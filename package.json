@@ -1,0 +1,33 @@
+{
+  "name": "@ark7/ark-model",
+  "version": "1.0.0",
+  "description": "Ark7 model used for both backend and frontend",
+  "types": "index.d.ts",
+  "main": "index.js",
+  "scripts": {
+    "build": "./node_modules/.bin/gulp",
+    "prepublish": "npm test && npm run build",
+    "test": "NODE_ENV=test node_modules/.bin/mocha --trace-warnings --require ts-node/register \"test/**/*.ts\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ark7-technology/ark-model.git"
+  },
+  "author": "yz@ark7.com",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/ark7-technology/ark-model/issues"
+  },
+  "homepage": "https://github.com/ark7-technology/ark-model#readme",
+  "devDependencies": {
+    "@types/mocha": "^8.0.3",
+    "@types/should": "^13.0.0",
+    "gulp": "^4.0.2",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-typescript": "^6.0.0-alpha.1",
+    "mocha": "^8.1.3",
+    "should": "^13.2.3",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.3"
+  }
+}

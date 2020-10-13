@@ -1,0 +1,3 @@
+recursive: true
+require: 'should'
+timeout: 50000
