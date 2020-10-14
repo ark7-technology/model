@@ -11,10 +11,10 @@
     "target": "es2017",
     "typeRoots": ["node_modules/@types"],
     "plugins": [{
-      "transform": "./dist/transformer"
+      "transform": "ts-transformer-interface/transformer"
     }],
-    "outDir": "dist"
+    "outDir": "../dist"
   },
-  "include": ["./src/**/*.ts"],
+  "include": ["**/*.ts"],
   "exclude": ["node_modules"]
 }

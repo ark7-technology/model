@@ -9,12 +9,12 @@
     "declaration": true,
     "noImplicitAny": true,
     "target": "es2017",
-    "typeRoots": ["node_modules/@types"],
+    "typeRoots": ["../node_modules/@types"],
     "plugins": [{
-      "transform": "./dist/transformer"
+      "transform": "../dist/transformer"
     }],
-    "outDir": "dist"
+    "outDir": "../dist/test"
   },
-  "include": ["./src/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["./**/*.ts"],
+  "exclude": ["../node_modules"]
 }
