@@ -23,7 +23,21 @@ function buildInterfaceProperty(
     optional: propertyOptional(symbol),
     modifier: propertyModifier(symbol),
     type: propertyType(symbol, typeChecker),
+    readonly: propertyReadonly(symbol),
   };
+}
+
+function propertyReadonly(symbol: ts.Symbol): boolean {
+  return (
+    symbol.declarations &&
+    symbol.declarations.some(
+      (d) =>
+        d.modifiers &&
+        d.modifiers.some(
+          (modifier) => modifier.kind === ts.SyntaxKind.ReadonlyKeyword,
+        ),
+    )
+  );
 }
 
 function propertyModifier(symbol: ts.Symbol): runtime.Modifier {

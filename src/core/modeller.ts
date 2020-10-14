@@ -10,21 +10,33 @@ import {
 } from './fields';
 
 export abstract class Ark7Modeller<T> {
-  generateArk7Model$$(_x: any): T {
-    throw new Error('generate not override.');
+  register$$(_x: any): T {
+    throw new Error('register$$ is not override.');
   }
 
-  protected abstract generateWithSchema(
+  protected abstract registerWithSchema(
     schema: runtime.Schema,
     ...args: any[]
   ): T;
 }
 
 export class Ark7MetaModeller extends Ark7Modeller<Ark7ModelMetadata> {
-  protected generateWithSchema<T extends object>(
+  private metadataMap: Map<string, Ark7ModelMetadata> = new Map();
+
+  getMetadata(name: string): Ark7ModelMetadata {
+    return this.metadataMap.get(name);
+  }
+
+  protected registerWithSchema<T extends object>(
     schema: runtime.Schema,
     modelClass: ModelClass<T>,
   ): Ark7ModelMetadata {
+    const name = modelClass.name;
+
+    if (this.metadataMap.has(name)) {
+      return this.metadataMap.get(name);
+    }
+
     const fields = getArk7ModelField(modelClass);
 
     const declarations: Ark7ModelField[] = _.chain(schema.props)
@@ -33,6 +45,7 @@ export class Ark7MetaModeller extends Ark7Modeller<Ark7ModelMetadata> {
         propertyName: p.name,
         options: {
           optional: p.optional,
+          readonly: p.readonly,
         },
         type: p.type,
       }))
@@ -49,11 +62,15 @@ export class Ark7MetaModeller extends Ark7Modeller<Ark7ModelMetadata> {
       }
     }
 
-    return {
-      name: modelClass.name,
+    const metadata = {
+      name,
       configs: getArk7ModelConfig(modelClass),
       fields,
     };
+
+    this.metadataMap.set(name, metadata);
+
+    return metadata;
   }
 }
 
@@ -89,6 +106,7 @@ export namespace runtime {
     optional: boolean;
     type: Type;
     modifier: Modifier;
+    readonly: boolean;
   }
 
   /** @since 1.0.0 */

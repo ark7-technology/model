@@ -64,7 +64,7 @@ function visitNode(node: ts.Node, program: ts.Program): ts.Node {
       const expression = ts.updatePropertyAccess(
         x,
         x.expression,
-        ts.createIdentifier('generateWithSchema'),
+        ts.createIdentifier('registerWithSchema'),
       );
 
       const args = ts.createNodeArray(
@@ -95,6 +95,6 @@ function isRuntimeTypeCallExpression(
     !!declaration &&
     !ts.isJSDocSignature(declaration) &&
     !!declaration.name &&
-    declaration.name.getText() === 'generateArk7Model$$'
+    declaration.name.getText() === 'register$$'
   );
 }

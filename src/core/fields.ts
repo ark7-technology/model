@@ -82,14 +82,10 @@ export type OptionsResolver<
 
 export type FieldOptionsResolver<T = {}> = OptionsResolver<FieldOptions<T>>;
 
-export interface BaseFieldOptions<T> {
-  optional?: boolean;
-  resolver?: FieldOptionsResolver<T>;
-}
-
 export type FieldOptions<T = {}> = BaseOptions<
   T & {
     optional?: boolean;
+    readonly?: boolean;
   }
 >;
 
