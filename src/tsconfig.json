@@ -10,7 +10,7 @@
     "noImplicitAny": true,
     "target": "es2017",
     "typeRoots": ["node_modules/@types"],
-    "plugins": [{}],
+    "plugins": [],
     "outDir": "../dist"
   },
   "include": ["**/*.ts"],

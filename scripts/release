@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+npm run clean
+
+npm run compile:src
+
 npm test
 
 npm run clean
