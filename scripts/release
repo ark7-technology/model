@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+npm test
+
+npm run clean
+
+npm run compile:src
+
+cp package.json LICENSE README.md dist
+
+cd dist
+
+npm publish --access=public
