@@ -1,15 +1,19 @@
-import { A7Model, Field } from '../../src';
+import { A7Model, Config, Field } from '../../src';
 
 export enum Gender {
-  MAN = 'MAN',
-  WOMAN = 'WOMAN',
+  MAN = 0,
+  WOMAN = 1,
 }
 
-@A7Model({})
+A7Model.provide(Gender);
+
+@Config({})
 export class Name {
   readonly first: string;
   @Field() last: string;
 }
+
+A7Model.provide(Name);
 
 @A7Model({
   hello: 'world1',

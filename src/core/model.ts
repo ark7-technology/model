@@ -7,9 +7,10 @@ import { Ark7ModelFields, ConfigOptions, ModelClass } from './fields';
 import { DEFAULT_OPTIONS_RESOLVER } from './resolvers';
 import { runtime } from './runtime';
 
-export function A7Model<T = {}>(
+export function Config<T = {}>(
   options: ConfigOptions<T>,
   schema?: runtime.Schema,
+  name?: string,
 ): ClassDecorator {
   return (constructor: Function) => {
     const configOptions: ConfigOptions = Reflect.getMetadata(
@@ -28,8 +29,16 @@ export function A7Model<T = {}>(
       constructor,
     );
 
-    manager.register(constructor.name, constructor as any);
+    manager.register(name ?? constructor.name, constructor as any);
   };
+}
+
+export function A7Model<T = {}>(
+  options: ConfigOptions<T>,
+  schema?: runtime.Schema,
+  name?: string,
+): ClassDecorator {
+  return Config(options, schema, name);
 }
 
 export interface Ark7ModelMetadata {
@@ -59,8 +68,9 @@ export class A7ModelManager {
 
     if (metadata.fields == null) {
       metadata.fields =
-        Reflect.getMetadata(ARK7_MODEL_FIELD, metadata.modelClass.prototype) ||
-        {};
+        (metadata.modelClass.prototype
+          ? Reflect.getMetadata(ARK7_MODEL_FIELD, metadata.modelClass.prototype)
+          : {}) || {};
     }
 
     return metadata;
@@ -81,5 +91,17 @@ export namespace A7Model {
     model: string | ModelClass<T>,
   ): Ark7ModelMetadata {
     return manager.getMetadata(model);
+  }
+
+  export function provide(
+    target: object,
+    schema?: runtime.Schema,
+    name?: string,
+  ) {
+    if (_.isFunction(target)) {
+      A7Model({}, schema, name)(target);
+    } else {
+      A7Model({}, schema, name)(target as any);
+    }
   }
 }

@@ -11,8 +11,6 @@ export function Field(options: FieldOptions = {}): PropertyDecorator {
     const fields: Ark7ModelFields =
       Reflect.getMetadata(ARK7_MODEL_FIELD, target) || {};
 
-    console.log('targat', target);
-
     Reflect.defineMetadata(
       ARK7_MODEL_FIELD,
       mergeFields(fields, propertyName, options),

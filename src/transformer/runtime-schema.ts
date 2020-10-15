@@ -151,11 +151,6 @@ function getTypeFromSignature(
     case ts.SyntaxKind.TypeReference:
       const typeArgs: ts.Node[] = (propertySignature as any).typeArguments;
 
-      // const id: any = (propertySignature as any).typeName;
-      // const t = typeChecker.getTypeAtLocation(id);
-      // console.log(id);
-      // console.log(t);
-
       if (typeArgs && typeArgs.length > 0) {
         const typeName = (propertySignature as any).typeName;
         const typeArg = typeArgs[0] as ts.PropertySignature;

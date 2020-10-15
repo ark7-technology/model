@@ -67,6 +67,23 @@ describe('A7Model', () => {
         fields: {},
         name: 'User',
       });
+
+      A7Model.getMetadata('Gender').should.have.properties({
+        modelClass: {
+          MAN: 0,
+          '0': 'MAN',
+          WOMAN: 1,
+          '1': 'WOMAN',
+        },
+        configs: {
+          schema: {
+            name: 'Gender',
+            props: [],
+          },
+        },
+        fields: {},
+        name: 'Gender',
+      });
     });
   });
 });

@@ -82,26 +82,20 @@ function visitNode(node: ts.Node, program: ts.Program): ts.Node {
     if (ts.isIdentifier(i)) {
       const t = typeChecker.getTypeAtLocation(i) as any;
 
+      const name = ts.createStringLiteral(t.symbol.escapedName);
+
       const literal = ts.createRegularExpressionLiteral(
-        JSON.stringify(buildInterface(t.symbol.escapedText, t, typeChecker)),
+        JSON.stringify(buildInterface(t.symbol.escapedName, t, typeChecker)),
       );
 
-      const elements = [literal, ...node.arguments];
-
-      const x = node.expression as any;
-
-      const expression = ts.updatePropertyAccess(
-        x,
-        x.expression,
-        ts.createIdentifier('registerWithSchema'),
-      );
+      const elements = [...node.arguments, literal, name];
 
       const args = ts.createNodeArray(
         elements,
         node.arguments.hasTrailingComma,
       );
 
-      return ts.updateCall(node, expression, node.typeArguments, args);
+      return ts.updateCall(node, node.expression, node.typeArguments, args);
     }
   }
 }
@@ -124,6 +118,6 @@ function isRuntimeTypeCallExpression(
     !!declaration &&
     !ts.isJSDocSignature(declaration) &&
     !!declaration.name &&
-    declaration.name.getText() === 'register$$'
+    declaration.name.getText() === 'provide'
   );
 }
