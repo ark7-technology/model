@@ -35,4 +35,6 @@ export class User {
   get birthday(): number {
     return this._birthday;
   }
+
+  protected update(user: User) {}
 }

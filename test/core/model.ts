@@ -97,6 +97,13 @@ describe('A7Model', () => {
                 readonly: false,
                 type: 'number',
               },
+              {
+                modifier: 'PROTECTED',
+                name: 'update',
+                optional: false,
+                readonly: false,
+                type: 'method',
+              },
             ],
           },
         },

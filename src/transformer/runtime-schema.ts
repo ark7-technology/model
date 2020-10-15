@@ -108,6 +108,10 @@ function propertyType(
   const typeParameters = parent.typeParameters;
   const propertySignature = (declaration as any).type;
 
+  if (declaration.kind === ts.SyntaxKind.MethodDeclaration) {
+    return 'method';
+  }
+
   if (propertySignature == null) {
     return null;
   }
