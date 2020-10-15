@@ -6,7 +6,7 @@ import { A7_MODEL_CONFIG, A7_MODEL_FIELD } from './tokens';
 import { DEFAULT_OPTIONS_RESOLVER } from './resolvers';
 import { runtime } from './runtime';
 
-export function Field(options: FieldOptions = {}): PropertyDecorator {
+export function Field<T = {}>(options?: FieldOptions<T>): PropertyDecorator {
   return (target: any, propertyName: string) => {
     const fields: Ark7ModelFields =
       Reflect.getMetadata(A7_MODEL_FIELD, target) || {};
@@ -36,7 +36,7 @@ export interface ModelClass<T> {
 function mergeFields(
   fields: Ark7ModelFields,
   propertyName: string,
-  options: FieldOptions,
+  options: FieldOptions = {},
 ): Ark7ModelFields {
   const resolver = options.resolver ?? DEFAULT_OPTIONS_RESOLVER;
 
