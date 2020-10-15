@@ -3,6 +3,7 @@ import 'should';
 import { Name, User } from '../models/users';
 import { metaModeller } from '../../src';
 
+// metaModeller.register$$(Gender);
 metaModeller.register$$(User);
 metaModeller.register$$(Name);
 
@@ -36,6 +37,29 @@ describe('metaModeller', () => {
         configs: {
           hello: 'world1',
           hello3: 'world3',
+          schema: {
+            name: 'User',
+            props: [
+              {
+                modifier: 'PUBLIC',
+                name: 'name',
+                optional: true,
+                readonly: false,
+                type: {
+                  referenceName: 'Name',
+                },
+              },
+              {
+                modifier: 'PUBLIC',
+                name: 'gender',
+                optional: false,
+                readonly: false,
+                type: {
+                  referenceName: 'Gender',
+                },
+              },
+            ],
+          },
         },
         fields: {
           name: {
@@ -45,6 +69,16 @@ describe('metaModeller', () => {
             propertyName: 'name',
             options: {
               optional: true,
+              readonly: false,
+            },
+          },
+          gender: {
+            type: {
+              referenceName: 'Gender',
+            },
+            propertyName: 'gender',
+            options: {
+              optional: false,
               readonly: false,
             },
           },

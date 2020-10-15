@@ -7,11 +7,29 @@ export function buildInterface(
   type: ts.Type,
   typeChecker: ts.TypeChecker,
 ): runtime.Schema {
-  const symbols: ts.Symbol[] = Array.from(type.symbol.members.values() as any);
-  return {
-    name: name,
-    props: symbols.map((s) => buildInterfaceProperty(s, typeChecker)),
-  };
+  switch (false) {
+    case !isEnumDeclaration(type.symbol):
+      console.log(type.symbol);
+      return {
+        name,
+        props: [],
+      };
+
+    default:
+      const symbols: ts.Symbol[] = Array.from(
+        type.symbol.members.values() as any,
+      );
+      return {
+        name,
+        props: symbols.map((s) => buildInterfaceProperty(s, typeChecker)),
+      };
+  }
+}
+
+function isEnumDeclaration(symbol: ts.Symbol): boolean {
+  return symbol.declarations?.some(
+    (d) => d.kind === ts.SyntaxKind.EnumDeclaration,
+  );
 }
 
 function buildInterfaceProperty(
@@ -126,6 +144,12 @@ function getTypeFromSignature(
       return 'unknown';
     case ts.SyntaxKind.TypeReference:
       const typeArgs: ts.Node[] = (propertySignature as any).typeArguments;
+
+      // const id: any = (propertySignature as any).typeName;
+      // const t = typeChecker.getTypeAtLocation(id);
+      // console.log(id);
+      // console.log(t);
+
       if (typeArgs && typeArgs.length > 0) {
         const typeName = (propertySignature as any).typeName;
         const typeArg = typeArgs[0] as ts.PropertySignature;

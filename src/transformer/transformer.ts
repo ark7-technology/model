@@ -42,6 +42,35 @@ const badInterface = ts.createRegularExpressionLiteral(
 
 function visitNode(node: ts.Node, program: ts.Program): ts.Node {
   const typeChecker = program.getTypeChecker();
+
+  if (
+    ts.isDecorator(node) &&
+    (node.expression as any)?.expression?.escapedText === 'A7Model'
+  ) {
+    const parent: any = node.parent;
+
+    const type = typeChecker.getTypeAtLocation(parent);
+
+    const literal = ts.createRegularExpressionLiteral(
+      JSON.stringify(
+        buildInterface(type.symbol.escapedName as string, type, typeChecker),
+      ),
+    );
+
+    const elements = [...(node.expression as any).arguments, literal];
+
+    const exp: any = node.expression;
+
+    const expression = ts.updateCall(
+      exp,
+      exp.expression,
+      exp.typeArguments,
+      elements,
+    );
+
+    return ts.updateDecorator(node, expression);
+  }
+
   if (!isRuntimeTypeCallExpression(node, typeChecker)) {
     return node;
   }

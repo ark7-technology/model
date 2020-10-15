@@ -4,8 +4,12 @@ import _ from 'underscore';
 
 import { ARK7_MODEL_CONFIG, ARK7_MODEL_FIELD } from './tokens';
 import { DEFAULT_OPTIONS_RESOLVER } from './resolvers';
+import { runtime } from './modeller';
 
-export function Config<T = {}>(options: ConfigOptions<T>): ClassDecorator {
+export function A7Model<T = {}>(
+  options: ConfigOptions<T>,
+  schema?: runtime.Schema,
+): ClassDecorator {
   return (constructor: Function) => {
     const configOptions: ConfigOptions = Reflect.getMetadata(
       ARK7_MODEL_CONFIG,
@@ -17,7 +21,11 @@ export function Config<T = {}>(options: ConfigOptions<T>): ClassDecorator {
     const newOptions =
       configOptions == null ? options : resolver(configOptions, options);
 
-    Reflect.defineMetadata(ARK7_MODEL_CONFIG, newOptions, constructor);
+    Reflect.defineMetadata(
+      ARK7_MODEL_CONFIG,
+      _.defaults({ schema }, newOptions),
+      constructor,
+    );
   };
 }
 
@@ -91,11 +99,11 @@ export type FieldOptions<T = {}> = BaseOptions<
 
 export type ConfigOptionsResolver<T = {}> = OptionsResolver<ConfigOptions<T>>;
 
-export interface BaseConfigOptions<T> {
-  resolver?: ConfigOptionsResolver<T>;
-}
-
-export type ConfigOptions<T = {}> = BaseOptions<T & {}>;
+export type ConfigOptions<T = {}> = BaseOptions<
+  T & {
+    schema?: runtime.Schema;
+  }
+>;
 
 export interface Ark7ModelField<T = any> {
   propertyName: string;
