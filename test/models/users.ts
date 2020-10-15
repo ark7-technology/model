@@ -1,5 +1,9 @@
 import { A7Model, Config, Field } from '../../src';
 
+export class Model {
+  @Field() _id: string;
+}
+
 export enum Gender {
   MAN = 0,
   WOMAN = 1,
@@ -8,7 +12,7 @@ export enum Gender {
 A7Model.provide(Gender);
 
 @Config({})
-export class Name {
+export class Name extends Model {
   readonly first: string;
   @Field() last: string;
 }
@@ -22,4 +26,13 @@ A7Model.provide(Name);
 export class User {
   name?: Name;
   gender: Gender;
+  phone: number | string;
+
+  createdAt: Date;
+
+  private _birthday: number;
+
+  get birthday(): number {
+    return this._birthday;
+  }
 }

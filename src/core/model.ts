@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 import _ from 'underscore';
 
-import { ARK7_MODEL_CONFIG, ARK7_MODEL_FIELD } from './tokens';
+import { A7_MODEL_CONFIG, A7_MODEL_FIELD } from './tokens';
 import { Ark7ModelFields, ConfigOptions, ModelClass } from './fields';
 import { DEFAULT_OPTIONS_RESOLVER } from './resolvers';
 import { runtime } from './runtime';
@@ -14,7 +14,7 @@ export function Config<T = {}>(
 ): ClassDecorator {
   return (constructor: Function) => {
     const configOptions: ConfigOptions = Reflect.getMetadata(
-      ARK7_MODEL_CONFIG,
+      A7_MODEL_CONFIG,
       constructor,
     );
 
@@ -24,12 +24,14 @@ export function Config<T = {}>(
       configOptions == null ? options : resolver(configOptions, options);
 
     Reflect.defineMetadata(
-      ARK7_MODEL_CONFIG,
+      A7_MODEL_CONFIG,
       _.defaults({ schema }, newOptions),
       constructor,
     );
 
-    manager.register(name ?? constructor.name, constructor as any);
+    if (schema != null) {
+      manager.register(name ?? constructor.name, constructor as any);
+    }
   };
 }
 
@@ -44,6 +46,7 @@ export function A7Model<T = {}>(
 export interface Ark7ModelMetadata {
   name: string;
   modelClass: ModelClass<any>;
+  superClass?: ModelClass<any>;
   configs?: ConfigOptions;
   fields?: Ark7ModelFields;
 }
@@ -63,13 +66,13 @@ export class A7ModelManager {
 
     if (metadata.configs == null) {
       metadata.configs =
-        Reflect.getMetadata(ARK7_MODEL_CONFIG, metadata.modelClass) || {};
+        Reflect.getMetadata(A7_MODEL_CONFIG, metadata.modelClass) || {};
     }
 
     if (metadata.fields == null) {
       metadata.fields =
         (metadata.modelClass.prototype
-          ? Reflect.getMetadata(ARK7_MODEL_FIELD, metadata.modelClass.prototype)
+          ? Reflect.getMetadata(A7_MODEL_FIELD, metadata.modelClass.prototype)
           : {}) || {};
     }
 
@@ -77,9 +80,14 @@ export class A7ModelManager {
   }
 
   register<T>(name: string, modelClass: ModelClass<T>) {
+    const superClass = modelClass?.prototype?.__proto__?.constructor;
     this.metadataMap.set(name, {
       name,
       modelClass,
+      superClass:
+        superClass != null && superClass !== Object.prototype.constructor
+          ? superClass
+          : null,
     });
   }
 }
@@ -93,15 +101,7 @@ export namespace A7Model {
     return manager.getMetadata(model);
   }
 
-  export function provide(
-    target: object,
-    schema?: runtime.Schema,
-    name?: string,
-  ) {
-    if (_.isFunction(target)) {
-      A7Model({}, schema, name)(target);
-    } else {
-      A7Model({}, schema, name)(target as any);
-    }
+  export function provide(target: any, schema?: runtime.Schema, name?: string) {
+    A7Model({}, schema, name)(target);
   }
 }

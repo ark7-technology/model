@@ -1,13 +1,14 @@
 import 'should';
 
 import { A7Model } from '../../src';
-import { Name, User } from '../models/users';
+import { Model, Name, User } from '../models/users';
 
 describe('A7Model', () => {
   describe('.getMetadata', () => {
-    it('should return expected value', () => {
-      A7Model.getMetadata('Name').should.have.properties({
+    it('should return expected value for Name', () => {
+      A7Model.getMetadata('Name').should.be.deepEqual({
         modelClass: Name.prototype.constructor,
+        superClass: Model.prototype.constructor,
         configs: {
           schema: {
             name: 'Name',
@@ -30,11 +31,14 @@ describe('A7Model', () => {
           },
         },
         fields: {
+          _id: { propertyName: '_id', options: {} },
           last: { propertyName: 'last', options: {} },
         },
         name: 'Name',
       });
+    });
 
+    it('should return expected value for User', () => {
       A7Model.getMetadata(User).should.be.deepEqual({
         modelClass: User.prototype.constructor,
         configs: {
@@ -61,14 +65,49 @@ describe('A7Model', () => {
                   referenceName: 'Gender',
                 },
               },
+              {
+                modifier: 'PUBLIC',
+                name: 'phone',
+                optional: false,
+                readonly: false,
+                type: {
+                  union: ['number', 'string'],
+                },
+              },
+              {
+                modifier: 'PUBLIC',
+                name: 'createdAt',
+                optional: false,
+                readonly: false,
+                type: {
+                  referenceName: 'Date',
+                },
+              },
+              {
+                modifier: 'PRIVATE',
+                name: '_birthday',
+                optional: false,
+                readonly: false,
+                type: 'number',
+              },
+              {
+                modifier: 'PUBLIC',
+                name: 'birthday',
+                optional: false,
+                readonly: false,
+                type: 'number',
+              },
             ],
           },
         },
         fields: {},
         name: 'User',
+        superClass: null,
       });
+    });
 
-      A7Model.getMetadata('Gender').should.have.properties({
+    it('should return expected value for Gender', () => {
+      A7Model.getMetadata('Gender').should.be.deepEqual({
         modelClass: {
           MAN: 0,
           '0': 'MAN',
@@ -83,6 +122,7 @@ describe('A7Model', () => {
         },
         fields: {},
         name: 'Gender',
+        superClass: null,
       });
     });
   });
