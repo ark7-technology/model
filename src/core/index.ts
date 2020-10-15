@@ -1,4 +1,5 @@
 export * from './fields';
-export * from './modeller';
+export * from './model';
 export * from './resolvers';
+export * from './runtime';
 export * from './tokens';

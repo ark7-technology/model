@@ -4,35 +4,14 @@ import _ from 'underscore';
 
 import { ARK7_MODEL_CONFIG, ARK7_MODEL_FIELD } from './tokens';
 import { DEFAULT_OPTIONS_RESOLVER } from './resolvers';
-import { runtime } from './modeller';
-
-export function A7Model<T = {}>(
-  options: ConfigOptions<T>,
-  schema?: runtime.Schema,
-): ClassDecorator {
-  return (constructor: Function) => {
-    const configOptions: ConfigOptions = Reflect.getMetadata(
-      ARK7_MODEL_CONFIG,
-      constructor,
-    );
-
-    const resolver = options.resolver ?? DEFAULT_OPTIONS_RESOLVER;
-
-    const newOptions =
-      configOptions == null ? options : resolver(configOptions, options);
-
-    Reflect.defineMetadata(
-      ARK7_MODEL_CONFIG,
-      _.defaults({ schema }, newOptions),
-      constructor,
-    );
-  };
-}
+import { runtime } from './runtime';
 
 export function Field(options: FieldOptions = {}): PropertyDecorator {
   return (target: any, propertyName: string) => {
     const fields: Ark7ModelFields =
       Reflect.getMetadata(ARK7_MODEL_FIELD, target) || {};
+
+    console.log('targat', target);
 
     Reflect.defineMetadata(
       ARK7_MODEL_FIELD,

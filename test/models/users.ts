@@ -5,9 +5,10 @@ export enum Gender {
   WOMAN = 'WOMAN',
 }
 
+@A7Model({})
 export class Name {
   readonly first: string;
-  last: string;
+  @Field() last: string;
 }
 
 @A7Model({
@@ -16,6 +17,5 @@ export class Name {
 })
 export class User {
   name?: Name;
-
   gender: Gender;
 }

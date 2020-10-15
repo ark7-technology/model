@@ -9,7 +9,6 @@ export function buildInterface(
 ): runtime.Schema {
   switch (false) {
     case !isEnumDeclaration(type.symbol):
-      console.log(type.symbol);
       return {
         name,
         props: [],
@@ -21,7 +20,9 @@ export function buildInterface(
       );
       return {
         name,
-        props: symbols.map((s) => buildInterfaceProperty(s, typeChecker)),
+        props: symbols
+          .filter((s) => s.getName() !== '__constructor')
+          .map((s) => buildInterfaceProperty(s, typeChecker)),
       };
   }
 }
@@ -106,6 +107,11 @@ function propertyType(
   }
   const typeParameters = parent.typeParameters;
   const propertySignature = (declaration as any).type;
+
+  if (propertySignature == null) {
+    return null;
+  }
+
   if (typeParameters && typeParameters.length > 0) {
     const typeParam = typeParameters[0];
     return {
