@@ -45,7 +45,7 @@ function mergeFields(
       ? options
       : resolver(fields[propertyName].options, options);
 
-  return _.extend(
+  return _.defaults(
     {
       [propertyName]: {
         propertyName,
