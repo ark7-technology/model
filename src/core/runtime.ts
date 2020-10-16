@@ -62,4 +62,12 @@ export namespace runtime {
     name: string;
     props: Property[];
   }
+
+  export function isReferenceType(type: Type): type is ReferenceType {
+    return (type as ReferenceType).referenceName != null;
+  }
+
+  export function isArrayType(type: Type): type is ArrayType {
+    return (type as ArrayType).arrayElementType != null;
+  }
 }
