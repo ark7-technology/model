@@ -70,4 +70,8 @@ export namespace runtime {
   export function isArrayType(type: Type): type is ArrayType {
     return (type as ArrayType).arrayElementType != null;
   }
+
+  export function isParameterizedType(type: Type): type is ParameterizedType {
+    return (type as ParameterizedType).selfType != null;
+  }
 }
