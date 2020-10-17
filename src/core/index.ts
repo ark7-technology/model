@@ -1,3 +1,4 @@
+export * from './decorators';
 export * from './fields';
 export * from './model';
 export * from './resolvers';

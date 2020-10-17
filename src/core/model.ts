@@ -56,6 +56,10 @@ export class A7ModelManager {
 
   constructor() {}
 
+  reset() {
+    this.metadataMap.clear();
+  }
+
   getMetadata<T>(name: string | ModelClass<T>): Ark7ModelMetadata {
     const key = _.isString(name) ? name : name.name;
     const metadata = this.metadataMap.get(key);
@@ -99,6 +103,10 @@ export namespace A7Model {
     model: string | ModelClass<T>,
   ): Ark7ModelMetadata {
     return manager.getMetadata(model);
+  }
+
+  export function reset() {
+    manager.reset();
   }
 
   export function provide(target: any, schema?: runtime.Schema, name?: string) {
