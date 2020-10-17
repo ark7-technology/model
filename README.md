@@ -59,7 +59,7 @@ export class User {
 // A7Model.provide(User)
 ```
 
-## Advanced Features
+## Model
 
 ### Model Metadata
 
@@ -118,3 +118,46 @@ interface ModelConfig {
   'bar'
 );
 ```
+
+## Field
+
+### Required v.s. Optional
+
+The `required` modifier can be declared on `field metadata` or `schema` level:
+
+```Typescript
+class Name {
+  first: string;  // schema level required
+
+  @Required()     // field metadata level required
+  last: string;   // schema level required
+}
+```
+
+Sometimes, the two levels may have conflict opinions:
+
+```Typescript
+class Name {
+  first?: string;  // schema level optional
+
+  @Required(false) // field metadata level: optional
+  last: string;    // schema level: required
+}
+```
+
+It depends on the adaptor to deal with those conflicts.
+
+### Readonly
+
+The `readonly` modifier can be declared on `field metadata` or `schema` level:
+
+```Typescript
+class Name {
+  readonly first: string;  // schema level readonly
+
+  @Readonly()     // field metadata level readonly
+  last: string;   // schema level non-readonly
+}
+```
+
+It depends on the adaptor to deal with the conflicts.
