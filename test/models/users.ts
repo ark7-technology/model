@@ -1,8 +1,5 @@
-import { A7Model, Config, Field } from '../../src';
-
-export class Model {
-  @Field() _id: string;
-}
+import { A7Model } from '../../src';
+import { Name } from './name';
 
 export enum Gender {
   MAN = 0,
@@ -10,14 +7,6 @@ export enum Gender {
 }
 
 A7Model.provide(Gender);
-
-@Config({})
-export class Name extends Model {
-  readonly first: string;
-  @Field() last: string;
-}
-
-A7Model.provide(Name);
 
 @A7Model({
   hello: 'world1',
