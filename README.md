@@ -2,7 +2,7 @@
 
 @ark7/model is a model layer which is shareable across multiple environments:
 
-- Nodejs (MongoDB)
+- [Nodejs (MongoDB)](https://github.com/ark7-technology/model-mongoose)
 - Browser
 
 ## Installation
