@@ -44,12 +44,22 @@ export function A7Model<T = object>(
   return Config(options, schema, name);
 }
 
-export interface Ark7ModelMetadata {
+export class Ark7ModelMetadata {
   name: string;
   modelClass: ModelClass<any>;
-  superClass?: ModelClass<any>;
-  configs?: ConfigOptions;
-  fields?: Ark7ModelFields;
+  superClass: ModelClass<any>;
+  configs: ConfigOptions;
+  fields: Ark7ModelFields;
+
+  constructor(cls: ModelClass<any>, name?: string) {
+    this.name = name || cls?.name;
+    this.modelClass = cls;
+    const superClass = cls?.prototype?.__proto__?.constructor;
+    this.superClass =
+      superClass != null && superClass !== Object.prototype.constructor
+        ? superClass
+        : null;
+  }
 }
 
 export namespace A7Model {

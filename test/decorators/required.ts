@@ -17,7 +17,7 @@ describe('decorators', () => {
     }
 
     it('specifies the required', () => {
-      A7Model.getMetadata(RequiredModel).should.be.deepEqual({
+      A7Model.getMetadata(RequiredModel).should.have.properties({
         name: 'RequiredModel',
         modelClass: RequiredModel.prototype.constructor,
         superClass: null,

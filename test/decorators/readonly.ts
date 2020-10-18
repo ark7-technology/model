@@ -11,7 +11,7 @@ describe('decorators', () => {
     }
 
     it('specifies the readonly', () => {
-      A7Model.getMetadata(ReadonlyModel).should.be.deepEqual({
+      A7Model.getMetadata(ReadonlyModel).should.have.properties({
         name: 'ReadonlyModel',
         modelClass: ReadonlyModel.prototype.constructor,
         superClass: null,

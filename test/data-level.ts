@@ -12,7 +12,7 @@ describe('data-level', () => {
 
   describe('.metadata', () => {
     it('specifies the data levels', () => {
-      A7Model.getMetadata(DataLevelModel).should.be.deepEqual({
+      A7Model.getMetadata(DataLevelModel).should.have.properties({
         name: 'DataLevelModel',
         modelClass: DataLevelModel.prototype.constructor,
         superClass: StrictModel.prototype.constructor,

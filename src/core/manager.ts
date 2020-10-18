@@ -37,15 +37,11 @@ export class Manager {
   }
 
   register<T>(name: string, modelClass: ModelClass<T>) {
-    const superClass = modelClass?.prototype?.__proto__?.constructor;
-    this.metadataMap.set(name, {
-      name,
-      modelClass,
-      superClass:
-        superClass != null && superClass !== Object.prototype.constructor
-          ? superClass
-          : null,
-    });
+    if (this.metadataMap.has(name)) {
+      throw new Error(`Model ${name} has already been registered.`);
+    }
+
+    this.metadataMap.set(name, new Ark7ModelMetadata(modelClass, name));
   }
 }
 

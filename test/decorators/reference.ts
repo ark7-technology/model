@@ -19,7 +19,7 @@ describe('decorators', () => {
     }
 
     it('specifies the required', () => {
-      A7Model.getMetadata(ReferenceModel).should.be.deepEqual({
+      A7Model.getMetadata(ReferenceModel).should.have.properties({
         name: 'ReferenceModel',
         modelClass: ReferenceModel.prototype.constructor,
         superClass: null,

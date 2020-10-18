@@ -8,7 +8,7 @@ import { Name } from '../models';
 describe('A7Model', () => {
   describe('.getMetadata', () => {
     it('should return expected value for Name', () => {
-      A7Model.getMetadata(Name).should.be.deepEqual({
+      A7Model.getMetadata(Name).should.have.properties({
         modelClass: Name.prototype.constructor,
         superClass: StrictModel.prototype.constructor,
         configs: {
