@@ -1,6 +1,6 @@
 import 'should';
 
-import { A7Model } from '../../src';
+import { A7Model, StrictModel } from '../../src';
 import { Name } from '../models';
 
 // import { Model, Name, User } from '../models/users';
@@ -10,7 +10,7 @@ describe('A7Model', () => {
     it('should return expected value for Name', () => {
       A7Model.getMetadata(Name).should.be.deepEqual({
         modelClass: Name.prototype.constructor,
-        superClass: null,
+        superClass: StrictModel.prototype.constructor,
         configs: {
           schema: {
             name: 'Name',

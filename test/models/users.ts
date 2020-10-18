@@ -1,4 +1,4 @@
-import { A7Model } from '../../src';
+import { A7Model, Model } from '../../src';
 import { Name } from './name';
 
 export enum Gender {
@@ -12,7 +12,7 @@ A7Model.provide(Gender);
   hello: 'world1',
   hello3: 'world3',
 })
-export class User {
+export class User extends Model {
   name?: Name;
   gender: Gender;
   phone: number | string;

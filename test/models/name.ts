@@ -1,7 +1,7 @@
-import { A7Model } from '../../src';
+import { A7Model, StrictModel } from '../../src';
 
 @A7Model({})
-export class Name {
+export class Name extends StrictModel {
   first: string;
   last: string;
 }

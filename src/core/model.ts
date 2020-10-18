@@ -1,115 +1,56 @@
-import 'reflect-metadata';
-
 import _ from 'underscore';
 
-import { A7_MODEL_CONFIG, A7_MODEL_FIELD } from './tokens';
-import { Ark7ModelFields, ConfigOptions, ModelClass } from './fields';
-import { DEFAULT_OPTIONS_RESOLVER } from './resolvers';
-import { runtime } from './runtime';
+import { A7Model } from './configs';
+import { DocumentToObjectOptions } from './fields';
 
-export function Config<T = {}>(
-  options: ConfigOptions<T>,
-  schema?: runtime.Schema,
-  name?: string,
-): ClassDecorator {
-  return (constructor: Function) => {
-    const configOptions: ConfigOptions = Reflect.getMetadata(
-      A7_MODEL_CONFIG,
-      constructor,
-    );
-
-    const resolver = options.resolver ?? DEFAULT_OPTIONS_RESOLVER;
-
-    const newOptions =
-      configOptions == null ? options : resolver(configOptions, options);
-
-    Reflect.defineMetadata(
-      A7_MODEL_CONFIG,
-      _.defaults({ schema }, newOptions),
-      constructor,
-    );
-
-    if (schema != null) {
-      manager.register(name ?? constructor.name, constructor as any);
-    }
-  };
-}
-
-export function A7Model<T = {}>(
-  options: ConfigOptions<T>,
-  schema?: runtime.Schema,
-  name?: string,
-): ClassDecorator {
-  return Config(options, schema, name);
-}
-
-export interface Ark7ModelMetadata {
-  name: string;
-  modelClass: ModelClass<any>;
-  superClass?: ModelClass<any>;
-  configs?: ConfigOptions;
-  fields?: Ark7ModelFields;
-}
-
-export class A7ModelManager {
-  private metadataMap: Map<string, Ark7ModelMetadata> = new Map();
-
-  constructor() {}
-
-  reset() {
-    this.metadataMap.clear();
+@A7Model({})
+export class StrictModel {
+  toJSON(options: DocumentToObjectOptions = {}): AsObject<this> {
+    return this.toObject(options);
   }
 
-  getMetadata<T>(name: string | ModelClass<T>): Ark7ModelMetadata {
-    const key = _.isString(name) ? name : name.name;
-    const metadata = this.metadataMap.get(key);
-
-    if (metadata == null) {
-      throw new Error(`Metadata ${key} not set`);
-    }
-
-    if (metadata.configs == null) {
-      metadata.configs =
-        Reflect.getMetadata(A7_MODEL_CONFIG, metadata.modelClass) || {};
-    }
-
-    if (metadata.fields == null) {
-      metadata.fields =
-        (metadata.modelClass.prototype
-          ? Reflect.getMetadata(A7_MODEL_FIELD, metadata.modelClass.prototype)
-          : {}) || {};
-    }
-
-    return metadata;
+  toObject(_options: DocumentToObjectOptions = {}): AsObject<this> {
+    return toObject(this);
   }
 
-  register<T>(name: string, modelClass: ModelClass<T>) {
-    const superClass = modelClass?.prototype?.__proto__?.constructor;
-    this.metadataMap.set(name, {
-      name,
-      modelClass,
-      superClass:
-        superClass != null && superClass !== Object.prototype.constructor
-          ? superClass
-          : null,
-    });
+  static modelize<T extends new (...args: any[]) => any>(
+    this: T,
+    o: AsObject<InstanceType<T>>,
+  ): InstanceType<T> {
+    const ret = _.clone(o);
+    Object.setPrototypeOf(ret, this.prototype);
+    return ret as any;
   }
 }
 
-export const manager = new A7ModelManager();
+@A7Model({})
+export class Model extends StrictModel {
+  _id?: string;
+}
 
-export namespace A7Model {
-  export function getMetadata<T>(
-    model: string | ModelClass<T>,
-  ): Ark7ModelMetadata {
-    return manager.getMetadata(model);
+export type AsObject<T> = Omit<T, MethodKeys<T>>;
+
+export type MethodKeys<T> = {
+  [P in keyof T]: T[P] extends Function ? P : never;
+}[keyof T];
+
+export type keys = keyof AsObject<StrictModel>;
+
+function toObject(obj: any): any {
+  if (_.isFunction(obj)) {
+    return null;
   }
 
-  export function reset() {
-    manager.reset();
+  if (_.isArray(obj)) {
+    return _.map(obj, toObject);
   }
 
-  export function provide(target: any, schema?: runtime.Schema, name?: string) {
-    A7Model({}, schema, name)(target);
+  if (obj instanceof Map) {
+    return _.chain(Array.from(obj.entries()))
+      .object()
+      .mapObject(toObject)
+      .value();
   }
+
+  return _.isObject(obj) ? _.mapObject(obj, toObject) : obj;
 }

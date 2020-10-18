@@ -1,21 +1,21 @@
 import 'should';
 
-import { A7Model, Level } from '../../src';
+import { A7Model, Level, StrictModel } from '../src';
 
-describe('decorators', () => {
-  describe('data-level', () => {
-    @A7Model({})
-    class DataLevelModel {
-      @Level(1) level1: string;
-      @Level(2) level2: string;
-      @Level(3) level3: string;
-    }
+describe('data-level', () => {
+  @A7Model({})
+  class DataLevelModel extends StrictModel {
+    @Level(1) level1: string;
+    @Level(2) level2: string;
+    @Level(3) level3: string;
+  }
 
+  describe('.metadata', () => {
     it('specifies the data levels', () => {
       A7Model.getMetadata(DataLevelModel).should.be.deepEqual({
         name: 'DataLevelModel',
         modelClass: DataLevelModel.prototype.constructor,
-        superClass: null,
+        superClass: StrictModel.prototype.constructor,
         configs: {
           schema: {
             name: 'DataLevelModel',
@@ -50,6 +50,18 @@ describe('decorators', () => {
           level1: { propertyName: 'level1', options: { level: 1 } },
         },
       });
+    });
+  });
+
+  describe('toJSON()', () => {
+    it('returns on different level', () => {
+      const ins = DataLevelModel.modelize({
+        level1: '1',
+        level2: '2',
+        level3: '3',
+      });
+
+      ins.should.be.instanceof(DataLevelModel);
     });
   });
 });

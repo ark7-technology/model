@@ -19,7 +19,7 @@ export function Field<T = {}>(options?: FieldOptions<T>): PropertyDecorator {
   };
 }
 
-export function getArk7ModelConfig<T extends object, P = {}>(
+export function getArk7ModelConfig<T extends object, P = object>(
   target: ModelClass<T>,
 ): ConfigOptions<P> {
   return Reflect.getMetadata(A7_MODEL_CONFIG, target) || {};
@@ -56,7 +56,7 @@ function mergeFields(
   );
 }
 
-export type BaseOptions<T = {}> = T & {
+export type BaseOptions<T = object> = T & {
   resolver?: OptionsResolver<T>;
 };
 
@@ -65,22 +65,53 @@ export type OptionsResolver<
   O extends BaseOptions<T> = BaseOptions<T>
 > = (baseOptions: O, options: O) => O;
 
-export type FieldOptionsResolver<T = {}> = OptionsResolver<FieldOptions<T>>;
+export type FieldOptionsResolver<T = object> = OptionsResolver<FieldOptions<T>>;
 
-export type FieldOptions<T = {}> = BaseOptions<
+export type FieldOptions<T = object> = BaseOptions<
   T & {
     optional?: boolean;
     readonly?: boolean;
   }
 >;
 
-export type ConfigOptionsResolver<T = {}> = OptionsResolver<ConfigOptions<T>>;
+export type ConfigOptionsResolver<T = object> = OptionsResolver<
+  ConfigOptions<T>
+>;
 
-export type ConfigOptions<T = {}> = BaseOptions<
+export type ConfigOptions<T = object> = BaseOptions<
   T & {
     schema?: runtime.Schema;
+    defaultLevel?: number;
+    toObject?: DocumentToObjectOptions;
+    toJSON?: DocumentToObjectOptions;
   }
 >;
+
+export interface DocumentToObjectOptions {
+  /** apply all getters (path and virtual getters) */
+  getters?: boolean;
+  /** apply virtual getters (can override getters option) */
+  virtuals?: boolean;
+  /** remove empty objects (defaults to true) */
+  minimize?: boolean;
+  /**
+   * A transform function to apply to the resulting document before returning
+   * @param doc The mongoose document which is being converted
+   * @param ret The plain object representation which has been converted
+   * @param options The options in use (either schema options or the options
+   *                passed inline)
+   */
+  transform?: (doc: any, ret: any, options: any) => any;
+  /** depopulate any populated paths, replacing them with their original refs
+   * (defaults to false) */
+  depopulate?: boolean;
+  /** whether to include the version key (defaults to true) */
+  versionKey?: boolean;
+  /** whether to convert Maps to POJOs. (defaults to false) */
+  flattenMaps?: boolean;
+  /** data level for projection. (defaults to null) */
+  level?: number;
+}
 
 export interface Ark7ModelField<T = any> {
   propertyName: string;
