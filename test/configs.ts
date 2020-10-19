@@ -1,5 +1,7 @@
 import 'should';
 
+import _ from 'underscore';
+
 import { A7Model, Field } from '../src';
 import { Name, User } from './models';
 import { genderMetadata, nameMetadata, userMetadata } from './metadata';
@@ -13,7 +15,7 @@ interface ModelConfig {
 
 @A7Model({})
 class ModelConfigBaseModel {
-  @Field() base1: string;
+  @Field({ type: String, required: true }) base1: string;
 
   get base2(): string {
     return this.base1;
@@ -22,7 +24,7 @@ class ModelConfigBaseModel {
 
 @A7Model({})
 class ModelConfigExtModel extends ModelConfigBaseModel {
-  @Field({ type: (x: string) => x }) base1: 'base1';
+  @Field({ type: _.identity }) base1: 'base1';
 }
 
 describe('configs', () => {
@@ -61,8 +63,44 @@ describe('configs', () => {
         },
         descriptor: null,
         field: {
+          type: String,
+          required: true,
+        },
+      });
+
+      metadata.combinedFields.get('base2').should.have.properties({
+        name: 'base2',
+        prop: {
+          name: 'base2',
+          optional: false,
+          modifier: 'PUBLIC',
+          type: 'string',
+          readonly: false,
+        },
+        descriptor: Object.getOwnPropertyDescriptor(
+          ModelConfigBaseModel.prototype,
+          'base2',
+        ),
+        field: null,
+      });
+    });
+
+    it('should return expected value for ModelConfigExtModel', () => {
+      const metadata = A7Model.getMetadata(ModelConfigExtModel);
+      metadata.combinedFields.should.have.keys('base1', 'base2');
+      metadata.combinedFields.get('base1').should.have.properties({
+        name: 'base1',
+        prop: {
           name: 'base1',
-          options: {},
+          optional: false,
+          modifier: 'PUBLIC',
+          type: null,
+          readonly: false,
+        },
+        descriptor: null,
+        field: {
+          type: _.identity,
+          required: true,
         },
       });
 

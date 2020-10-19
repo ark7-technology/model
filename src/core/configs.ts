@@ -10,7 +10,7 @@ import {
   ModelClass,
 } from './fields';
 import { DEFAULT_OPTIONS_RESOLVER } from './resolvers';
-import { manager } from './manager';
+import { Manager, manager } from './manager';
 import { runtime } from './runtime';
 
 export function Config<T = object>(
@@ -68,7 +68,7 @@ export class Ark7ModelMetadata {
         : null;
   }
 
-  createCombinedFields() {
+  createCombinedFields(manager: Manager) {
     if (this.combinedFields != null) {
       return;
     }
@@ -90,8 +90,27 @@ export class Ark7ModelMetadata {
 
       this.combinedFields.set(
         name,
-        new CombinedModelField(name, prop, descriptor, field),
+        new CombinedModelField(name, prop, descriptor, field?.options),
       );
+    }
+
+    if (this.superClass != null) {
+      const superMetadata = manager.getMetadata(this.superClass);
+      const allNames = _.union([
+        ...this.combinedFields.keys(),
+        ...superMetadata.combinedFields.keys(),
+      ]);
+
+      for (const name of allNames) {
+        const a = this.combinedFields.get(name);
+        const b = superMetadata.combinedFields.get(name);
+
+        if (a == null || b == null) {
+          this.combinedFields.set(name, a ?? b);
+        } else {
+          this.combinedFields.set(name, a.merge(b));
+        }
+      }
     }
   }
 }

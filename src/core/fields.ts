@@ -6,7 +6,9 @@ import { A7_MODEL_CONFIG, A7_MODEL_FIELD } from './tokens';
 import { DEFAULT_OPTIONS_RESOLVER } from './resolvers';
 import { runtime } from './runtime';
 
-export function Field<T = {}>(options?: FieldOptions<T>): PropertyDecorator {
+export function Field<T = StrictFieldOption>(
+  options?: FieldOptions<T>,
+): PropertyDecorator {
   return (target: any, propertyName: string) => {
     const fields: Ark7ModelFields =
       Reflect.getMetadata(A7_MODEL_FIELD, target) || {};
@@ -67,12 +69,12 @@ export type OptionsResolver<
 
 export type FieldOptionsResolver<T = object> = OptionsResolver<FieldOptions<T>>;
 
-export type FieldOptions<T = object> = BaseOptions<
-  T & {
-    type?: ModelClass<any> | Function;
-    optional?: boolean;
-    readonly?: boolean;
-  }
+export interface StrictFieldOption {
+  type?: ModelClass<any> | Function;
+}
+
+export type FieldOptions<T = StrictFieldOption> = BaseOptions<
+  T & StrictFieldOption
 >;
 
 export type ConfigOptionsResolver<T = object> = OptionsResolver<
@@ -130,4 +132,8 @@ export class CombinedModelField {
     public descriptor: PropertyDescriptor = null,
     public field: FieldOptions = null,
   ) {}
+
+  merge(_b: CombinedModelField): CombinedModelField {
+    return this;
+  }
 }
