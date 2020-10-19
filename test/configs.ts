@@ -20,6 +20,11 @@ class ModelConfigBaseModel {
   get base2(): string {
     return this.base1;
   }
+
+  @Field({ foo: 'bar' })
+  foo() {
+    return 'bar';
+  }
 }
 
 @A7Model({})
@@ -51,7 +56,8 @@ describe('configs', () => {
   describe('.combinedFields', () => {
     it('should return expected value for ModelConfigBaseModel', () => {
       const metadata = A7Model.getMetadata(ModelConfigBaseModel);
-      metadata.combinedFields.should.have.keys('base1', 'base2');
+      metadata.combinedFields.should.have.size(3);
+      metadata.combinedFields.should.have.keys('base1', 'base2', 'foo');
       metadata.combinedFields.get('base1').should.have.properties({
         name: 'base1',
         prop: {
@@ -83,11 +89,30 @@ describe('configs', () => {
         ),
         field: null,
       });
+
+      metadata.combinedFields.get('foo').should.have.properties({
+        name: 'foo',
+        prop: {
+          name: 'foo',
+          optional: false,
+          modifier: 'PUBLIC',
+          type: 'method',
+          readonly: false,
+        },
+        descriptor: Object.getOwnPropertyDescriptor(
+          ModelConfigBaseModel.prototype,
+          'foo',
+        ),
+        field: {
+          foo: 'bar',
+        },
+      });
     });
 
     it('should return expected value for ModelConfigExtModel', () => {
       const metadata = A7Model.getMetadata(ModelConfigExtModel);
-      metadata.combinedFields.should.have.keys('base1', 'base2');
+      metadata.combinedFields.should.have.size(3);
+      metadata.combinedFields.should.have.keys('base1', 'base2', 'foo');
       metadata.combinedFields.get('base1').should.have.properties({
         name: 'base1',
         prop: {
@@ -119,6 +144,26 @@ describe('configs', () => {
         ),
         field: null,
       });
+
+      metadata.combinedFields.get('foo').should.have.properties({
+        name: 'foo',
+        prop: {
+          name: 'foo',
+          optional: false,
+          modifier: 'PUBLIC',
+          type: 'method',
+          readonly: false,
+        },
+        descriptor: Object.getOwnPropertyDescriptor(
+          ModelConfigBaseModel.prototype,
+          'foo',
+        ),
+        field: {
+          foo: 'bar',
+        },
+      });
+
+      metadata.combinedFields.get('foo').isMethod.should.be.true();
     });
   });
 });

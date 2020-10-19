@@ -133,7 +133,16 @@ export class CombinedModelField {
     public field: FieldOptions = null,
   ) {}
 
-  merge(_b: CombinedModelField): CombinedModelField {
-    return this;
+  merge(b: CombinedModelField): CombinedModelField {
+    return new CombinedModelField(
+      this.name,
+      this.prop ?? b.prop,
+      this.descriptor ?? b.descriptor,
+      this.field ?? b.field,
+    );
+  }
+
+  get isMethod(): boolean {
+    return this.prop?.type === 'method';
   }
 }
