@@ -45,9 +45,9 @@ describe('data-level', () => {
           },
         },
         fields: {
-          level3: { propertyName: 'level3', options: { level: 3 } },
-          level2: { propertyName: 'level2', options: { level: 2 } },
-          level1: { propertyName: 'level1', options: { level: 1 } },
+          level3: { name: 'level3', options: { level: 3 } },
+          level2: { name: 'level2', options: { level: 2 } },
+          level1: { name: 'level1', options: { level: 1 } },
         },
       });
     });

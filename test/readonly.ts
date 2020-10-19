@@ -36,8 +36,8 @@ describe('readonly', () => {
         },
       },
       fields: {
-        field2: { propertyName: 'field2', options: { readonly: false } },
-        field1: { propertyName: 'field1', options: { readonly: true } },
+        field2: { name: 'field2', options: { readonly: false } },
+        field1: { name: 'field1', options: { readonly: true } },
       },
     });
   });

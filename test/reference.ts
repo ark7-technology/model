@@ -57,11 +57,11 @@ describe('reference', () => {
       },
       fields: {
         field1: {
-          propertyName: 'field1',
+          name: 'field1',
           options: { reference: true },
         },
         field2: {
-          propertyName: 'field2',
+          name: 'field2',
           options: { reference: true, model: 'ReferenceModelA' },
         },
       },

@@ -33,6 +33,8 @@ export class Manager {
           : {}) || {};
     }
 
+    metadata.createCombinedFields();
+
     return metadata;
   }
 

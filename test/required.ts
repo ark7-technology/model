@@ -49,9 +49,9 @@ describe('required', () => {
         },
       },
       fields: {
-        field1: { propertyName: 'field1', options: { required: true } },
-        field2: { propertyName: 'field2', options: { required: false } },
-        field3: { propertyName: 'field3', options: { required } },
+        field1: { name: 'field1', options: { required: true } },
+        field2: { name: 'field2', options: { required: false } },
+        field3: { name: 'field3', options: { required } },
       },
     });
   });

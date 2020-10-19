@@ -3,7 +3,12 @@ import 'reflect-metadata';
 import _ from 'underscore';
 
 import { A7_MODEL_CONFIG } from './tokens';
-import { Ark7ModelFields, ConfigOptions, ModelClass } from './fields';
+import {
+  Ark7ModelFields,
+  CombinedModelField,
+  ConfigOptions,
+  ModelClass,
+} from './fields';
 import { DEFAULT_OPTIONS_RESOLVER } from './resolvers';
 import { manager } from './manager';
 import { runtime } from './runtime';
@@ -51,6 +56,8 @@ export class Ark7ModelMetadata {
   configs: ConfigOptions;
   fields: Ark7ModelFields;
 
+  combinedFields: Map<string, CombinedModelField>;
+
   constructor(cls: ModelClass<any>, name?: string) {
     this.name = name || cls?.name;
     this.modelClass = cls;
@@ -59,6 +66,33 @@ export class Ark7ModelMetadata {
       superClass != null && superClass !== Object.prototype.constructor
         ? superClass
         : null;
+  }
+
+  createCombinedFields() {
+    if (this.combinedFields != null) {
+      return;
+    }
+
+    this.combinedFields = new Map();
+
+    const propNames = _.map(this.configs.schema.props, (p) => p.name);
+    const fieldNames = _.keys(this.fields);
+    const names = _.uniq([...propNames, ...fieldNames]);
+
+    for (const name of names) {
+      const prop = _.find(this.configs.schema.props, (p) => p.name === name);
+      const field = this.fields[name];
+
+      const descriptor = Object.getOwnPropertyDescriptor(
+        this.modelClass.prototype,
+        name,
+      );
+
+      this.combinedFields.set(
+        name,
+        new CombinedModelField(name, prop, descriptor, field),
+      );
+    }
   }
 }
 

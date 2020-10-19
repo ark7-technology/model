@@ -48,7 +48,7 @@ function mergeFields(
   return _.defaults(
     {
       [propertyName]: {
-        propertyName,
+        name: propertyName,
         options: newOptions,
       },
     },
@@ -69,6 +69,7 @@ export type FieldOptionsResolver<T = object> = OptionsResolver<FieldOptions<T>>;
 
 export type FieldOptions<T = object> = BaseOptions<
   T & {
+    type?: ModelClass<any> | Function;
     optional?: boolean;
     readonly?: boolean;
   }
@@ -113,12 +114,20 @@ export interface DocumentToObjectOptions {
   level?: number;
 }
 
-export interface Ark7ModelField<T = any> {
-  propertyName: string;
+export interface Ark7ModelField {
+  name: string;
   options: FieldOptions;
-  type: T;
 }
 
 export interface Ark7ModelFields {
   [key: string]: Ark7ModelField;
+}
+
+export class CombinedModelField {
+  constructor(
+    public name: string,
+    public prop: runtime.Property,
+    public descriptor: PropertyDescriptor = null,
+    public field: FieldOptions = null,
+  ) {}
 }
