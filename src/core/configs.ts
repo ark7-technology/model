@@ -29,6 +29,8 @@ export function Config<T = object>(
     const newOptions =
       configOptions == null ? options : resolver(configOptions, options);
 
+    delete newOptions.resolver;
+
     Reflect.defineMetadata(
       A7_MODEL_CONFIG,
       _.defaults({ schema }, newOptions),

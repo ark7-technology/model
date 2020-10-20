@@ -11,3 +11,13 @@ export const LATEST_OPTIONS_RESOLVER: OptionsResolver = (
   _baseOptions,
   options,
 ) => options;
+
+export function concatResolver(field: string): OptionsResolver {
+  return (baseOptions: any, options: any) => {
+    const bF: any[] = baseOptions[field] || [];
+    const nF: any[] = options[field] || [];
+    return _.extend({}, baseOptions, options, {
+      [field]: [...nF, ...bF],
+    });
+  };
+}
