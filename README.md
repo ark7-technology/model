@@ -227,6 +227,14 @@ user.toObject().should.be.instanceof({
 
 ### Data Level
 
+Usually, data used in CRUD pattern has importance levels. We pre-define four
+levels `DefaultDataLevel.BASIC`, `DefaultDataLevel.SHORT`,
+`DefaultDataLevel.DETAIL`, and `DefaultDataLevel.CONFIDENTIAL`.
+
+Level is a numeric number ranked by its importance. For example,
+`model.toJSON({ level: DefaultDataLevel.SHORT })` will returns
+`DefaultDataLevel.BASIC` and `DefaultDataLevel.SHORT`.
+
 ```Typescript
 import { A7Model, StrictModel } from '@ark7/model';
 
