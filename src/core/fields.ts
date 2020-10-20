@@ -215,7 +215,8 @@ export class CombinedModelField {
 
     function map(val: any): any {
       if (runtime.isReferenceType(propType)) {
-        return (val as StrictModel).toObject(newOptions, manager);
+        const c = val as StrictModel;
+        return c.toObject ? c.toObject(newOptions, manager) : c;
       }
 
       return val;

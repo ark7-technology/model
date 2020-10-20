@@ -11,6 +11,7 @@ import {
 } from './fields';
 import { DEFAULT_OPTIONS_RESOLVER } from './resolvers';
 import { Manager, manager } from './manager';
+import { createEnumModelClass } from './enums';
 import { runtime } from './runtime';
 
 export function Config<T = object>(
@@ -18,10 +19,14 @@ export function Config<T = object>(
   schema?: runtime.Schema,
   name?: string,
 ): ClassDecorator {
-  return (constructor: Function) => {
+  return (constructor: ModelClass<any> | object) => {
+    const cls: ModelClass<any> = _.isFunction(constructor)
+      ? constructor
+      : createEnumModelClass(constructor);
+
     const configOptions: ConfigOptions = Reflect.getMetadata(
       A7_MODEL_CONFIG,
-      constructor,
+      cls,
     );
 
     const resolver = options.resolver ?? DEFAULT_OPTIONS_RESOLVER;
@@ -34,11 +39,11 @@ export function Config<T = object>(
     Reflect.defineMetadata(
       A7_MODEL_CONFIG,
       _.defaults({ schema }, newOptions),
-      constructor,
+      cls,
     );
 
     if (schema != null) {
-      manager.register(name ?? constructor.name, constructor as any);
+      manager.register(name ?? cls.name, cls);
     }
   };
 }
