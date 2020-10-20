@@ -262,3 +262,32 @@ user.toObject({ level: DefaultDataLevel.BASIC }).should.be.instanceof({
   email: 'test@google.com',
 });
 ```
+
+### Attachment
+
+Sometimes, we need to attach metadata to an instance.
+
+```Typescript
+import { A7Model, StrictModel } from '@ark7/model';
+
+@A7Model({})
+class Name extends StrictModel {
+  first: string;
+  last: string;
+}
+
+const name = Name.modelize({ first: 'foo', last: 'bar'});
+
+name.$attach({ hello: 'world' });
+
+name.$attach().should.be.deepEqual({
+  __$attach: true,
+  hello: 'world',
+});
+
+// This won't affect toObject() or toJSON():
+name.toObject().should.be.deepEqual({
+  first: 'foo',
+  last: 'bar',
+});
+```

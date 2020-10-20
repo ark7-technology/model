@@ -8,6 +8,26 @@ import { Manager, manager as _manager } from './manager';
 
 @A7Model({})
 export class StrictModel {
+  $attach<T>(data?: T): Attachment<T> {
+    const proto = (this as any).__proto__;
+
+    if (data == null) {
+      return proto.__$attach ? _.clone(proto) : null;
+    }
+
+    if (proto.__$attach) {
+      _.extend(proto, data);
+
+      return _.clone(proto);
+    } else {
+      const nProto = _.extend({ __$attach: true }, data);
+      Object.setPrototypeOf(this, nProto);
+      Object.setPrototypeOf(nProto, proto);
+
+      return _.clone(nProto);
+    }
+  }
+
   toJSON(options: DocumentToObjectOptions = {}): AsObject<this> {
     return this.toObject(options);
   }
@@ -74,3 +94,7 @@ export class StrictModel {
 export class Model extends StrictModel {
   _id?: string;
 }
+
+export type Attachment<T = object> = T & {
+  __$attach: true;
+};
