@@ -161,3 +161,96 @@ class Name {
 ```
 
 It depends on the adaptor to deal with the conflicts.
+
+### Model.modelize()
+
+```Typescript
+import { A7Model, StrictModel } from '@ark7/model';
+
+@A7Model({})
+class Name extends StrictModel {
+  first: string;
+  last: string;
+}
+
+@A7Model({})
+export class User extends StrictModel {
+  email: string;
+  name?: Name;
+}
+
+const user = User.modelize({
+  email: 'test@google.com',
+  name: {
+    first: 'foo',
+    last: 'bar',
+  }
+});
+
+user.should.be.instanceof(User);
+user.name.should.be.instanceof(Name);
+```
+
+### .toObject() & .toJSON()
+
+```Typescript
+import { A7Model, StrictModel } from '@ark7/model';
+
+@A7Model({})
+class Name extends StrictModel {
+  first: string;
+  last: string;
+}
+
+@A7Model({})
+export class User extends StrictModel {
+  email: string;
+  name?: Name;
+}
+
+const user = User.modelize({
+  email: 'test@google.com',
+  name: {
+    first: 'foo',
+    last: 'bar',
+  }
+});
+
+user.toObject().should.be.instanceof({
+  email: 'test@google.com',
+  name: {
+    first: 'foo',
+    last: 'bar',
+  }
+});
+```
+
+### Data Level
+
+```Typescript
+import { A7Model, StrictModel } from '@ark7/model';
+
+@A7Model({})
+class Name extends StrictModel {
+  @Basic() first: string;
+  @Basic() last: string;
+}
+
+@A7Model({})
+export class User extends StrictModel {
+  @Basic() email: string;
+  @Short() name?: Name;
+}
+
+const user = User.modelize({
+  email: 'test@google.com',
+  name: {
+    first: 'foo',
+    last: 'bar',
+  }
+});
+
+user.toObject({ level: DefaultDataLevel.BASIC }).should.be.instanceof({
+  email: 'test@google.com',
+});
+```
