@@ -69,10 +69,26 @@ export class StrictModel {
     manager?: Manager,
   ): InstanceType<T> {
     manager = manager ?? _manager;
-    const ret: any = _.clone(o);
-    Object.setPrototypeOf(ret, this.prototype);
 
-    const metadata = A7Model.getMetadata(this.prototype.constructor);
+    const metadata = manager.getMetadata(this.prototype.constructor);
+
+    const ret: any = _.clone(o);
+
+    if (metadata.configs?.discriminatorKey) {
+      const key = (o as any)[metadata.configs.discriminatorKey];
+      if (key != null && key !== this.prototype.constructor.name) {
+        const m = manager.getMetadata(key);
+        return (m.modelClass as any).modelize.call(m.modelClass, o, manager);
+      }
+
+      if (key == null) {
+        ret[
+          metadata.configs.discriminatorKey
+        ] = this.prototype.constructor.name;
+      }
+    }
+
+    Object.setPrototypeOf(ret, this.prototype);
 
     for (const name of metadata.combinedFields.keys()) {
       const field = metadata.combinedFields.get(name);

@@ -84,17 +84,20 @@ export type FieldOptions<T = StrictFieldOption> = BaseOptions<
   T & StrictFieldOption
 >;
 
-export type ConfigOptionsResolver<T = object> = OptionsResolver<
+export type ConfigOptionsResolver<T = StrictConfigOptions> = OptionsResolver<
   ConfigOptions<T>
 >;
 
-export type ConfigOptions<T = object> = BaseOptions<
-  T & {
-    schema?: runtime.Schema;
-    defaultLevel?: number;
-    toObject?: DocumentToObjectOptions;
-    toJSON?: DocumentToObjectOptions;
-  }
+export interface StrictConfigOptions {
+  schema?: runtime.Schema;
+  defaultLevel?: number;
+  toObject?: DocumentToObjectOptions;
+  toJSON?: DocumentToObjectOptions;
+  discriminatorKey?: string;
+}
+
+export type ConfigOptions<T = StrictConfigOptions> = BaseOptions<
+  T & StrictConfigOptions
 >;
 
 export interface DocumentToObjectOptions {

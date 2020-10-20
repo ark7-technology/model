@@ -298,3 +298,37 @@ name.toObject().should.be.deepEqual({
   last: 'bar',
 });
 ```
+
+### Discrimination
+
+```Typescript
+@A7Model({
+  discriminatorKey: 'kind',
+})
+class Event extends StrictModel {
+  kind?: string;
+}
+
+@A7Model({})
+class MouseEvent extends Event {
+  foo: string;
+}
+
+const ins = EventModel.modelize({
+  kind: 'MouseEvent',
+  foo: 'bar',
+} as any);
+
+ins.should.be.instanceof(MouseEvent);
+
+const ins2 = MouseEvent.modelize({
+  foo: 'bar',
+});
+
+ins2.should.be.instanceof(MouseEvent);
+
+ins2.toObject().should.be.deepEqual({
+  kind: 'MouseEvent',
+  foo: 'bar',
+});
+```
