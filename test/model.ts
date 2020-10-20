@@ -5,6 +5,7 @@ import {
   Basic,
   DefaultDataLevel,
   Detail,
+  Level,
   Ref,
   Short,
   StrictModel,
@@ -31,6 +32,11 @@ describe('model', () => {
     @Short() field2: string;
     @Detail() field3: string;
 
+    @Level({
+      passLevelMap: {
+        [DefaultDataLevel.BASIC]: DefaultDataLevel.SHORT,
+      },
+    })
     embedded?: TestModelEmbedModel;
 
     ref?: Ref<TestModelReferenceModel>;
@@ -42,27 +48,49 @@ describe('model', () => {
     field1: '1',
     field2: '2',
     field3: '3',
+
+    embedded: {
+      field1: 'e1',
+      field2: 'e2',
+      field3: 'e3',
+    },
   });
 
   describe('#modelize', () => {
     it('creates an instance of model', () => {
       ins.should.be.instanceof(TestModelModel1);
+      ins.embedded.should.be.instanceof(TestModelEmbedModel);
     });
   });
 
   describe('.toObject', () => {
     it('returns POJO instance', () => {
       ins.toObject().should.not.be.instanceof(TestModelModel1);
+
+      ins.toObject().should.be.deepEqual({
+        field1: '1',
+        field2: '2',
+        field3: '3',
+
+        embedded: {
+          field1: 'e1',
+          field2: 'e2',
+          field3: 'e3',
+        },
+
+        refs: [],
+      });
     });
 
     it('returns on different level', () => {
-      ins
-        .toObject({ level: DefaultDataLevel.BASIC })
-        .should.have.keys('field1');
-
-      // ins
-      // .toObject({ level: DefaultDataLevel.BASIC })
-      // .should.not.have.keys('field2', 'field3');
+      ins.toObject({ level: DefaultDataLevel.BASIC }).should.be.deepEqual({
+        field1: '1',
+        embedded: {
+          field1: 'e1',
+          field2: 'e2',
+        },
+        refs: [],
+      });
     });
   });
 });

@@ -4,6 +4,8 @@ import _ from 'underscore';
 
 import { A7_MODEL_CONFIG, A7_MODEL_FIELD } from './tokens';
 import { DEFAULT_OPTIONS_RESOLVER } from './resolvers';
+import { Manager } from './manager';
+import { StrictModel } from './model';
 import { runtime } from './runtime';
 
 export function Field<T = StrictFieldOption>(
@@ -71,6 +73,11 @@ export type FieldOptionsResolver<T = object> = OptionsResolver<FieldOptions<T>>;
 
 export interface StrictFieldOption {
   type?: ModelClass<any> | Function;
+  default?: any;
+  level?: number;
+  passLevelMap?: {
+    [current: number]: number;
+  };
 }
 
 export type FieldOptions<T = StrictFieldOption> = BaseOptions<
@@ -144,5 +151,76 @@ export class CombinedModelField {
 
   get isMethod(): boolean {
     return this.prop?.type === 'method';
+  }
+
+  get isArray(): boolean {
+    return runtime.isArrayType(this.prop.type);
+  }
+
+  get type(): runtime.Type {
+    return this.isArray
+      ? (this.prop.type as runtime.ArrayType).arrayElementType
+      : this.prop.type;
+  }
+
+  modelize(o: any, manager: Manager): any {
+    const fieldType = this.field?.type;
+
+    if (_.isUndefined(o) && !_.isUndefined(this.field?.default)) {
+      return _.isFunction(this.field.default)
+        ? this.field.default()
+        : this.field.default;
+    }
+
+    if (fieldType === Date) {
+      return new Date(o);
+    }
+
+    if (fieldType === String) {
+      return new String(o);
+    }
+
+    if (_.isFunction(fieldType)) {
+      return (fieldType as Function)(o);
+    }
+
+    const propType = this.type;
+
+    function map(val: any): any {
+      if (runtime.isReferenceType(propType)) {
+        const metadata = manager.getMetadata(propType.referenceName);
+
+        return (metadata.modelClass as typeof StrictModel).modelize(
+          val,
+          manager,
+        );
+      }
+
+      return val;
+    }
+
+    return this.isArray ? _.map(o, map) : map(o);
+  }
+
+  toObject(o: any, manager: Manager, options: DocumentToObjectOptions): any {
+    const propType = this.type;
+
+    const newOptions = _.clone(options);
+
+    if (options.level != null) {
+      newOptions.level =
+        (this.field?.passLevelMap && this.field?.passLevelMap[options.level]) ||
+        options.level;
+    }
+
+    function map(val: any): any {
+      if (runtime.isReferenceType(propType)) {
+        return (val as StrictModel).toObject(newOptions, manager);
+      }
+
+      return val;
+    }
+
+    return this.isArray ? _.map(o, map) : map(o);
   }
 }

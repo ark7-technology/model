@@ -64,14 +64,14 @@ export namespace runtime {
   }
 
   export function isReferenceType(type: Type): type is ReferenceType {
-    return (type as ReferenceType).referenceName != null;
+    return (type as ReferenceType)?.referenceName != null;
   }
 
   export function isArrayType(type: Type): type is ArrayType {
-    return (type as ArrayType).arrayElementType != null;
+    return (type as ArrayType)?.arrayElementType != null;
   }
 
   export function isParameterizedType(type: Type): type is ParameterizedType {
-    return (type as ParameterizedType).selfType != null;
+    return (type as ParameterizedType)?.selfType != null;
   }
 }
