@@ -46,12 +46,19 @@ export class Name {
   last: string;
 }
 
+export enum Gender {
+  MALE = 'MALE',
+  FEMALE = 'FEMALE',
+}
+
 @A7Model({})
 export class User {
 
   email: string;
 
   name?: Name;
+
+  gender?: Gender;
 }
 
 // Another way to register User model:
