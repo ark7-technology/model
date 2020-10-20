@@ -169,6 +169,20 @@ class Name {
 
 It depends on the adaptor to deal with the conflicts.
 
+### Default
+
+The `default` value can be set on `field metadata`:
+
+```Typescript
+class Name {
+  @Default('foo')
+  first: string;
+
+  @Default(() => 'bar')
+  last: string;
+}
+```
+
 ### Model.modelize()
 
 ```Typescript
