@@ -15,3 +15,12 @@ export function Required(
 export interface RequiredOptions {
   required: boolean | (() => boolean);
 }
+
+/**
+ * Indicate a field is optional.
+ */
+export function Optional(options: boolean = true): PropertyDecorator {
+  return Field<RequiredOptions>({
+    required: !options,
+  });
+}
