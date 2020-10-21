@@ -72,7 +72,7 @@ export type OptionsResolver<
 export type FieldOptionsResolver<T = object> = OptionsResolver<FieldOptions<T>>;
 
 export interface StrictFieldOption {
-  type?: ModelClass<any> | Function;
+  type?: any;
   default?: any;
   level?: number;
   passLevelMap?: {
