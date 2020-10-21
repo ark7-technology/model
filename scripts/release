@@ -2,11 +2,15 @@
 
 npm run clean
 
+npm run compile:src:pure
+
 npm run compile:src
 
 npm test
 
 npm run clean
+
+npm run compile:src:pure
 
 npm run compile:src
 
