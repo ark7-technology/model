@@ -12,7 +12,7 @@ import {
 import { DEFAULT_OPTIONS_RESOLVER } from './resolvers';
 import { Manager, manager } from './manager';
 import { createEnumModelClass } from './enums';
-import { runtime } from './runtime';
+import { runtime } from '../runtime';
 
 export function Config<T = object>(
   options: ConfigOptions<T>,

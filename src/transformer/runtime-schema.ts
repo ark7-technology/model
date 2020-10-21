@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 
-import { runtime } from '../core/runtime';
+import { runtime } from '../runtime';
 
 export function buildInterface(
   name: string,

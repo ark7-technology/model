@@ -6,7 +6,7 @@ import { A7_MODEL_CONFIG, A7_MODEL_FIELD } from './tokens';
 import { DEFAULT_OPTIONS_RESOLVER } from './resolvers';
 import { Manager } from './manager';
 import { StrictModel } from './model';
-import { runtime } from './runtime';
+import { runtime } from '../runtime';
 
 export function Field<T = StrictFieldOption>(
   options?: FieldOptions<T>,

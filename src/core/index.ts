@@ -5,6 +5,5 @@ export * from './fields';
 export * from './manager';
 export * from './model';
 export * from './resolvers';
-export * from './runtime';
 export * from './tokens';
 export * from './types';
