@@ -4,6 +4,8 @@ npm run clean
 
 npm run compile:src:pure
 
+rm -rf dist/core
+
 npm run compile:src
 
 npm test
@@ -11,6 +13,8 @@ npm test
 npm run clean
 
 npm run compile:src:pure
+
+rm -rf dist/core
 
 npm run compile:src
 
