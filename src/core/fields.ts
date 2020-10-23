@@ -3,6 +3,10 @@ import 'reflect-metadata';
 import _ from 'underscore';
 
 import { A7_MODEL_CONFIG, A7_MODEL_FIELD } from './tokens';
+import {
+  CompoundIndexOptionsFields,
+  CompoundIndexOptionsOptions,
+} from './decorators';
 import { DEFAULT_OPTIONS_RESOLVER } from './resolvers';
 import { Manager } from './manager';
 import { StrictModel } from './model';
@@ -94,6 +98,10 @@ export interface StrictConfigOptions {
   toObject?: DocumentToObjectOptions;
   toJSON?: DocumentToObjectOptions;
   discriminatorKey?: string;
+  indexes?: Array<{
+    fields: CompoundIndexOptionsFields;
+    options?: CompoundIndexOptionsOptions;
+  }>;
 }
 
 export type ConfigOptions<T = StrictConfigOptions> = BaseOptions<
