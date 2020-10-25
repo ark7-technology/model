@@ -69,7 +69,7 @@ export type BaseOptions<T = object> = T & {
 };
 
 export type OptionsResolver<
-  T = {},
+  T = object,
   O extends BaseOptions<T> = BaseOptions<T>
 > = (baseOptions: O, options: O) => O;
 
@@ -102,6 +102,7 @@ export interface StrictConfigOptions {
     fields: CompoundIndexOptionsFields;
     options?: CompoundIndexOptionsOptions;
   }>;
+  mixinClasses?: ModelClass<any>[];
 }
 
 export type ConfigOptions<T = StrictConfigOptions> = BaseOptions<

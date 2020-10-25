@@ -101,8 +101,13 @@ export class Ark7ModelMetadata {
       );
     }
 
-    if (this.superClass != null) {
-      const superMetadata = manager.getMetadata(this.superClass);
+    const mixinClasses = _.filter(
+      [this.superClass, ...(this.configs.mixinClasses || [])],
+      _.identity,
+    );
+
+    for (const mixinClass of mixinClasses) {
+      const superMetadata = manager.getMetadata(mixinClass);
       const allNames = _.union([
         ...this.combinedFields.keys(),
         ...superMetadata.combinedFields.keys(),

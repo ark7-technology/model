@@ -12,7 +12,7 @@ export const LATEST_OPTIONS_RESOLVER: OptionsResolver = (
   options,
 ) => options;
 
-export function concatResolver(field: string): OptionsResolver {
+export function concatResolver<T>(field: string): OptionsResolver<T> {
   return (baseOptions: any, options: any) => {
     const bF: any[] = baseOptions[field] || [];
     const nF: any[] = options[field] || [];

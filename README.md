@@ -5,6 +5,25 @@
 - [Nodejs (MongoDB)](https://github.com/ark7-technology/model-mongoose)
 - Browser
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+  - [Define a Model](#define-a-model)
+- [Model](#model)
+  - [Model Metadata](#model-metadata)
+  - [Model Definition](#model-definition)
+  - [Discrimination](#discrimination)
+  - [Mixin](#mixin)
+- [Field](#field)
+  - [Required v.s. Optional](#required-v.s.-optional)
+  - [Readonly](#readonly)
+  - [Default](#default)
+  - [Model.modelize()](<#model.modelize()>)
+  - [.toObject() & .toJSON()](<#toObject()-&-.toJSON()>)
+  - [Data Level](#data-level)
+  - [Attachment](#attachment)
+
 ## Installation
 
 Install the dependencies package:
@@ -124,6 +143,63 @@ interface ModelConfig {
 (A7Model.getMetadata(MCModel).configs as ModelConfig).foo.should.be.equal(
   'bar'
 );
+```
+
+### Discrimination
+
+```Typescript
+@A7Model({
+  discriminatorKey: 'kind',
+})
+class Event extends StrictModel {
+  kind?: string;
+}
+
+@A7Model({})
+class MouseEvent extends Event {
+  foo: string;
+}
+
+const ins = EventModel.modelize({
+  kind: 'MouseEvent',
+  foo: 'bar',
+} as any);
+
+ins.should.be.instanceof(MouseEvent);
+
+const ins2 = MouseEvent.modelize({
+  foo: 'bar',
+});
+
+ins2.should.be.instanceof(MouseEvent);
+
+ins2.toObject().should.be.deepEqual({
+  kind: 'MouseEvent',
+  foo: 'bar',
+});
+```
+
+### Mixin
+
+A model can mixin other models.
+
+```Typescript
+@A7Model({})
+class M1 {
+  foo: string;
+}
+
+@A7Model({})
+class M2 {
+  bar: string;
+}
+
+@A7Model({})
+@Mixin(M1)
+@Mixin(M2)
+class CombinedModel extends Model {}
+
+interface CombinedModel extends M1, M2 {}
 ```
 
 ## Field
@@ -310,39 +386,5 @@ name.$attach().should.be.deepEqual({
 name.toObject().should.be.deepEqual({
   first: 'foo',
   last: 'bar',
-});
-```
-
-### Discrimination
-
-```Typescript
-@A7Model({
-  discriminatorKey: 'kind',
-})
-class Event extends StrictModel {
-  kind?: string;
-}
-
-@A7Model({})
-class MouseEvent extends Event {
-  foo: string;
-}
-
-const ins = EventModel.modelize({
-  kind: 'MouseEvent',
-  foo: 'bar',
-} as any);
-
-ins.should.be.instanceof(MouseEvent);
-
-const ins2 = MouseEvent.modelize({
-  foo: 'bar',
-});
-
-ins2.should.be.instanceof(MouseEvent);
-
-ins2.toObject().should.be.deepEqual({
-  kind: 'MouseEvent',
-  foo: 'bar',
 });
 ```
