@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-import _ from 'underscore';
+import _, { mixin } from 'underscore';
 
 import { A7_MODEL_CONFIG } from './tokens';
 import {
@@ -73,6 +73,14 @@ export class Ark7ModelMetadata {
       superClass != null && superClass !== Object.prototype.constructor
         ? superClass
         : null;
+  }
+
+  get classes(): ModelClass<any>[] {
+    const mixinClasses: ModelClass<any>[] = this.configs?.mixinClasses || [];
+    return _.filter(
+      [this.superClass, ...mixinClasses, this.modelClass],
+      _.identity,
+    );
   }
 
   createCombinedFields(manager: Manager) {
