@@ -19,8 +19,8 @@
   - [Required v.s. Optional](#required-v.s.-optional)
   - [Readonly](#readonly)
   - [Default](#default)
-  - [Model.modelize()](<#model.modelize()>)
-  - [.toObject() & .toJSON()](<#toObject()-&-.toJSON()>)
+  - [Model.modelize()](#modelmodelize)
+  - [.toObject() & .toJSON()](#toobject--tojson)
   - [Data Level](#data-level)
   - [Attachment](#attachment)
 
