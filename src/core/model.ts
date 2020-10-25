@@ -106,9 +106,13 @@ export class StrictModel {
   }
 }
 
+export interface ID {
+  toString(): string;
+}
+
 @A7Model({})
 export class Model extends StrictModel {
-  _id?: string;
+  _id?: ID;
 }
 
 export type Attachment<T = object> = T & {
