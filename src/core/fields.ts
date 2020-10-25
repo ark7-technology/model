@@ -82,6 +82,8 @@ export interface StrictFieldOption {
   passLevelMap?: {
     [current: number]: number;
   };
+  readonly?: boolean;
+  autogen?: boolean;
 }
 
 export type FieldOptions<T = StrictFieldOption> = BaseOptions<

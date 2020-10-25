@@ -9,6 +9,17 @@ export function Readonly(options: boolean = true): PropertyDecorator {
   });
 }
 
+/**
+ * Indicate an autogen field.
+ */
+export function Autogen(): PropertyDecorator {
+  return Field<ReadonlyOptions>({
+    readonly: true,
+    autogen: true,
+  });
+}
+
 export interface ReadonlyOptions {
   readonly: boolean;
+  autogen?: boolean;
 }
