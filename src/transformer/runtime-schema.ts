@@ -22,7 +22,8 @@ export function buildInterface(
         name,
         props: symbols
           .filter((s) => s.getName() !== '__constructor')
-          .map((s) => buildInterfaceProperty(s, typeChecker)),
+          .map((s) => buildInterfaceProperty(s, typeChecker))
+          .filter((x) => x != null),
       };
   }
 }
@@ -41,10 +42,20 @@ function isSetterDeclaration(symbol: ts.Symbol): boolean {
   return symbol.declarations?.some((d) => d.kind === ts.SyntaxKind.SetAccessor);
 }
 
+function isTypeParameter(symbol: ts.Symbol): boolean {
+  return symbol.declarations?.some(
+    (d) => d.kind === ts.SyntaxKind.TypeParameter,
+  );
+}
+
 function buildInterfaceProperty(
   symbol: ts.Symbol,
   typeChecker: ts.TypeChecker,
 ): runtime.Property {
+  if (isTypeParameter(symbol)) {
+    return null;
+  }
+
   const prop: runtime.Property = {
     name: symbol.getName(),
     optional: propertyOptional(symbol),
@@ -215,9 +226,9 @@ function getTypeFromSignature(
       const members: Map<string, ts.Symbol> = (propertySignature as any).symbol
         .members;
       return {
-        props: Array.from(members.values()).map((m) =>
-          buildInterfaceProperty(m as ts.Symbol, typeChecker),
-        ),
+        props: Array.from(members.values())
+          .map((m) => buildInterfaceProperty(m as ts.Symbol, typeChecker))
+          .filter((x) => x != null),
       };
     case ts.SyntaxKind.UnionType:
       const union = ((propertySignature as any) as ts.UnionTypeNode).types.map(
