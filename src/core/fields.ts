@@ -84,6 +84,15 @@ export interface StrictFieldOption {
   };
   readonly?: boolean;
   autogen?: boolean;
+
+  /** Virtual fields */
+  ref?: string | ModelClass<any>;
+  localField?: string;
+  foreignField?: string;
+  justOne?: boolean;
+  options?: any;
+  count?: boolean;
+  match?: object;
 }
 
 export type FieldOptions<T = StrictFieldOption> = BaseOptions<
@@ -105,15 +114,6 @@ export interface StrictConfigOptions {
     options?: CompoundIndexOptionsOptions;
   }>;
   mixinClasses?: ModelClass<any>[];
-
-  /** Virtual fields */
-  ref?: string | ModelClass<any>;
-  localField?: string;
-  foreignField?: string;
-  justOne?: boolean;
-  options?: any;
-  count?: boolean;
-  match?: object;
 }
 
 export type ConfigOptions<T = StrictConfigOptions> = BaseOptions<
@@ -174,6 +174,15 @@ export class CombinedModelField {
 
   get isMethod(): boolean {
     return this.prop?.type === 'method';
+  }
+
+  get isVirtualReference(): boolean {
+    return (
+      this.field != null &&
+      this.field.ref != null &&
+      this.field.localField != null &&
+      this.field.foreignField != null
+    );
   }
 
   get isArray(): boolean {
