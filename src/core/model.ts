@@ -80,7 +80,10 @@ export class StrictModel {
 
     if (metadata.configs?.discriminatorKey) {
       const key = (o as any)[metadata.configs.discriminatorKey];
-      if (key != null && key !== this.prototype.constructor.name) {
+      if (
+        key != null &&
+        key.toLowerCase() !== this.prototype.constructor.name.toLowerCase()
+      ) {
         const m = manager.getMetadata(key);
         return (m.modelClass as any).modelize.call(m.modelClass, o, manager);
       }
