@@ -1,6 +1,7 @@
 export * from './data-level';
 export * from './default';
 export * from './indexes';
+export * from './map';
 export * from './mixin';
 export * from './readonly';
 export * from './reference';
