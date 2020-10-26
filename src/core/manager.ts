@@ -5,6 +5,7 @@ import { Ark7ModelMetadata } from './configs';
 import { ModelClass } from './fields';
 
 export class Manager {
+  // metadataMap is case insensitive.
   private metadataMap: Map<string, Ark7ModelMetadata> = new Map();
 
   constructor() {}
@@ -14,7 +15,7 @@ export class Manager {
   }
 
   getMetadata<T>(name: string | ModelClass<T>): Ark7ModelMetadata {
-    const key = _.isString(name) ? name : name.name;
+    const key = (_.isString(name) ? name : name.name).toLowerCase();
     const metadata = this.metadataMap.get(key);
 
     if (metadata == null) {
@@ -39,11 +40,12 @@ export class Manager {
   }
 
   register<T>(name: string, modelClass: ModelClass<T>) {
-    if (this.metadataMap.has(name)) {
+    const lower = name.toLowerCase();
+    if (this.metadataMap.has(lower)) {
       throw new Error(`Model ${name} has already been registered.`);
     }
 
-    this.metadataMap.set(name, new Ark7ModelMetadata(modelClass, name));
+    this.metadataMap.set(lower, new Ark7ModelMetadata(modelClass, name));
   }
 }
 
