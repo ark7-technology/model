@@ -171,10 +171,20 @@ export class CombinedModelField {
     return runtime.isArrayType(this.prop.type);
   }
 
-  get type(): runtime.Type {
-    return this.isArray
+  get isReference(): boolean {
+    const type = this.isArray
       ? (this.prop.type as runtime.ArrayType).arrayElementType
       : this.prop.type;
+
+    return runtime.isParameterizedType(type) && type.selfType === 'Ref';
+  }
+
+  get type(): runtime.Type {
+    const type = this.isArray
+      ? (this.prop.type as runtime.ArrayType).arrayElementType
+      : this.prop.type;
+
+    return runtime.isParameterizedType(type) ? type.typeArgumentType : type;
   }
 
   modelize(o: any, manager: Manager): any {

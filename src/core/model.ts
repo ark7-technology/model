@@ -68,6 +68,10 @@ export class StrictModel {
     o: AsObject<InstanceType<T>>,
     manager?: Manager,
   ): InstanceType<T> {
+    if (o == null) {
+      return o as any;
+    }
+
     manager = manager ?? _manager;
 
     const metadata = manager.getMetadata(this.prototype.constructor);
