@@ -50,8 +50,11 @@ function buildInterfaceProperty(
     optional: propertyOptional(symbol),
     modifier: propertyModifier(symbol),
     type: propertyType(symbol, typeChecker),
-    readonly: propertyReadonly(symbol),
   };
+
+  if (propertyReadonly(symbol)) {
+    prop.readonly = true;
+  }
 
   if (isAbstract(symbol)) {
     prop.abstract = true;

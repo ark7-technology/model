@@ -22,10 +22,10 @@ export namespace runtime {
     optional: boolean;
     type: Type;
     modifier: Modifier;
-    readonly: boolean;
-    abstract?: boolean;
-    getter?: boolean;
-    setter?: boolean;
+    readonly?: true;
+    abstract?: true;
+    getter?: true;
+    setter?: true;
   }
 
   /** @since 1.0.0 */

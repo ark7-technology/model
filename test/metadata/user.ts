@@ -14,7 +14,6 @@ export const userMetadata = {
           modifier: 'PUBLIC',
           name: 'name',
           optional: true,
-          readonly: false,
           type: {
             referenceName: 'Name',
           },
@@ -23,7 +22,6 @@ export const userMetadata = {
           modifier: 'PUBLIC',
           name: 'gender',
           optional: false,
-          readonly: false,
           type: {
             referenceName: 'Gender',
           },
@@ -32,7 +30,6 @@ export const userMetadata = {
           modifier: 'PUBLIC',
           name: 'phone',
           optional: false,
-          readonly: false,
           type: {
             union: ['number', 'string'],
           },
@@ -41,7 +38,6 @@ export const userMetadata = {
           modifier: 'PUBLIC',
           name: 'createdAt',
           optional: false,
-          readonly: false,
           type: {
             referenceName: 'Date',
           },
@@ -50,14 +46,12 @@ export const userMetadata = {
           modifier: 'PRIVATE',
           name: '_birthday',
           optional: false,
-          readonly: false,
           type: 'number',
         },
         {
           modifier: 'PUBLIC',
           name: 'birthday',
           optional: false,
-          readonly: false,
           type: 'number',
           getter: true,
         },
@@ -65,7 +59,6 @@ export const userMetadata = {
           modifier: 'PROTECTED',
           name: 'update',
           optional: false,
-          readonly: false,
           type: 'method',
         },
       ],

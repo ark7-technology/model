@@ -21,7 +21,6 @@ describe('maps', () => {
                 optional: false,
                 modifier: 'PUBLIC',
                 type: { selfType: 'MMap', typeArgumentType: 'number' },
-                readonly: false,
               },
             ],
           },

@@ -36,7 +36,6 @@ describe('reference', () => {
                   referenceName: 'ReferenceModelA',
                 },
               },
-              readonly: false,
             },
             {
               name: 'field2',
@@ -50,7 +49,6 @@ describe('reference', () => {
                   },
                 },
               },
-              readonly: false,
             },
           ],
         },

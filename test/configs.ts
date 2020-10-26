@@ -65,7 +65,6 @@ describe('configs', () => {
           optional: false,
           modifier: 'PUBLIC',
           type: 'string',
-          readonly: false,
         },
         descriptor: null,
         field: {
@@ -81,7 +80,6 @@ describe('configs', () => {
           optional: false,
           modifier: 'PUBLIC',
           type: 'string',
-          readonly: false,
           getter: true,
         },
         descriptor: Object.getOwnPropertyDescriptor(
@@ -98,7 +96,6 @@ describe('configs', () => {
           optional: false,
           modifier: 'PUBLIC',
           type: 'method',
-          readonly: false,
         },
         descriptor: Object.getOwnPropertyDescriptor(
           ModelConfigBaseModel.prototype,
@@ -121,7 +118,6 @@ describe('configs', () => {
           optional: false,
           modifier: 'PUBLIC',
           type: null,
-          readonly: false,
         },
         descriptor: null,
         field: {
@@ -137,7 +133,6 @@ describe('configs', () => {
           optional: false,
           modifier: 'PUBLIC',
           type: 'string',
-          readonly: false,
           getter: true,
         },
         descriptor: Object.getOwnPropertyDescriptor(
@@ -154,7 +149,6 @@ describe('configs', () => {
           optional: false,
           modifier: 'PUBLIC',
           type: 'method',
-          readonly: false,
         },
         descriptor: Object.getOwnPropertyDescriptor(
           ModelConfigBaseModel.prototype,
