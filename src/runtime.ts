@@ -23,6 +23,9 @@ export namespace runtime {
     type: Type;
     modifier: Modifier;
     readonly: boolean;
+    abstract?: boolean;
+    getter?: boolean;
+    setter?: boolean;
   }
 
   /** @since 1.0.0 */

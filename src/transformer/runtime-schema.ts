@@ -33,17 +33,39 @@ function isEnumDeclaration(symbol: ts.Symbol): boolean {
   );
 }
 
+function isGetterDeclaration(symbol: ts.Symbol): boolean {
+  return symbol.declarations?.some((d) => d.kind === ts.SyntaxKind.GetAccessor);
+}
+
+function isSetterDeclaration(symbol: ts.Symbol): boolean {
+  return symbol.declarations?.some((d) => d.kind === ts.SyntaxKind.SetAccessor);
+}
+
 function buildInterfaceProperty(
   symbol: ts.Symbol,
   typeChecker: ts.TypeChecker,
 ): runtime.Property {
-  return {
+  const prop: runtime.Property = {
     name: symbol.getName(),
     optional: propertyOptional(symbol),
     modifier: propertyModifier(symbol),
     type: propertyType(symbol, typeChecker),
     readonly: propertyReadonly(symbol),
   };
+
+  if (isAbstract(symbol)) {
+    prop.abstract = true;
+  }
+
+  if (isGetterDeclaration(symbol)) {
+    prop.getter = true;
+  }
+
+  if (isSetterDeclaration(symbol)) {
+    prop.setter = true;
+  }
+
+  return prop;
 }
 
 function propertyReadonly(symbol: ts.Symbol): boolean {
@@ -57,6 +79,18 @@ function propertyReadonly(symbol: ts.Symbol): boolean {
         ),
     )
   );
+}
+
+function isAbstract(symbol: ts.Symbol): boolean {
+  for (const declaration of symbol.declarations) {
+    for (const modifier of declaration.modifiers || []) {
+      if (modifier.kind === ts.SyntaxKind.AbstractKeyword) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 function propertyModifier(symbol: ts.Symbol): runtime.Modifier {

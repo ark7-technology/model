@@ -59,6 +59,7 @@ export const userMetadata = {
           optional: false,
           readonly: false,
           type: 'number',
+          getter: true,
         },
         {
           modifier: 'PROTECTED',

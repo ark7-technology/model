@@ -82,6 +82,7 @@ describe('configs', () => {
           modifier: 'PUBLIC',
           type: 'string',
           readonly: false,
+          getter: true,
         },
         descriptor: Object.getOwnPropertyDescriptor(
           ModelConfigBaseModel.prototype,
@@ -137,6 +138,7 @@ describe('configs', () => {
           modifier: 'PUBLIC',
           type: 'string',
           readonly: false,
+          getter: true,
         },
         descriptor: Object.getOwnPropertyDescriptor(
           ModelConfigBaseModel.prototype,
