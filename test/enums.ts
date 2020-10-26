@@ -18,6 +18,8 @@ A7Model.provide(DIFF_KEY_VALUE);
 class TestEnumModel extends StrictModel {
   e1?: SAME_KEY_VALUE;
   e2?: DIFF_KEY_VALUE;
+  // e3?: SAME_KEY_VALUE.K2;
+  // e4?: SAME_KEY_VALUE.K1 | SAME_KEY_VALUE.K2;
 }
 
 describe('enums', () => {

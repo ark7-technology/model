@@ -99,7 +99,7 @@ export class StrictModel {
 
     for (const name of metadata.combinedFields.keys()) {
       const field = metadata.combinedFields.get(name);
-      if (field.isMethod) {
+      if (field.isMethod || (field.prop?.getter && !field.prop?.setter)) {
         continue;
       }
 
