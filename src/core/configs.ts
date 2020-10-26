@@ -10,8 +10,8 @@ import {
   ModelClass,
 } from './fields';
 import { DEFAULT_OPTIONS_RESOLVER } from './resolvers';
+import { Enum, createEnumModelClass } from './enums';
 import { Manager, manager } from './manager';
-import { createEnumModelClass } from './enums';
 import { runtime } from '../runtime';
 
 export function Config<T = object>(
@@ -75,6 +75,10 @@ export class Ark7ModelMetadata {
         : null;
   }
 
+  get isEnum(): boolean {
+    return this.modelClass.prototype instanceof Enum;
+  }
+
   get classes(): ModelClass<any>[] {
     const mixinClasses: ModelClass<any>[] = this.configs?.mixinClasses || [];
     return _.filter(
@@ -111,7 +115,7 @@ export class Ark7ModelMetadata {
 
     const mixinClasses = _.filter(
       [this.superClass, ...(this.configs.mixinClasses || [])],
-      _.identity,
+      (c) => c != null && c !== Enum,
     );
 
     for (const mixinClass of mixinClasses) {

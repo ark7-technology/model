@@ -1,6 +1,6 @@
 import 'should';
 
-import { A7Model, StrictModel } from '../src';
+import { A7Model, Enum, StrictModel } from '../src';
 
 export enum SAME_KEY_VALUE {
   K1 = 'K1',
@@ -23,9 +23,10 @@ class TestEnumModel extends StrictModel {
 describe('enums', () => {
   describe('.getMetadata()', () => {
     it('should return right metadata for SAME_KEY_VALUE', () => {
-      A7Model.getMetadata('SAME_KEY_VALUE').should.have.properties({
+      const metadata = A7Model.getMetadata('SAME_KEY_VALUE');
+      metadata.should.have.properties({
         name: 'SAME_KEY_VALUE',
-        superClass: null,
+        superClass: Enum.prototype.constructor,
         configs: {
           schema: {
             name: 'SAME_KEY_VALUE',
@@ -34,6 +35,8 @@ describe('enums', () => {
         },
         fields: {},
       });
+
+      metadata.isEnum.should.be.true();
     });
   });
 

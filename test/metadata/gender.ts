@@ -1,5 +1,7 @@
+import { Enum } from '../../src';
+
 export const genderMetadata: any = {
-  superClass: null,
+  superClass: Enum.prototype.constructor,
   configs: {
     schema: {
       name: 'Gender',
