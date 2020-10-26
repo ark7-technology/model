@@ -9,11 +9,13 @@ export function Level(level: number | LevelOptions): PropertyDecorator {
   return Field<LevelOptions>(_.isNumber(level) ? { level } : level);
 }
 
+export interface PassLevelMap {
+  [current: number]: number;
+}
+
 export interface LevelOptions {
   level?: number;
-  passLevelMap?: {
-    [current: number]: number;
-  };
+  passLevelMap?: PassLevelMap;
 }
 
 export enum DefaultDataLevel {
@@ -30,18 +32,34 @@ export enum DefaultDataLevel {
   CONFIDENTIAL = 40,
 }
 
-export function Basic(): PropertyDecorator {
-  return Level(DefaultDataLevel.BASIC);
+export function Basic(passLevelMap?: PassLevelMap): PropertyDecorator {
+  return Level(
+    passLevelMap == null
+      ? DefaultDataLevel.BASIC
+      : { level: DefaultDataLevel.BASIC, passLevelMap },
+  );
 }
 
-export function Short(): PropertyDecorator {
-  return Level(DefaultDataLevel.SHORT);
+export function Short(passLevelMap?: PassLevelMap): PropertyDecorator {
+  return Level(
+    passLevelMap == null
+      ? DefaultDataLevel.SHORT
+      : { level: DefaultDataLevel.SHORT, passLevelMap },
+  );
 }
 
-export function Detail(): PropertyDecorator {
-  return Level(DefaultDataLevel.DETAIL);
+export function Detail(passLevelMap?: PassLevelMap): PropertyDecorator {
+  return Level(
+    passLevelMap == null
+      ? DefaultDataLevel.DETAIL
+      : { level: DefaultDataLevel.DETAIL, passLevelMap },
+  );
 }
 
-export function Confidential(): PropertyDecorator {
-  return Level(DefaultDataLevel.CONFIDENTIAL);
+export function Confidential(passLevelMap?: PassLevelMap): PropertyDecorator {
+  return Level(
+    passLevelMap == null
+      ? DefaultDataLevel.CONFIDENTIAL
+      : { level: DefaultDataLevel.CONFIDENTIAL, passLevelMap },
+  );
 }

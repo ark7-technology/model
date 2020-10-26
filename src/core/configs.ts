@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-import _, { mixin } from 'underscore';
+import _ from 'underscore';
 
 import { A7_MODEL_CONFIG } from './tokens';
 import {
