@@ -79,6 +79,23 @@ export class Ark7ModelMetadata {
     return this.modelClass.prototype instanceof Enum;
   }
 
+  get enums(): object {
+    return (this.modelClass as any).enums;
+  }
+
+  get enumType(): 'string' | 'number' {
+    const values = _.values(this.enums);
+
+    return _.find(values, (v) => _.isNumber(v)) != null ? 'number' : 'string';
+  }
+
+  get enumValues(): string[] | number[] {
+    const type = this.enumType;
+    const values = _.values(this.enums);
+
+    return type === 'number' ? _.filter(values, _.isNumber) : values;
+  }
+
   get classes(): ModelClass<any>[] {
     const mixinClasses: ModelClass<any>[] = this.configs?.mixinClasses || [];
     return _.filter(
