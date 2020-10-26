@@ -5,3 +5,4 @@ export * from './mixin';
 export * from './readonly';
 export * from './reference';
 export * from './required';
+export * from './virtual';

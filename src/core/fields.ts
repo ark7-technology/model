@@ -105,6 +105,15 @@ export interface StrictConfigOptions {
     options?: CompoundIndexOptionsOptions;
   }>;
   mixinClasses?: ModelClass<any>[];
+
+  /** Virtual fields */
+  ref?: string | ModelClass<any>;
+  localField?: string;
+  foreignField?: string;
+  justOne?: boolean;
+  options?: any;
+  count?: boolean;
+  match?: object;
 }
 
 export type ConfigOptions<T = StrictConfigOptions> = BaseOptions<
