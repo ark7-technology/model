@@ -30,6 +30,9 @@ export enum DefaultDataLevel {
 
   // Confidential information which is not supposed to be returned.
   CONFIDENTIAL = 40,
+
+  // Never returns the field.
+  NEVER = 1000,
 }
 
 export function Basic(passLevelMap?: PassLevelMap): PropertyDecorator {
