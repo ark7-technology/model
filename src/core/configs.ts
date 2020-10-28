@@ -7,8 +7,11 @@ import {
   Ark7ModelFields,
   CombinedModelField,
   ConfigOptions,
+  DocumentToObjectOptions,
   ModelClass,
 } from './fields';
+import { AsObject } from './types';
+import { Converter, converter } from './converter';
 import { DEFAULT_OPTIONS_RESOLVER } from './resolvers';
 import { Enum, createEnumModelClass } from './enums';
 import { Manager, manager } from './manager';
@@ -19,9 +22,11 @@ export function Config<T = object>(
   schema?: runtime.Schema,
   name?: string,
 ): ClassDecorator {
-  return (constructor: ModelClass<any> | object) => {
+  return (constructor: object | ProvideOptions<any> | ModelClass<any>) => {
     const cls: ModelClass<any> = _.isFunction(constructor)
       ? constructor
+      : _.isEmpty(schema) /** a registered type */
+      ? converter(constructor, name)
       : createEnumModelClass(constructor);
 
     const configOptions: ConfigOptions = Reflect.getMetadata(
@@ -73,6 +78,10 @@ export class Ark7ModelMetadata {
       superClass != null && superClass !== Object.prototype.constructor
         ? superClass
         : null;
+  }
+
+  get isCustomizedType(): boolean {
+    return this.modelClass.prototype instanceof Converter;
   }
 
   get isEnum(): boolean {
@@ -132,7 +141,7 @@ export class Ark7ModelMetadata {
 
     const mixinClasses = _.filter(
       [this.superClass, ...(this.configs.mixinClasses || [])],
-      (c) => c != null && c !== Enum,
+      (c) => c != null && c !== Enum && c !== Converter,
     );
 
     for (const mixinClass of mixinClasses) {
@@ -167,10 +176,15 @@ export namespace A7Model {
     manager.reset();
   }
 
+  /** target is an enum */
   export function provide(target: object): void;
-  export function provide<T>(options: ProvideOptions<T>): void;
+  /** target is a model */
+  export function provide(target: ModelClass<any>): void;
+  /** target is a customized type */
+  export function provide<T>(options?: ProvideOptions<T>): void;
+
   export function provide<T>(
-    target: object | ProvideOptions<T>,
+    target?: object | ProvideOptions<T> | ModelClass<any>,
     schema?: runtime.Schema,
     name?: string,
   ) {
@@ -180,5 +194,11 @@ export namespace A7Model {
 
 export interface ProvideOptions<T> {
   name?: string;
-  modelize: (val: any, field?: CombinedModelField) => T;
+  modelize?: (val: any, manager?: Manager) => T;
+  toObject?: (
+    val: any,
+    field: CombinedModelField,
+    options: DocumentToObjectOptions,
+    manager: Manager,
+  ) => any;
 }

@@ -74,8 +74,23 @@ function visitNode(node: ts.Node, program: ts.Program): ts.Node {
   if (!isRuntimeTypeCallExpression(node, typeChecker)) {
     return node;
   }
-  if (!node.arguments || node.arguments.length === 0) {
+
+  if (!node.arguments?.length && !node.typeArguments?.length) {
     return badInterface;
+  }
+
+  if (node.typeArguments?.length) {
+    const typeNode = node.typeArguments[0];
+
+    const name = ts.createStringLiteral(typeNode.getText());
+
+    const literal = ts.createRegularExpressionLiteral(JSON.stringify({}));
+
+    const elements = [...node.arguments, literal, name];
+
+    const args = ts.createNodeArray(elements, node.arguments.hasTrailingComma);
+
+    return ts.updateCall(node, node.expression, node.typeArguments, args);
   } else {
     const i = node.arguments[0];
 

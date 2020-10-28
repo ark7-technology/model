@@ -160,7 +160,7 @@ export class CombinedModelField {
     public name: string,
     public prop: runtime.Property,
     public descriptor: PropertyDescriptor = null,
-    public field: FieldOptions = null,
+    public field: FieldOptions<any> = null,
   ) {}
 
   merge(b: CombinedModelField): CombinedModelField {
@@ -276,14 +276,26 @@ export class CombinedModelField {
         options.level;
     }
 
-    function map(val: any): any {
+    const map = (val: any): any => {
       if (runtime.isReferenceType(propType)) {
+        if (manager.hasMetadata(propType.referenceName)) {
+          const metadata = manager.getMetadata(propType.referenceName);
+
+          if (metadata.isCustomizedType) {
+            return (metadata.modelClass as any).toObject(
+              val,
+              this,
+              options,
+              manager,
+            );
+          }
+        }
         const c = val as StrictModel;
         return c.toObject ? c.toObject(newOptions, manager) : c;
       }
 
       return val;
-    }
+    };
 
     return this.isArray ? _.map(o, map) : map(o);
   }

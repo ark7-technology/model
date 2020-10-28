@@ -15,6 +15,11 @@ export class Manager {
     this.metadataMap.clear();
   }
 
+  hasMetadata<T>(name: string | ModelClass<T>): boolean {
+    const key = (_.isString(name) ? name : name.name).toLowerCase();
+    return this.metadataMap.has(key);
+  }
+
   getMetadata<T>(name: string | ModelClass<T>): Ark7ModelMetadata {
     const key = (_.isString(name) ? name : name.name).toLowerCase();
     const metadata = this.metadataMap.get(key);
