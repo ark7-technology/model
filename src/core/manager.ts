@@ -2,6 +2,7 @@ import _ from 'underscore';
 
 import { A7_MODEL_CONFIG, A7_MODEL_FIELD } from './tokens';
 import { Ark7ModelMetadata } from './configs';
+import { MetadataError } from './errors';
 import { ModelClass } from './fields';
 
 export class Manager {
@@ -19,7 +20,7 @@ export class Manager {
     const metadata = this.metadataMap.get(key);
 
     if (metadata == null) {
-      throw new Error(`Metadata ${key} not set`);
+      throw new MetadataError(key);
     }
 
     if (metadata.configs == null) {

@@ -167,7 +167,18 @@ export namespace A7Model {
     manager.reset();
   }
 
-  export function provide(target: any, schema?: runtime.Schema, name?: string) {
-    A7Model({}, schema, name)(target);
+  export function provide(target: object): void;
+  export function provide<T>(options: ProvideOptions<T>): void;
+  export function provide<T>(
+    target: object | ProvideOptions<T>,
+    schema?: runtime.Schema,
+    name?: string,
+  ) {
+    A7Model({}, schema, name)(target as any);
   }
+}
+
+export interface ProvideOptions<T> {
+  name?: string;
+  modelize: (val: any, field?: CombinedModelField) => T;
 }

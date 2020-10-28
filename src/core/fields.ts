@@ -172,6 +172,23 @@ export class CombinedModelField {
     );
   }
 
+  get isID(): boolean {
+    return (
+      runtime.isReferenceType(this.prop?.type) &&
+      this.prop.type.referenceName === 'ID'
+    );
+  }
+
+  get isDate(): boolean {
+    if (this.field?.type != null) {
+      return this.field.type === Date;
+    } else if (runtime.isReferenceType(this.prop?.type)) {
+      return this.prop.type.referenceName === 'Date';
+    }
+
+    return false;
+  }
+
   get isMethod(): boolean {
     return this.prop?.type === 'method';
   }
@@ -214,8 +231,12 @@ export class CombinedModelField {
         : this.field.default;
     }
 
-    if (fieldType === Date) {
+    if (this.isDate) {
       return new Date(o);
+    }
+
+    if (this.isID) {
+      return o;
     }
 
     if (fieldType === String) {
