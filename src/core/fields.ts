@@ -231,10 +231,6 @@ export class CombinedModelField {
         : this.field.default;
     }
 
-    if (this.isDate) {
-      return new Date(o);
-    }
-
     if (this.isID) {
       return o;
     }

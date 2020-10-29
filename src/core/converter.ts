@@ -22,7 +22,7 @@ export function converter<T>(
       if (options.toObject != null) {
         return options.toObject(o, field, opt, manager);
       } else {
-        return this;
+        return o;
       }
     }
 

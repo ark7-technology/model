@@ -1,3 +1,5 @@
+import './builtin-types';
+
 export * from './configs';
 export * from './decorators';
 export * from './enums';
