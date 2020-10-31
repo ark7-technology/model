@@ -21,3 +21,9 @@ export interface SSN extends String {}
 A7Model.provide<SSN>({
   modelize: (val) => val,
 });
+
+export interface PhoneNumber extends String {}
+
+A7Model.provide<PhoneNumber>({
+  modelize: (val) => val,
+});
