@@ -23,6 +23,9 @@
   - [.toObject() & .toJSON()](#toobject--tojson)
   - [Data Level](#data-level)
   - [Attachment](#attachment)
+- [Built-in Types](#built-in-types)
+  - [Email](#email)
+  - [UUID](#uuid)
 
 ## Installation
 
@@ -388,3 +391,13 @@ name.toObject().should.be.deepEqual({
   last: 'bar',
 });
 ```
+
+## Built-in Types
+
+### Email
+
+Email address.
+
+### UUID
+
+UUID.
