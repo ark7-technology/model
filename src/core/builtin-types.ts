@@ -15,3 +15,9 @@ export interface UUID extends String {}
 A7Model.provide<UUID>({
   modelize: (val) => val,
 });
+
+export interface SSN extends String {}
+
+A7Model.provide<SSN>({
+  modelize: (val) => val,
+});
