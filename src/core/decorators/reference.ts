@@ -1,9 +1,8 @@
 import _ from 'underscore';
 
-import { AsObject } from '../types';
 import { Field } from '../fields';
 
-export type Ref<M> = string | AsObject<M>;
+export type Ref<M> = string | M;
 
 /**
  * Set a reference field.
