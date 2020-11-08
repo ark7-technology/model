@@ -42,7 +42,7 @@ export interface IndexOptions {
 }
 
 export interface CompoundIndexOptionsFields {
-  [key: string]: number;
+  [key: string]: number | 'text';
 }
 
 export interface CompoundIndexOptionsOptions {
