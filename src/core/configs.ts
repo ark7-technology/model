@@ -110,7 +110,11 @@ export class Ark7ModelMetadata {
 
     return _.chain([this.superClass, ...mixinClasses])
       .filter(_.identity)
-      .map((cls) => A7Model.getMetadata(cls).classes)
+      .map((cls) =>
+        cls === Enum || cls === Converter
+          ? cls
+          : A7Model.getMetadata(cls).classes,
+      )
       .flatten()
       .union([this.modelClass])
       .value();

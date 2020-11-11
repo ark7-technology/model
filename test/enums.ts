@@ -42,6 +42,8 @@ describe('enums', () => {
       metadata.enums.should.not.be.null();
       metadata.enumType.should.be.equal('string');
       metadata.enumValues.should.be.deepEqual(['K1', 'K2']);
+
+      metadata.classes.should.have.length(2);
     });
   });
 
