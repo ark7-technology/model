@@ -107,10 +107,13 @@ export class Ark7ModelMetadata {
 
   get classes(): ModelClass<any>[] {
     const mixinClasses: ModelClass<any>[] = this.configs?.mixinClasses || [];
-    return _.filter(
-      [this.superClass, ...mixinClasses, this.modelClass],
-      _.identity,
-    );
+
+    return _.chain([this.superClass, ...mixinClasses])
+      .filter(_.identity)
+      .map((cls) => A7Model.getMetadata(cls).classes)
+      .flatten()
+      .union([this.modelClass])
+      .value();
   }
 
   createCombinedFields(manager: Manager) {
