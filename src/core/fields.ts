@@ -131,6 +131,7 @@ export interface ModelizeOptions {
   attachFieldMetadata?: boolean;
   manager?: Manager;
   meta?: ModelizeMetadata;
+  field?: CombinedModelField;
 }
 
 export interface DocumentToObjectOptions {
@@ -276,6 +277,7 @@ export class CombinedModelField {
           manager,
           meta,
           attachFieldMetadata: options.attachFieldMetadata,
+          field: this,
         });
       }
 

@@ -2,11 +2,7 @@ import _ from 'underscore';
 
 import { A7Model } from './configs';
 import { AsObject } from './types';
-import {
-  DocumentToObjectOptions,
-  ModelizeMetadata,
-  ModelizeOptions,
-} from './fields';
+import { DocumentToObjectOptions, ModelizeOptions } from './fields';
 import { LevelOptions } from './decorators';
 import { Manager, manager as _manager } from './manager';
 
