@@ -2,7 +2,11 @@ import _ from 'underscore';
 
 import { A7Model } from './configs';
 import { AsObject } from './types';
-import { DocumentToObjectOptions } from './fields';
+import {
+  DocumentToObjectOptions,
+  ModelizeMetadata,
+  ModelizeOptions,
+} from './fields';
 import { LevelOptions } from './decorators';
 import { Manager, manager as _manager } from './manager';
 
@@ -70,13 +74,13 @@ export class StrictModel {
   static modelize<T extends new (...args: any[]) => any>(
     this: T,
     o: AsObject<InstanceType<T>>,
-    manager?: Manager,
+    options: ModelizeOptions = {},
   ): InstanceType<T> {
     if (o == null) {
       return o as any;
     }
 
-    manager = manager ?? _manager;
+    const manager = options.manager ?? _manager;
 
     const metadata = manager.getMetadata(this.prototype.constructor);
 
@@ -107,10 +111,22 @@ export class StrictModel {
         continue;
       }
 
-      const val = field.modelize(ret[name], manager);
+      const val = field.modelize(ret[name], {
+        manager,
+        meta: {
+          $parent: ret,
+          $path: name,
+        },
+        attachFieldMetadata: options.attachFieldMetadata,
+      });
+
       if (!_.isUndefined(val)) {
         ret[name] = val;
       }
+    }
+
+    if (options.attachFieldMetadata) {
+      (ret as StrictModel).$attach(options.meta || {});
     }
 
     return ret as any;

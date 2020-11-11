@@ -8,7 +8,7 @@ import {
   CompoundIndexOptionsOptions,
 } from './decorators';
 import { DEFAULT_OPTIONS_RESOLVER } from './resolvers';
-import { Manager } from './manager';
+import { Manager, manager as _manager } from './manager';
 import { StrictModel } from './model';
 import { runtime } from '../runtime';
 
@@ -120,6 +120,19 @@ export type ConfigOptions<T = StrictConfigOptions> = BaseOptions<
   T & StrictConfigOptions
 >;
 
+export interface ModelizeMetadata {
+  $parent?: any;
+  $path?: string;
+  $isArray?: boolean;
+  $index?: number;
+}
+
+export interface ModelizeOptions {
+  attachFieldMetadata?: boolean;
+  manager?: Manager;
+  meta?: ModelizeMetadata;
+}
+
 export interface DocumentToObjectOptions {
   /** apply all getters (path and virtual getters) */
   getters?: boolean;
@@ -222,7 +235,8 @@ export class CombinedModelField {
     return runtime.isParameterizedType(type) ? type.typeArgumentType : type;
   }
 
-  modelize(o: any, manager: Manager): any {
+  modelize(o: any, options: ModelizeOptions = {}): any {
+    const manager = options.manager ?? _manager;
     const fieldType = this.field?.type;
 
     if (_.isUndefined(o) && !_.isUndefined(this.field?.default)) {
@@ -245,14 +259,24 @@ export class CombinedModelField {
 
     const propType = this.type;
 
-    function map(val: any): any {
+    function map(val: any, idx?: number): any {
       if (runtime.isReferenceType(propType)) {
         const metadata = manager.getMetadata(propType.referenceName);
 
-        return (metadata.modelClass as typeof StrictModel).modelize(
-          val,
+        const meta: ModelizeMetadata = {
+          $parent: options.meta?.$parent,
+          $path: options.meta?.$path,
+          $isArray: idx != null,
+        };
+        if (idx != null) {
+          meta.$index = idx;
+        }
+
+        return (metadata.modelClass as typeof StrictModel).modelize(val, {
           manager,
-        );
+          meta,
+          attachFieldMetadata: options.attachFieldMetadata,
+        });
       }
 
       return val;
