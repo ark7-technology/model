@@ -10,10 +10,10 @@ import {
   DocumentToObjectOptions,
   ModelClass,
 } from './fields';
-import { AsObject } from './types';
 import { Converter, converter } from './converter';
 import { DEFAULT_OPTIONS_RESOLVER } from './resolvers';
 import { Enum, createEnumModelClass } from './enums';
+import { LevelOptions } from './decorators';
 import { Manager, manager } from './manager';
 import { runtime } from '../runtime';
 
@@ -169,6 +169,40 @@ export class Ark7ModelMetadata {
         }
       }
     }
+  }
+
+  toObject(
+    obj: any,
+    options: DocumentToObjectOptions = {},
+    mgr?: Manager,
+  ): any {
+    if (obj == null) {
+      return obj;
+    }
+
+    mgr = mgr ?? manager;
+
+    const ret: any = {};
+    for (const name of this.combinedFields.keys()) {
+      const field = this.combinedFields.get(name);
+      if (field.isMethod) {
+        continue;
+      }
+
+      if (
+        options.level != null &&
+        (field.field as LevelOptions)?.level > options.level
+      ) {
+        continue;
+      }
+
+      const target = obj[name];
+
+      if (!_.isUndefined(target)) {
+        ret[name] = field.toObject(target, mgr, options);
+      }
+    }
+    return ret;
   }
 }
 

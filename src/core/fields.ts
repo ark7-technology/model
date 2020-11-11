@@ -285,6 +285,12 @@ export class CombinedModelField {
               manager,
             );
           }
+
+          if (metadata.isEnum) {
+            return val;
+          }
+
+          return metadata.toObject(val, newOptions, manager);
         }
         const c = val as StrictModel;
         return c.toObject ? c.toObject(newOptions, manager) : c;

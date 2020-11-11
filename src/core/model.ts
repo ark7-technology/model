@@ -63,31 +63,8 @@ export class StrictModel {
     options: DocumentToObjectOptions = {},
     manager?: Manager,
   ): AsObject<this> {
-    manager = manager ?? _manager;
-
-    const ret: any = {};
     const metadata = A7Model.getMetadata((this as any).__proto__.constructor);
-
-    for (const name of metadata.combinedFields.keys()) {
-      const field = metadata.combinedFields.get(name);
-      if (field.isMethod) {
-        continue;
-      }
-
-      if (
-        options.level != null &&
-        (field.field as LevelOptions)?.level > options.level
-      ) {
-        continue;
-      }
-
-      const target = (this as any)[name];
-
-      if (!_.isUndefined(target)) {
-        ret[name] = field.toObject(target, manager, options);
-      }
-    }
-    return ret;
+    return metadata.toObject(this, options, manager);
   }
 
   static modelize<T extends new (...args: any[]) => any>(
