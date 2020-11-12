@@ -6,6 +6,22 @@ import { DocumentToObjectOptions, ModelizeOptions } from './fields';
 import { LevelOptions } from './decorators';
 import { Manager, manager as _manager } from './manager';
 
+export interface StrictModel {
+  /**
+   * Set field and modelize the result, not saving to the server.
+   */
+  $set(name: string, obj: any): this;
+
+  /**
+   * Update the server and local instance.
+   */
+  $update(obj: object): Promise<this>;
+
+  $save(): Promise<this>;
+
+  $delete(): Promise<this | void>;
+}
+
 @A7Model({})
 export class StrictModel {
   $attach<T>(data?: T): Attachment<T> {
