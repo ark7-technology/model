@@ -9,6 +9,7 @@ import {
   ConfigOptions,
   DocumentToObjectOptions,
   ModelClass,
+  ModelizeOptions,
 } from './fields';
 import { Converter, converter } from './converter';
 import { DEFAULT_OPTIONS_RESOLVER } from './resolvers';
@@ -235,11 +236,6 @@ export namespace A7Model {
 
 export interface ProvideOptions<T> {
   name?: string;
-  modelize?: (val: any, manager?: Manager) => T;
-  toObject?: (
-    val: any,
-    field: CombinedModelField,
-    options: DocumentToObjectOptions,
-    manager: Manager,
-  ) => any;
+  modelize?: (val: any, options: ModelizeOptions) => T;
+  toObject?: (val: any, options: DocumentToObjectOptions) => any;
 }

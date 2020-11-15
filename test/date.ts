@@ -3,12 +3,22 @@ import 'should';
 import * as moment from 'moment';
 import { Moment } from 'moment';
 
-import { A7Model, CombinedModelField, Field, Model } from '../src';
+import {
+  A7Model,
+  DocumentToObjectOptions,
+  Field,
+  Model,
+  ModelizeOptions,
+} from '../src';
 
 A7Model.provide<Moment>({
-  modelize: (x: any) => moment.utc(x),
-  toObject: (x: Moment, field: CombinedModelField) => {
-    return field.field?.tz === 'UTC' ? x.toISOString() : x.toDate().toString();
+  modelize: (x: any, options: ModelizeOptions) => {
+    return options.field?.field?.tz === 'UTC' ? moment.utc(x) : moment(x);
+  },
+  toObject: (x: Moment, options: DocumentToObjectOptions) => {
+    return options.field.field?.tz === 'UTC'
+      ? x.toISOString()
+      : x.toDate().toString();
   },
 });
 

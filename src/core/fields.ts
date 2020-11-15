@@ -158,6 +158,9 @@ export interface DocumentToObjectOptions {
   flattenMaps?: boolean;
   /** data level for projection. (defaults to null) */
   level?: number;
+  /** model field */
+  field?: CombinedModelField;
+  manager?: Manager;
 }
 
 export interface Ark7ModelField {
@@ -259,6 +262,7 @@ export class CombinedModelField {
     }
 
     const propType = this.type;
+    const field = this;
 
     function map(val: any, idx?: number): any {
       if (runtime.isReferenceType(propType)) {
@@ -277,7 +281,7 @@ export class CombinedModelField {
           manager,
           meta,
           attachFieldMetadata: options.attachFieldMetadata,
-          field: this,
+          field,
         });
       }
 

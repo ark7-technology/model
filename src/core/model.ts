@@ -89,7 +89,7 @@ export class StrictModel {
         key.toLowerCase() !== this.prototype.constructor.name.toLowerCase()
       ) {
         const m = manager.getMetadata(key);
-        return (m.modelClass as any).modelize.call(m.modelClass, o, manager);
+        return (m.modelClass as any).modelize.call(m.modelClass, o, options);
       }
 
       if (key == null) {

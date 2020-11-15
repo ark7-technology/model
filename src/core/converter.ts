@@ -1,7 +1,10 @@
+import _ from 'underscore';
+
 import {
   CombinedModelField,
   DocumentToObjectOptions,
   ModelClass,
+  ModelizeOptions,
 } from './fields';
 import { Manager } from './manager';
 import { ProvideOptions } from './configs';
@@ -20,14 +23,23 @@ export function converter<T>(
       manager: Manager,
     ): any {
       if (options.toObject != null) {
-        return options.toObject(o, field, opt, manager);
+        return options.toObject(
+          o,
+          _.extend(
+            {
+              field,
+              manager,
+            },
+            opt,
+          ),
+        );
       } else {
         return o;
       }
     }
 
-    static modelize(o: any, manager?: Manager): any {
-      return options.modelize(o, manager);
+    static modelize(o: any, opts: ModelizeOptions = {}): any {
+      return options.modelize(o, opts);
     }
   }
 
