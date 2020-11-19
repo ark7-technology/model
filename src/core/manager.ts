@@ -28,6 +28,7 @@ export class Manager {
     const metadata = this.metadataMap.get(key);
 
     if (metadata == null) {
+      d('model %O not set (%O).', name, this.metadataMap.size);
       throw new MetadataError(key);
     }
 
