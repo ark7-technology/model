@@ -1,9 +1,12 @@
 import _ from 'underscore';
+import debug from 'debug';
 
 import { A7_MODEL_CONFIG, A7_MODEL_FIELD } from './tokens';
 import { Ark7ModelMetadata } from './configs';
 import { MetadataError } from './errors';
 import { ModelClass } from './fields';
+
+const d = debug('ark7:model:Manager');
 
 export class Manager {
   // metadataMap is case insensitive.
@@ -52,6 +55,8 @@ export class Manager {
     }
 
     this.metadataMap.set(lower, new Ark7ModelMetadata(modelClass, name));
+
+    d('register model %O (%O).', name, this.metadataMap.size);
   }
 }
 
