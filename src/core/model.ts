@@ -5,6 +5,7 @@ import { AsObject } from './types';
 import { DocumentToObjectOptions, ModelizeOptions } from './fields';
 import { LevelOptions } from './decorators';
 import { Manager, manager as _manager } from './manager';
+import { runtime } from '../runtime';
 
 @A7Model({})
 export class StrictModel {
@@ -103,7 +104,12 @@ export class StrictModel {
 
     for (const name of metadata.combinedFields.keys()) {
       const field = metadata.combinedFields.get(name);
-      if (field.isMethod || (field.prop?.getter && !field.prop?.setter)) {
+      if (
+        field.isMethod ||
+        (field.prop?.getter && !field.prop?.setter) ||
+        field.prop?.modifier === runtime.Modifier.PROTECTED ||
+        field.prop?.modifier === runtime.Modifier.PRIVATE
+      ) {
         continue;
       }
 
