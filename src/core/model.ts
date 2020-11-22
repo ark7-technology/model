@@ -127,7 +127,7 @@ export class StrictModel {
       }
     }
 
-    if (options.attachFieldMetadata) {
+    if (options.attachFieldMetadata && (ret as StrictModel).$attach) {
       (ret as StrictModel).$attach(options.meta || {});
     }
 
