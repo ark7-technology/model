@@ -93,6 +93,8 @@ export interface StrictFieldOption {
   options?: any;
   count?: boolean;
   match?: object;
+
+  noPersist?: boolean;
 }
 
 export type FieldOptions<T = StrictFieldOption> = BaseOptions<
