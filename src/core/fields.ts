@@ -245,6 +245,15 @@ export class CombinedModelField {
     const manager = options.manager ?? _manager;
     const fieldType = this.field?.type;
 
+    if (_.isUndefined(o) && !this.prop?.optional) {
+      switch (this.prop.type) {
+        case 'string':
+          return '';
+        case 'number':
+          return 0;
+      }
+    }
+
     if (_.isUndefined(o) && !_.isUndefined(this.field?.default)) {
       return _.isFunction(this.field.default)
         ? this.field.default()
