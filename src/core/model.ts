@@ -92,6 +92,24 @@ export class StrictModel {
       }
     }
 
+    const desc = Object.getOwnPropertyDescriptor(this.prototype, '$mixed');
+
+    if (desc == null) {
+      Object.defineProperty(this.prototype, '$mixed', { value: true });
+
+      for (const cls of metadata.classes) {
+        const desc = _.omit(
+          Object.getOwnPropertyDescriptors(cls.prototype),
+          'constructor',
+          '$mixed',
+          '$attach',
+          'toJSON',
+          'toObject',
+        );
+        Object.defineProperties(this.prototype, desc);
+      }
+    }
+
     Object.setPrototypeOf(ret, this.prototype);
 
     for (const name of metadata.combinedFields.keys()) {

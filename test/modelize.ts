@@ -1,6 +1,13 @@
 import 'should';
 
-import { A7Model, StrictModel } from '../src';
+import { A7Model, Mixin, StrictModel } from '../src';
+
+@A7Model({})
+class ModelizeModel3 extends StrictModel {
+  get foo2() {
+    return 'bar';
+  }
+}
 
 @A7Model({})
 class ModelizeModel2 extends StrictModel {
@@ -8,10 +15,13 @@ class ModelizeModel2 extends StrictModel {
 }
 
 @A7Model({})
+@Mixin(ModelizeModel3)
 class ModelizeModel1 extends StrictModel {
   model: ModelizeModel2;
   models: ModelizeModel2[];
 }
+
+interface ModelizeModel1 extends ModelizeModel3 {}
 
 describe('modelize', () => {
   it('works with normal data', () => {
@@ -26,7 +36,10 @@ describe('modelize', () => {
       ],
     });
 
+    ins.foo2.should.be.equal('bar');
+
     ins.toJSON().should.be.deepEqual({
+      foo2: 'bar',
       model: {
         foo: 'foo1',
       },
@@ -54,6 +67,7 @@ describe('modelize', () => {
     );
 
     ins.toJSON().should.be.deepEqual({
+      foo2: 'bar',
       model: {
         foo: 'foo1',
       },
