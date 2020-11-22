@@ -291,7 +291,8 @@ export class CombinedModelField {
     return this.isArray ? _.map(o, map) : map(o);
   }
 
-  toObject(o: any, manager: Manager, options: DocumentToObjectOptions): any {
+  toObject(o: any, options: DocumentToObjectOptions): any {
+    const manager = options.manager ?? _manager;
     const propType = this.type;
 
     const newOptions = _.clone(options);
@@ -320,10 +321,10 @@ export class CombinedModelField {
             return val;
           }
 
-          return metadata.toObject(val, newOptions, manager);
+          return metadata.toObject(val, newOptions);
         }
         const c = val as StrictModel;
-        return c.toObject ? c.toObject(newOptions, manager) : c;
+        return c.toObject ? c.toObject(newOptions) : c;
       }
 
       return val;

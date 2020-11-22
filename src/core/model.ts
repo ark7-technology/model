@@ -1,10 +1,10 @@
 import _ from 'underscore';
 
+import { manager as _manager } from './manager';
 import { A7Model } from './configs';
 import { AsObject } from './types';
 import { DocumentToObjectOptions, ModelizeOptions } from './fields';
 import { LevelOptions } from './decorators';
-import { Manager, manager as _manager } from './manager';
 import { runtime } from '../runtime';
 
 @A7Model({})
@@ -29,12 +29,7 @@ export class StrictModel {
     }
   }
 
-  toJSON(
-    options: DocumentToObjectOptions = {},
-    manager?: Manager,
-  ): AsObject<this> {
-    manager = manager ?? _manager;
-
+  toJSON(options: DocumentToObjectOptions = {}): AsObject<this> {
     const ret: any = {};
     const metadata = A7Model.getMetadata((this as any).__proto__.constructor);
 
@@ -54,18 +49,15 @@ export class StrictModel {
       const target = (this as any)[name];
 
       if (!_.isUndefined(target)) {
-        ret[name] = field.toObject(target, _manager, options);
+        ret[name] = field.toObject(target, options);
       }
     }
     return ret;
   }
 
-  toObject(
-    options: DocumentToObjectOptions = {},
-    manager?: Manager,
-  ): AsObject<this> {
+  toObject(options: DocumentToObjectOptions = {}): AsObject<this> {
     const metadata = A7Model.getMetadata((this as any).__proto__.constructor);
-    return metadata.toObject(this, options, manager);
+    return metadata.toObject(this, options);
   }
 
   static modelize<T extends new (...args: any[]) => any>(

@@ -172,16 +172,10 @@ export class Ark7ModelMetadata {
     }
   }
 
-  toObject(
-    obj: any,
-    options: DocumentToObjectOptions = {},
-    mgr?: Manager,
-  ): any {
+  toObject(obj: any, options: DocumentToObjectOptions = {}): any {
     if (obj == null) {
       return obj;
     }
-
-    mgr = mgr ?? manager;
 
     const ret: any = {};
     for (const name of this.combinedFields.keys()) {
@@ -200,7 +194,7 @@ export class Ark7ModelMetadata {
       const target = obj[name];
 
       if (!_.isUndefined(target)) {
-        ret[name] = field.toObject(target, mgr, options);
+        ret[name] = field.toObject(target, options);
       }
     }
     return ret;
