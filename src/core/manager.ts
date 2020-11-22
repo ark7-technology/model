@@ -12,9 +12,12 @@ export class Manager {
   // metadataMap is case insensitive.
   private metadataMap: Map<string, Ark7ModelMetadata> = new Map();
 
-  constructor() {}
+  constructor() {
+    d('Manager instance created.');
+  }
 
   reset() {
+    d('Manager instance reset.');
     this.metadataMap.clear();
   }
 
