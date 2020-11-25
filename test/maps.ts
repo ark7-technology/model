@@ -3,8 +3,14 @@ import 'should';
 import { A7Model, MMap, StrictModel } from '../src';
 
 @A7Model({})
+class TestMapModel2 extends StrictModel {
+  foo: string;
+}
+
+@A7Model({})
 class TestMapModel extends StrictModel {
-  f1: MMap<number>;
+  f1: MMap<TestMapModel2>;
+  f2: MMap<number>;
 }
 
 describe('maps', () => {
@@ -26,6 +32,36 @@ describe('maps', () => {
           },
         },
         fields: {},
+      });
+    });
+  });
+
+  describe('.modelize()', () => {
+    it('should modelize map fields', () => {
+      const ins = TestMapModel.modelize({
+        f1: {
+          f: { foo: 'f1' },
+        },
+        f2: {
+          n: 2,
+        },
+      });
+
+      ins.f1.should.be.instanceof(Map);
+      ins.f1.get('f').should.be.instanceof(TestMapModel2);
+      ins.f1.get('f').foo.should.be.eql('f1');
+
+      ins.f2.should.be.instanceof(Map);
+      ins.f2.get('n').should.be.instanceof(Number);
+      ins.f2.get('n').should.be.eql(2);
+
+      ins.toJSON().should.be.deepEqual({
+        f1: {
+          f: { foo: 'f1' },
+        },
+        f2: {
+          n: 2,
+        },
       });
     });
   });

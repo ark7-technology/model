@@ -225,6 +225,13 @@ export class CombinedModelField {
     return runtime.isArrayType(this.prop.type);
   }
 
+  get isMap(): boolean {
+    return (
+      runtime.isParameterizedType(this.prop.type) &&
+      this.prop.type.selfType === 'MMap'
+    );
+  }
+
   get isReference(): boolean {
     const type = this.isArray
       ? (this.prop.type as runtime.ArrayType).arrayElementType
@@ -275,9 +282,9 @@ export class CombinedModelField {
     const propType = this.type;
     const field = this;
 
-    function map(val: any, idx?: number): any {
-      if (runtime.isReferenceType(propType)) {
-        const metadata = manager.getMetadata(propType.referenceName);
+    function modelizeField(type: runtime.Type, val: any, idx?: number): any {
+      if (runtime.isReferenceType(type)) {
+        const metadata = manager.getMetadata(type.referenceName);
 
         const meta: ModelizeMetadata = {
           $parent: options.meta?.$parent,
@@ -297,6 +304,25 @@ export class CombinedModelField {
       }
 
       return val;
+    }
+
+    function map(val: any, idx?: number): any {
+      if (runtime.isParameterizedType(field.prop.type)) {
+        const p = field.prop.type.typeArgumentType;
+        switch (field.prop.type.selfType) {
+          case 'MMap':
+            const entries = _.chain(
+              val instanceof Map ? val.entries() : _.pairs(val),
+            )
+              .map(([key, val]) => [key, modelizeField(p, val)])
+              .value();
+            return new Map(entries as any);
+        }
+
+        return val;
+      }
+
+      return modelizeField(propType, val, idx);
     }
 
     return this.isArray ? _.map(o, map) : map(o);
@@ -341,6 +367,13 @@ export class CombinedModelField {
       return val;
     };
 
-    return this.isArray ? _.map(o, map) : map(o);
+    return this.isMap
+      ? _.chain(Array.from(o.entries()))
+          .map(([key, val]) => [key, map(val)])
+          .object()
+          .value()
+      : this.isArray
+      ? _.map(o, map)
+      : map(o);
   }
 }
