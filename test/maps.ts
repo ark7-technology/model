@@ -26,6 +26,15 @@ describe('maps', () => {
                 name: 'f1',
                 optional: false,
                 modifier: 'PUBLIC',
+                type: {
+                  selfType: 'MMap',
+                  typeArgumentType: { referenceName: 'TestMapModel2' },
+                },
+              },
+              {
+                name: 'f2',
+                optional: false,
+                modifier: 'PUBLIC',
                 type: { selfType: 'MMap', typeArgumentType: 'number' },
               },
             ],
