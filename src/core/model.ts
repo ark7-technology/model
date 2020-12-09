@@ -9,7 +9,7 @@ import { runtime } from '../runtime';
 
 @A7Model({})
 export class StrictModel {
-  $attach<T>(data?: T): Attachment<T> {
+  $attach?<T>(data?: T): Attachment<T> {
     const proto = (this as any).__proto__;
 
     if (data == null) {
@@ -29,7 +29,7 @@ export class StrictModel {
     }
   }
 
-  toJSON(options: DocumentToObjectOptions = {}): AsObject<this> {
+  toJSON?(options: DocumentToObjectOptions = {}): AsObject<this> {
     const ret: any = {};
     const metadata = A7Model.getMetadata((this as any).__proto__.constructor);
 
@@ -55,7 +55,7 @@ export class StrictModel {
     return ret;
   }
 
-  toObject(options: DocumentToObjectOptions = {}): AsObject<this> {
+  toObject?(options: DocumentToObjectOptions = {}): AsObject<this> {
     const metadata = A7Model.getMetadata((this as any).__proto__.constructor);
     return metadata.toObject(this, options);
   }
