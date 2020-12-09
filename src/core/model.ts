@@ -29,7 +29,7 @@ export class StrictModel {
     }
   }
 
-  toJSON?(options: DocumentToObjectOptions = {}): AsObject<this> {
+  toJSON(options: DocumentToObjectOptions = {}): AsObject<this> {
     const ret: any = {};
     const metadata = A7Model.getMetadata((this as any).__proto__.constructor);
 
