@@ -134,6 +134,12 @@ export interface ModelizeOptions {
   manager?: Manager;
   meta?: ModelizeMetadata;
   field?: CombinedModelField;
+
+  // Whether to allow a mongodb-style id reference. For example,
+  //   { user: '58a606de-d0f3-495a-a36a-da5da8ea68de' } might be translated to
+  //   { user: { _id: '58a606de-d0f3-495a-a36a-da5da8ea68de' } } based on the
+  //   User schema.
+  allowReference?: boolean;
 }
 
 export interface DocumentToObjectOptions {
@@ -300,6 +306,7 @@ export class CombinedModelField {
           meta,
           attachFieldMetadata: options.attachFieldMetadata,
           field,
+          allowReference: options.allowReference,
         });
       }
 

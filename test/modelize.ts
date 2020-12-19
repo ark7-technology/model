@@ -1,6 +1,6 @@
 import 'should';
 
-import { A7Model, Mixin, StrictModel } from '../src';
+import { A7Model, Mixin, ModelizeError, StrictModel } from '../src';
 
 @A7Model({})
 class ModelizeModel3 extends StrictModel {
@@ -84,5 +84,33 @@ describe('modelize', () => {
       $path: 'model',
       __$attach: true,
     });
+  });
+
+  it('throws format wrong error', () => {
+    (() => {
+      ModelizeModel1.modelize({
+        model: '12345',
+      } as any);
+    }).should.throw(ModelizeError, {
+      path: 'model:ModelizeModel2.foo',
+      cls: ModelizeModel1,
+    });
+  });
+
+  it('allows id reference', () => {
+    ModelizeModel1.modelize(
+      {
+        model: '12345',
+      } as any,
+      { allowReference: true },
+    )
+      .toJSON()
+      .should.be.deepEqual({
+        foo2: 'bar',
+        model: {
+          foo: '',
+        },
+        models: [],
+      });
   });
 });

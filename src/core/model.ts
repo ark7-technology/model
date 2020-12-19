@@ -5,6 +5,7 @@ import { A7Model } from './configs';
 import { AsObject } from './types';
 import { DocumentToObjectOptions, ModelizeOptions } from './fields';
 import { LevelOptions } from './decorators';
+import { ModelizeError } from './errors';
 import { runtime } from '../runtime';
 
 @A7Model({})
@@ -73,7 +74,11 @@ export class StrictModel {
 
     const metadata = manager.getMetadata(this.prototype.constructor);
 
-    const ret: any = _.clone(o);
+    let ret: any = _.clone(o);
+
+    if (_.isString(ret) && options.allowReference) {
+      ret = { _id: ret };
+    }
 
     if (metadata.configs?.discriminatorKey) {
       const key = (o as any)[metadata.configs.discriminatorKey];
@@ -123,17 +128,27 @@ export class StrictModel {
         continue;
       }
 
-      const val = field.modelize(ret[name], {
-        manager,
-        meta: {
-          $parent: ret,
-          $path: name,
-        },
-        attachFieldMetadata: options.attachFieldMetadata,
-      });
+      try {
+        const val = field.modelize(ret[name], {
+          manager,
+          meta: {
+            $parent: ret,
+            $path: name,
+          },
+          attachFieldMetadata: options.attachFieldMetadata,
+          allowReference: options.allowReference,
+        });
 
-      if (!_.isUndefined(val)) {
-        ret[name] = val;
+        if (!_.isUndefined(val)) {
+          ret[name] = val;
+        }
+      } catch (error) {
+        if (error instanceof ModelizeError) {
+          console.log(error);
+          throw ModelizeError.fromNested(error, this, name);
+        } else {
+          throw new ModelizeError(name, this, error);
+        }
       }
     }
 
