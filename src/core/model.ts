@@ -144,7 +144,6 @@ export class StrictModel {
         }
       } catch (error) {
         if (error instanceof ModelizeError) {
-          console.log(error);
           throw ModelizeError.fromNested(error, this, name);
         } else {
           throw new ModelizeError(name, this, error);
