@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-import _ from 'underscore';
+import * as _ from 'underscore';
 
 import { A7_MODEL_CONFIG } from './tokens';
 import {

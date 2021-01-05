@@ -1,15 +1,15 @@
 import 'should';
 
-import { A7Model, Ref, Reference } from '../src';
+import { A7Model, Ref, Reference, StrictModel } from '../src';
 
 describe('reference', () => {
   @A7Model({})
-  class ReferenceModelA {
+  class ReferenceModelA extends StrictModel {
     fieldA1: string;
   }
 
   @A7Model({})
-  class ReferenceModel {
+  class ReferenceModel extends StrictModel {
     @Reference()
     field1: Ref<ReferenceModelA>;
 
@@ -21,7 +21,6 @@ describe('reference', () => {
     A7Model.getMetadata(ReferenceModel).should.have.properties({
       name: 'ReferenceModel',
       modelClass: ReferenceModel.prototype.constructor,
-      superClass: null,
       configs: {
         schema: {
           name: 'ReferenceModel',
@@ -64,5 +63,33 @@ describe('reference', () => {
         },
       },
     });
+  });
+
+  it('modelize references', () => {
+    const ins = ReferenceModel.modelize({
+      field1: {
+        fieldA1: 'foo',
+      } as any,
+      field2: [],
+    });
+
+    ins.field1.should.be.instanceof(ReferenceModelA);
+
+    const ins2 = ReferenceModel.modelize({
+      field1: '1234',
+      field2: [],
+    });
+
+    ins2.field1.should.be.String();
+
+    const ins3 = ReferenceModel.modelize(
+      {
+        field1: '1234',
+        field2: [],
+      },
+      { allowReference: true },
+    );
+
+    ins3.field1.should.be.instanceof(ReferenceModelA);
   });
 });

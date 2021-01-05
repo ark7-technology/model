@@ -1,6 +1,6 @@
 import 'should';
 
-import _ from 'underscore';
+import * as _ from 'underscore';
 
 import { A7Model, Field } from '../src';
 import { Name, User } from './models';

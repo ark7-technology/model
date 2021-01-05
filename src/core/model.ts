@@ -1,4 +1,4 @@
-import _ from 'underscore';
+import * as _ from 'underscore';
 
 import { manager as _manager } from './manager';
 import { A7Model } from './configs';

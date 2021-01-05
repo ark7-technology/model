@@ -1,4 +1,4 @@
-import _ from 'underscore';
+import * as _ from 'underscore';
 
 import { Config } from '../configs';
 import { Field } from '../fields';

@@ -1,5 +1,5 @@
-import _ from 'underscore';
-import debug from 'debug';
+import * as _ from 'underscore';
+import * as debug from 'debug';
 
 import { A7_MODEL_CONFIG, A7_MODEL_FIELD } from './tokens';
 import { Ark7ModelMetadata } from './configs';

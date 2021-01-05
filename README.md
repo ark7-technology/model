@@ -1,6 +1,8 @@
 # @ark7/model
 
-@ark7/model is a model layer which is shareable across multiple environments:
+A critical problem which always leads to many bugs is the duplication of the
+same models. @ark7/model is a model class layer which is shareable across
+multiple environments, so that the logics are kept in sync.
 
 - [Nodejs (MongoDB)](https://github.com/ark7-technology/model-mongoose)
 - Browser

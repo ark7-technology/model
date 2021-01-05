@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-import _ from 'underscore';
+import * as _ from 'underscore';
 
 import { A7_MODEL_CONFIG, A7_MODEL_FIELD } from './tokens';
 import {
@@ -9,6 +9,7 @@ import {
 } from './decorators';
 import { DEFAULT_OPTIONS_RESOLVER } from './resolvers';
 import { Manager, manager as _manager } from './manager';
+import { ModelizeError } from './errors';
 import { StrictModel } from './model';
 import { runtime } from '../runtime';
 
@@ -301,13 +302,21 @@ export class CombinedModelField {
           meta.$index = idx;
         }
 
-        return (metadata.modelClass as typeof StrictModel).modelize(val, {
-          manager,
-          meta,
-          attachFieldMetadata: options.attachFieldMetadata,
-          field,
-          allowReference: options.allowReference,
-        });
+        try {
+          return (metadata.modelClass as typeof StrictModel).modelize(val, {
+            manager,
+            meta,
+            attachFieldMetadata: options.attachFieldMetadata,
+            field,
+            allowReference: options.allowReference,
+          });
+        } catch (error) {
+          if (error instanceof ModelizeError) {
+            throw error;
+          } else {
+            throw new ModelizeError(field.name, field, error);
+          }
+        }
       }
 
       return val;
@@ -324,6 +333,17 @@ export class CombinedModelField {
               .map(([key, val]) => [key, modelizeField(p, val)])
               .value();
             return new Map(entries as any);
+
+          case 'Ref':
+            if (_.isString(val) && !options.allowReference) {
+              return val;
+            }
+
+            if (_.isString(val) && options.allowReference) {
+              return modelizeField(propType, { _id: val }, idx);
+            }
+
+            return modelizeField(propType, val, idx);
         }
 
         return val;
