@@ -49,7 +49,7 @@ export function Config<T = object>(
     );
 
     if (schema != null) {
-      manager.register(name ?? cls.name, cls);
+      manager.register(name ?? schema.name ?? cls.name, cls);
     }
   };
 }
