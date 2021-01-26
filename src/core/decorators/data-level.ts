@@ -6,7 +6,7 @@ import { Field } from '../fields';
  * Config data level for the field.
  *
  * Each field will be assigned a level number.  The higher the level number, the
- * more restrict or confidential the field it is.  We have pre-defined five data
+ * more restrict or confidential the field is.  We have pre-defined five data
  * levels:
  *
  *   1. BASIC (10) - The basic field that will be used in the most scenarios.
