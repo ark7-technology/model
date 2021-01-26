@@ -240,6 +240,9 @@ export class CombinedModelField {
     );
   }
 
+  /**
+   * If the current field is a foreign Ref<Model>.
+   */
   get isReference(): boolean {
     const type = this.isArray
       ? (this.prop.type as runtime.ArrayType).arrayElementType

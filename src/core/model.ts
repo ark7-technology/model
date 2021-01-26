@@ -158,6 +158,16 @@ export interface ID {
   toString(): string;
 }
 
+let isIDFn: (x: any) => x is ID = ((x: any) => !_.isString(x)) as any;
+
+export function setIsIDFn(fn: (x: any) => x is ID) {
+  isIDFn = fn;
+}
+
+export function isID(x: any): x is ID {
+  return isIDFn(x);
+}
+
 @A7Model({})
 export class Model extends StrictModel {
   _id?: ID;

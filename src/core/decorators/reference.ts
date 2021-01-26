@@ -1,8 +1,9 @@
 import * as _ from 'underscore';
 
 import { Field } from '../fields';
+import { ID, isID } from '../model';
 
-export type Ref<M> = string | M;
+export type Ref<M> = ID | M;
 
 /**
  * Set a reference field.
@@ -25,4 +26,8 @@ export interface ReferenceOptions {
 
 export interface ReferenceOptionsMetadata extends ReferenceOptions {
   reference: true;
+}
+
+export function asModel<M>(x: Ref<M>): x is M {
+  return !isID(x);
 }
