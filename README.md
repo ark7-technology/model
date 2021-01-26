@@ -378,6 +378,14 @@ const user = User.modelize({
 user.toObject({ level: DefaultDataLevel.BASIC }).should.be.instanceof({
   email: 'test@google.com',
 });
+
+user.toObject({ level: DefaultDataLevel.SHORT }).should.be.instanceof({
+  email: 'test@google.com',
+  name: {
+    first: 'foo',
+    last: 'bar',
+  },
+});
 ```
 
 **Population**
