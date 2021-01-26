@@ -32,6 +32,8 @@ export function asModel<M>(x: Ref<M>): M {
   return x as M;
 }
 
+export const $$ = asModel;
+
 export function isModel<M>(x: Ref<M>): x is M {
   return !isID(x);
 }
