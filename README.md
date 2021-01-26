@@ -329,17 +329,32 @@ user.toObject().should.be.instanceof({
 
 ### Data Level
 
-Usually, data used in CRUD pattern has importance levels. We pre-define four
-levels `DefaultDataLevel.BASIC`, `DefaultDataLevel.SHORT`,
-`DefaultDataLevel.DETAIL`, and `DefaultDataLevel.CONFIDENTIAL`.
+Each field will be assigned a level number. The higher the level number, the
+more restrict or confidential the field it is. We have pre-defined five data
+levels:
 
-Level is a numeric number ranked by its importance. For example,
-`model.toJSON({ level: DefaultDataLevel.SHORT })` will returns
-`DefaultDataLevel.BASIC` and `DefaultDataLevel.SHORT`.
+    1. BASIC (10) - The basic field that will be used in the most scenarios.
+                    Usually, presented when it's referenced by other model.
+
+    2. SHORT (20) - The fields that are useful for displaying as a list or
+                    table. Usually, presented in the find or search endpoints.
+
+    3. DETAIL (30) - The fields that contains detail information. Usually,
+                     presented in the get endpoints.
+
+    4. CONFIDENTIAL (40) - The fields that contains sensitive information.
+                           Usually, not returning to the client or only to
+                           admins with special privileges.
+
+    5. NEVER (50) - The fields that are never returns.
+
+**Projection**
+
+We can do the projection by providing a filter level. Any fields with level
+numbers that are smaller or equal to the filter level will be projected. You can
+tune the filter level by specifying the passLevelMap in the option.
 
 ```Typescript
-import { A7Model, StrictModel } from '@ark7/model';
-
 @A7Model({})
 class Name extends StrictModel {
   @Basic() first: string;
@@ -363,6 +378,25 @@ const user = User.modelize({
 user.toObject({ level: DefaultDataLevel.BASIC }).should.be.instanceof({
   email: 'test@google.com',
 });
+```
+
+**Population**
+
+For a reference field, when the filter level is greater than the
+populateLevel specified by the option, the field will be populated.
+
+```typescript
+@A7Model({})
+export class User extends Model {
+  @Virtual({ ... })
+  @Level({ populateLevel: DefaultDataLevel.DETAIL })
+  posts: Post[];
+}
+
+@A7Model({})
+export class Post extends Model {
+  author: Ref<User>;
+}
 ```
 
 ### Attachment
