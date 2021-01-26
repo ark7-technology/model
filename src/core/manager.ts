@@ -27,7 +27,7 @@ export class Manager {
   }
 
   getMetadata<T>(name: string | ModelClass<T>): Ark7ModelMetadata {
-    const key = (_.isString(name) ? name : name.name).toLowerCase();
+    const key = (_.isString(name) ? name : name.$modelClassName).toLowerCase();
     const metadata = this.metadataMap.get(key);
 
     if (metadata == null) {
@@ -53,6 +53,8 @@ export class Manager {
   }
 
   register<T>(name: string, modelClass: ModelClass<T>) {
+    modelClass.$modelClassName = name;
+
     const lower = name.toLowerCase();
     if (this.metadataMap.has(lower)) {
       throw new Error(`Model ${name} has already been registered.`);

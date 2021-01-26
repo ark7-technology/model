@@ -40,6 +40,7 @@ export function getArk7ModelField<T>(target: ModelClass<T>): Ark7ModelFields {
 
 export interface ModelClass<T> {
   new (...args: any[]): T;
+  $modelClassName?: string;
 }
 
 function mergeFields(
