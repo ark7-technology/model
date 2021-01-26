@@ -158,7 +158,7 @@ export interface ID {
   toString(): string;
 }
 
-let isIDFn: (x: any) => x is ID = ((x: any) => !_.isString(x)) as any;
+let isIDFn: (x: any) => x is ID = ((x: any) => _.isString(x)) as any;
 
 export function setIsIDFn(fn: (x: any) => x is ID) {
   isIDFn = fn;

@@ -1,6 +1,6 @@
 import 'should';
 
-import { A7Model, Ref, Reference, StrictModel } from '../src';
+import { A7Model, Ref, Reference, StrictModel, asModel } from '../src';
 
 describe('reference', () => {
   @A7Model({})
@@ -16,6 +16,14 @@ describe('reference', () => {
     @Reference({ model: 'ReferenceModelA' })
     field2: Ref<ReferenceModelA>[];
   }
+
+  describe('asModel', () => {
+    it('asset the value', () => {
+      const x: Ref<number> = 123;
+
+      asModel(x).toFixed().should.be.eql('123');
+    });
+  });
 
   it('specifies the required', () => {
     A7Model.getMetadata(ReferenceModel).should.have.properties({

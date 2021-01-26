@@ -9,6 +9,7 @@ import {
   Ref,
   Short,
   StrictModel,
+  isID,
 } from '../src';
 
 describe('model', () => {
@@ -91,6 +92,12 @@ describe('model', () => {
         },
         refs: [],
       });
+    });
+  });
+
+  describe('isID', () => {
+    it('checks if it is a ID', () => {
+      isID('12345').should.be.true();
     });
   });
 });
