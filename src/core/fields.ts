@@ -273,7 +273,7 @@ export class CombinedModelField {
     }
 
     if (_.isUndefined(o) && !_.isUndefined(this.field?.default)) {
-      return _.isFunction(this.field.default)
+      o = _.isFunction(this.field.default)
         ? this.field.default()
         : this.field.default;
     }

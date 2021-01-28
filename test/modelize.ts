@@ -1,6 +1,6 @@
 import 'should';
 
-import { A7Model, Mixin, ModelizeError, StrictModel } from '../src';
+import { A7Model, Default, Mixin, ModelizeError, StrictModel } from '../src';
 
 @A7Model({})
 class ModelizeModel3 extends StrictModel {
@@ -23,7 +23,21 @@ class ModelizeModel1 extends StrictModel {
 
 interface ModelizeModel1 extends ModelizeModel3 {}
 
+@A7Model({})
+class ModelizeModel4 extends StrictModel {
+  @Default(ModelizeModel3.modelize({}))
+  f3?: ModelizeModel3;
+}
+
 describe('modelize', () => {
+  it('works with default model', () => {
+    const ins = ModelizeModel4.modelize({}, { attachFieldMetadata: true });
+
+    ins.f3.foo2.should.be.equal('bar');
+
+    (ins.f3.$attach() as any).$parent.should.be.equal(ins);
+  });
+
   it('works with normal data', () => {
     const ins = ModelizeModel1.modelize({
       model: {
