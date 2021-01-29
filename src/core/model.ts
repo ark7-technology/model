@@ -10,6 +10,10 @@ import { runtime } from '../runtime';
 
 @A7Model({})
 export class StrictModel {
+  static $metadata() {
+    return _manager.getMetadata(this);
+  }
+
   $attach?<T>(data?: T): Attachment<T> {
     const proto = (this as any).__proto__;
 

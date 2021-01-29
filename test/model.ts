@@ -100,4 +100,10 @@ describe('model', () => {
       isID('12345').should.be.true();
     });
   });
+
+  describe('#metadata()', () => {
+    it('returns metadata from model class', () => {
+      TestModelModel1.$metadata().name.should.be.eql('TestModelModel1');
+    });
+  });
 });
