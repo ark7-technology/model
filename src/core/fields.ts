@@ -6,8 +6,10 @@ import { A7_MODEL_CONFIG, A7_MODEL_FIELD } from './tokens';
 import {
   CompoundIndexOptionsFields,
   CompoundIndexOptionsOptions,
+  LevelOptions,
 } from './decorators';
 import { DEFAULT_OPTIONS_RESOLVER } from './resolvers';
+import { DefaultDataLevel } from './levels';
 import { Manager, manager as _manager } from './manager';
 import { ModelizeError } from './errors';
 import { StrictModel } from './model';
@@ -214,6 +216,16 @@ export class CombinedModelField {
     }
 
     return false;
+  }
+
+  get level(): number {
+    const level = (this.field as LevelOptions)?.level;
+
+    return this.isGetter ? level ?? DefaultDataLevel.NEVER : level;
+  }
+
+  get isGetter(): boolean {
+    return !!this.prop?.getter;
   }
 
   get isMethod(): boolean {

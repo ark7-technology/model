@@ -3,6 +3,7 @@ import 'should';
 import {
   A7Model,
   Default,
+  Detail,
   Mixin,
   ModelizeError,
   Never,
@@ -11,6 +12,7 @@ import {
 
 @A7Model({})
 class ModelizeModel3 extends StrictModel {
+  @Detail()
   get foo2() {
     return 'bar';
   }

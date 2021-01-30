@@ -13,8 +13,8 @@ import {
 } from './fields';
 import { Converter, converter } from './converter';
 import { DEFAULT_OPTIONS_RESOLVER } from './resolvers';
+import { DefaultDataLevel } from './levels';
 import { Enum, createEnumModelClass } from './enums';
-import { LevelOptions } from './decorators';
 import { Manager, manager } from './manager';
 import { runtime } from '../runtime';
 
@@ -177,8 +177,7 @@ export class Ark7ModelMetadata {
       return obj;
     }
 
-    // Import DefaultDataLevel will lead to error, use 9999.
-    const level = options.level ?? 9999;
+    const level = options.level ?? DefaultDataLevel.NEVER - 1;
 
     const ret: any = {};
     for (const name of this.combinedFields.keys()) {
@@ -187,7 +186,7 @@ export class Ark7ModelMetadata {
         continue;
       }
 
-      if ((field.field as LevelOptions)?.level > level) {
+      if (field.level > level) {
         continue;
       }
 

@@ -4,6 +4,7 @@ export * from './decorators';
 export * from './enums';
 export * from './errors';
 export * from './fields';
+export * from './levels';
 export * from './manager';
 export * from './model';
 export * from './resolvers';

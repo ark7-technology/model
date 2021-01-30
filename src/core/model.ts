@@ -3,7 +3,7 @@ import * as _ from 'underscore';
 import { manager as _manager } from './manager';
 import { A7Model } from './configs';
 import { AsObject } from './types';
-import { DefaultDataLevel, LevelOptions } from './decorators';
+import { DefaultDataLevel } from './levels';
 import { DocumentToObjectOptions, ModelizeOptions } from './fields';
 import { ModelizeError } from './errors';
 import { runtime } from '../runtime';
@@ -46,7 +46,7 @@ export class StrictModel {
         continue;
       }
 
-      if ((field.field as LevelOptions)?.level > level) {
+      if (field.level > level) {
         continue;
       }
 
