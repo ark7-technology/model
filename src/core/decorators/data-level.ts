@@ -22,7 +22,7 @@ import { Field } from '../fields';
  *                          Usually, not returning to the client or only to
  *                          admins with special privileges.
  *
- *   5. NEVER (50) - The fields that are never returns.
+ *   5. NEVER (1000) - The fields that are never returns.
  *
  *
  * **Projection**
@@ -104,5 +104,13 @@ export function Confidential(passLevelMap?: PassLevelMap): PropertyDecorator {
     passLevelMap == null
       ? DefaultDataLevel.CONFIDENTIAL
       : { level: DefaultDataLevel.CONFIDENTIAL, passLevelMap },
+  );
+}
+
+export function Never(passLevelMap?: PassLevelMap): PropertyDecorator {
+  return Level(
+    passLevelMap == null
+      ? DefaultDataLevel.NEVER
+      : { level: DefaultDataLevel.NEVER, passLevelMap },
   );
 }

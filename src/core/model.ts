@@ -3,8 +3,8 @@ import * as _ from 'underscore';
 import { manager as _manager } from './manager';
 import { A7Model } from './configs';
 import { AsObject } from './types';
+import { DefaultDataLevel, LevelOptions } from './decorators';
 import { DocumentToObjectOptions, ModelizeOptions } from './fields';
-import { LevelOptions } from './decorators';
 import { ModelizeError } from './errors';
 import { runtime } from '../runtime';
 
@@ -38,16 +38,15 @@ export class StrictModel {
     const ret: any = {};
     const metadata = A7Model.getMetadata((this as any).__proto__.constructor);
 
+    const level = options.level ?? DefaultDataLevel.NEVER - 1;
+
     for (const name of metadata.combinedFields.keys()) {
       const field = metadata.combinedFields.get(name);
       if (field.isMethod) {
         continue;
       }
 
-      if (
-        options.level != null &&
-        (field.field as LevelOptions)?.level > options.level
-      ) {
+      if ((field.field as LevelOptions)?.level > level) {
         continue;
       }
 

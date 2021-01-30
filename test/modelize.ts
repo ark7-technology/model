@@ -1,11 +1,23 @@
 import 'should';
 
-import { A7Model, Default, Mixin, ModelizeError, StrictModel } from '../src';
+import {
+  A7Model,
+  Default,
+  Mixin,
+  ModelizeError,
+  Never,
+  StrictModel,
+} from '../src';
 
 @A7Model({})
 class ModelizeModel3 extends StrictModel {
   get foo2() {
     return 'bar';
+  }
+
+  @Never()
+  get foo3() {
+    return 'bar3';
   }
 }
 

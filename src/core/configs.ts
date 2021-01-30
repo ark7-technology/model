@@ -177,6 +177,9 @@ export class Ark7ModelMetadata {
       return obj;
     }
 
+    // Import DefaultDataLevel will lead to error, use 9999.
+    const level = options.level ?? 9999;
+
     const ret: any = {};
     for (const name of this.combinedFields.keys()) {
       const field = this.combinedFields.get(name);
@@ -184,10 +187,7 @@ export class Ark7ModelMetadata {
         continue;
       }
 
-      if (
-        options.level != null &&
-        (field.field as LevelOptions)?.level > options.level
-      ) {
+      if ((field.field as LevelOptions)?.level > level) {
         continue;
       }
 
