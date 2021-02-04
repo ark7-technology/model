@@ -27,7 +27,16 @@ export class Manager {
   }
 
   getMetadata<T>(name: string | ModelClass<T>): Ark7ModelMetadata {
-    const key = (_.isString(name) ? name : name.$modelClassName).toLowerCase();
+    const eKey = _.isString(name) ? name : name.$modelClassName;
+    if (eKey == null) {
+      console.error(
+        'Cannot determine the name of object, forget add @A7Model({}) annotation?',
+        name,
+      );
+      throw new MetadataError('');
+    }
+
+    const key = eKey.toLowerCase();
     const metadata = this.metadataMap.get(key);
 
     if (metadata == null) {
