@@ -166,7 +166,10 @@ export class Ark7ModelMetadata {
         if (a == null || b == null) {
           this.combinedFields.set(name, a ?? b);
         } else {
-          this.combinedFields.set(name, a.merge(b));
+          this.combinedFields.set(
+            name,
+            mixinClass !== this.superClass ? b.merge(a) : a.merge(b),
+          );
         }
       }
     }
