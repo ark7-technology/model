@@ -109,15 +109,15 @@ export class Ark7ModelMetadata {
   get classes(): ModelClass<any>[] {
     const mixinClasses: ModelClass<any>[] = this.configs?.mixinClasses || [];
 
-    return _.chain([this.superClass, ...mixinClasses])
+    return _.chain([this.superClass, this.modelClass, ...mixinClasses])
       .filter(_.identity)
       .map((cls) =>
-        cls === Enum || cls === Converter
+        cls === Enum || cls === Converter || cls === this.modelClass
           ? cls
           : A7Model.getMetadata(cls).classes,
       )
       .flatten()
-      .union([this.modelClass])
+      .union()
       .value();
   }
 

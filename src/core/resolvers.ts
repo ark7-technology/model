@@ -21,3 +21,13 @@ export function concatResolver<T>(field: string): OptionsResolver<T> {
     });
   };
 }
+
+export function reverseConcatResolver<T>(field: string): OptionsResolver<T> {
+  return (baseOptions: any, options: any) => {
+    const bF: any[] = baseOptions[field] || [];
+    const nF: any[] = options[field] || [];
+    return _.extend({}, baseOptions, options, {
+      [field]: [...bF, ...nF],
+    });
+  };
+}

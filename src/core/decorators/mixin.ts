@@ -1,6 +1,6 @@
 import { Config } from '../configs';
 import { ModelClass, OptionsResolver } from '../fields';
-import { concatResolver } from '../resolvers';
+import { reverseConcatResolver } from '../resolvers';
 
 /**
  * Mixin another class.
@@ -8,7 +8,7 @@ import { concatResolver } from '../resolvers';
 export function Mixin(cls: ModelClass<any>): ClassDecorator {
   return Config<MixinOptions>({
     mixinClasses: [cls],
-    resolver: concatResolver('mixinClasses'),
+    resolver: reverseConcatResolver('mixinClasses'),
   });
 }
 

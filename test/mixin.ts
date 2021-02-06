@@ -30,7 +30,7 @@ describe('mixin', () => {
           name: 'MixinModel',
           props: [],
         },
-        mixinClasses: [Mixin1Model, Mixin2Model],
+        mixinClasses: [Mixin2Model, Mixin1Model],
       },
       fields: {},
     });
