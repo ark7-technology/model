@@ -23,11 +23,11 @@ class Child extends Parent {}
 describe('orders', () => {
   it('generates expected orders', () => {
     A7Model.getMetadata(Child).classes.should.be.eql([
-      Parent,
       ParentMixin,
-      Child,
+      Parent,
       ChildMixin,
       ChildMixin2,
+      Child,
     ]);
   });
 });

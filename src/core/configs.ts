@@ -109,7 +109,7 @@ export class Ark7ModelMetadata {
   get classes(): ModelClass<any>[] {
     const mixinClasses: ModelClass<any>[] = this.configs?.mixinClasses || [];
 
-    return _.chain([this.superClass, this.modelClass, ...mixinClasses])
+    return _.chain([this.superClass, ...mixinClasses, this.modelClass])
       .filter(_.identity)
       .map((cls) =>
         cls === Enum || cls === Converter || cls === this.modelClass
@@ -152,7 +152,7 @@ export class Ark7ModelMetadata {
       (c) => c != null && c !== Enum && c !== Converter,
     );
 
-    for (const mixinClass of mixinClasses) {
+    for (const mixinClass of mixinClasses.reverse()) {
       const superMetadata = manager.getMetadata(mixinClass);
       const allNames = _.union([
         ...this.combinedFields.keys(),
@@ -166,10 +166,7 @@ export class Ark7ModelMetadata {
         if (a == null || b == null) {
           this.combinedFields.set(name, a ?? b);
         } else {
-          this.combinedFields.set(
-            name,
-            mixinClass !== this.superClass ? b.merge(a) : a.merge(b),
-          );
+          this.combinedFields.set(name, a.merge(b));
         }
       }
     }
