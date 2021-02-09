@@ -3,6 +3,7 @@ import 'should';
 import { A7Model, Default, Mixin, StrictModel } from '../src';
 
 describe('mixin', () => {
+  // User testing models.
   @A7Model({})
   class MixinBaseUserProfile {}
 
@@ -20,6 +21,7 @@ describe('mixin', () => {
     profile: MixinUserProfile;
   }
 
+  // Normal testing models.
   @A7Model({})
   class MixinUser extends MixinBaseUser {}
 
@@ -124,5 +126,31 @@ describe('mixin', () => {
 
     ins.mixinField.should.be.instanceOf(ExtendMixinModel);
     ins.mixinField.whoami.should.be.eql('ExtendMixinModel');
+  });
+
+  // Parent modelize testing models.
+
+  @A7Model({})
+  class MixinParent1Mixin extends StrictModel {
+    get whoami() {
+      return 'MixinParent1Mixin';
+    }
+  }
+
+  @A7Model({})
+  @Mixin(MixinParent1Mixin)
+  class MixinParent1 extends StrictModel {}
+
+  interface MixinParent1 extends MixinParent1Mixin {}
+
+  @A7Model({})
+  class MixinParent2 extends MixinParent1 {}
+
+  @A7Model({})
+  class MixinChild3 extends MixinParent2 {}
+
+  it('should modelize with the deep parent model', () => {
+    const i = MixinChild3.modelize({});
+    i.whoami.should.be.equal('MixinParent1Mixin');
   });
 });
