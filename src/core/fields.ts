@@ -33,7 +33,7 @@ export function Field<T = StrictFieldOption>(
 export function getArk7ModelConfig<T extends object, P = object>(
   target: ModelClass<T>,
 ): ConfigOptions<P> {
-  return Reflect.getMetadata(A7_MODEL_CONFIG, target) || {};
+  return Reflect.getOwnMetadata(A7_MODEL_CONFIG, target) || {};
 }
 
 export function getArk7ModelField<T>(target: ModelClass<T>): Ark7ModelFields {
@@ -43,6 +43,7 @@ export function getArk7ModelField<T>(target: ModelClass<T>): Ark7ModelFields {
 export interface ModelClass<T> {
   new (...args: any[]): T;
   $modelClassName?: string;
+  $discriminatorKey?: string;
 }
 
 function mergeFields(
@@ -69,6 +70,7 @@ function mergeFields(
 }
 
 export type BaseOptions<T = object> = T & {
+  discriminatorKey?: string;
   resolver?: OptionsResolver<T>;
 };
 

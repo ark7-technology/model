@@ -4,6 +4,26 @@ import { A7Model, Default, Mixin, StrictModel } from '../src';
 
 describe('mixin', () => {
   @A7Model({})
+  class MixinBaseUserProfile {}
+
+  @A7Model({})
+  class MixinUserProfile extends MixinBaseUserProfile {}
+
+  @A7Model({})
+  class MixinIdentity extends StrictModel {
+    profile: MixinBaseUserProfile;
+  }
+
+  @A7Model({})
+  @Mixin(MixinIdentity)
+  class MixinBaseUser {
+    profile: MixinUserProfile;
+  }
+
+  @A7Model({})
+  class MixinUser extends MixinBaseUser {}
+
+  @A7Model({})
   class BaseMixinModel extends StrictModel {
     get whoami() {
       return 'BaseMixinModel';
@@ -41,6 +61,14 @@ describe('mixin', () => {
   }
 
   interface MixinModel extends Mixin1Model, Mixin2Model {}
+
+  it('modelizes right user profile', () => {
+    A7Model.getMetadata(MixinUser)
+      .combinedFields.get('profile')
+      .prop.type.should.be.deepEqual({
+        referenceName: 'MixinUserProfile',
+      });
+  });
 
   it('specifies the mixin classes', () => {
     const metadata = A7Model.getMetadata(MixinModel);

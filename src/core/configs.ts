@@ -30,7 +30,7 @@ export function Config<T = object>(
       ? converter(constructor, name)
       : createEnumModelClass(constructor);
 
-    const configOptions: ConfigOptions = Reflect.getMetadata(
+    const configOptions: ConfigOptions = Reflect.getOwnMetadata(
       A7_MODEL_CONFIG,
       cls,
     );
@@ -42,11 +42,21 @@ export function Config<T = object>(
 
     delete newOptions.resolver;
 
+    // Pass back the parent discriminator key.
+    if (cls.$discriminatorKey && newOptions.discriminatorKey == null) {
+      newOptions.discriminatorKey = cls.$discriminatorKey;
+    }
+
     Reflect.defineMetadata(
       A7_MODEL_CONFIG,
       _.defaults({ schema }, newOptions),
       cls,
     );
+
+    // discriminator key is required to pass down.
+    if (newOptions.discriminatorKey) {
+      cls.$discriminatorKey = newOptions.discriminatorKey;
+    }
 
     if (schema != null) {
       manager.register(name ?? schema.name ?? cls.name, cls);
@@ -106,6 +116,9 @@ export class Ark7ModelMetadata {
     return type === 'number' ? _.filter(values, _.isNumber) : values;
   }
 
+  /**
+   * Return related classes with priority from low to high.
+   */
   get classes(): ModelClass<any>[] {
     const mixinClasses: ModelClass<any>[] = this.configs?.mixinClasses || [];
 

@@ -46,7 +46,7 @@ export class Manager {
 
     if (metadata.configs == null) {
       metadata.configs =
-        Reflect.getMetadata(A7_MODEL_CONFIG, metadata.modelClass) || {};
+        Reflect.getOwnMetadata(A7_MODEL_CONFIG, metadata.modelClass) || {};
     }
 
     if (metadata.fields == null) {
