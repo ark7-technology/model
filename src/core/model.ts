@@ -100,7 +100,8 @@ export class StrictModel {
     if (desc == null) {
       Object.defineProperty(this.prototype, '$mixed', { value: true });
 
-      for (const cls of metadata.classes) {
+      for (const cls of metadata.classes.reverse()) {
+        const ownProperties = Object.getOwnPropertyNames(this.prototype);
         const desc = _.omit(
           Object.getOwnPropertyDescriptors(cls.prototype),
           'constructor',
@@ -108,6 +109,7 @@ export class StrictModel {
           '$attach',
           'toJSON',
           'toObject',
+          ...ownProperties,
         );
         Object.defineProperties(this.prototype, desc);
       }
