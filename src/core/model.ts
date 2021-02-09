@@ -10,6 +10,12 @@ import { runtime } from '../runtime';
 
 @A7Model({})
 export class StrictModel {
+  constructor() {
+    throw new Error(
+      'Do not use this constructor, use Class.modelize() instead.',
+    );
+  }
+
   static $metadata() {
     return _manager.getMetadata(this);
   }
