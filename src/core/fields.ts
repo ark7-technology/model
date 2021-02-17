@@ -101,6 +101,9 @@ export interface StrictFieldOption {
   match?: object;
 
   noPersist?: boolean;
+
+  getter?: boolean;
+  setter?: boolean;
 }
 
 export type FieldOptions<T = StrictFieldOption> = BaseOptions<
@@ -227,7 +230,11 @@ export class CombinedModelField {
   }
 
   get isGetter(): boolean {
-    return !!this.prop?.getter;
+    return this.field?.getter ?? this.prop?.getter;
+  }
+
+  get isSetter(): boolean {
+    return this.field?.setter ?? this.prop?.setter;
   }
 
   get isMethod(): boolean {

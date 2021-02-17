@@ -127,7 +127,7 @@ export class StrictModel {
       const field = metadata.combinedFields.get(name);
       if (
         field.isMethod ||
-        (field.prop?.getter && !field.prop?.setter) ||
+        (field.isGetter && !field.isSetter) ||
         field.prop?.modifier === runtime.Modifier.PROTECTED ||
         field.prop?.modifier === runtime.Modifier.PRIVATE
       ) {
