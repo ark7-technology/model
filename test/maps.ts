@@ -51,9 +51,7 @@ describe('maps', () => {
         f1: {
           f: { foo: 'f1' },
         },
-        f2: {
-          n: 2,
-        },
+        f2: new Map([['n', 2]]),
       });
 
       ins.f1.should.be.instanceof(Map);

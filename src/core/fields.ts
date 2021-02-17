@@ -368,7 +368,7 @@ export class CombinedModelField {
         switch (field.prop.type.selfType) {
           case 'MMap':
             const entries = _.chain(
-              val instanceof Map ? val.entries() : _.pairs(val),
+              val instanceof Map ? Array.from(val.entries()) : _.pairs(val),
             )
               .map(([key, val]) => [key, modelizeField(p, val)])
               .value();
