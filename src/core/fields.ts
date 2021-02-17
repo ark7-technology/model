@@ -251,13 +251,13 @@ export class CombinedModelField {
   }
 
   get isArray(): boolean {
-    return runtime.isArrayType(this.prop.type);
+    return runtime.isArrayType(this.prop?.type);
   }
 
   get isMap(): boolean {
     return (
-      runtime.isParameterizedType(this.prop.type) &&
-      this.prop.type.selfType === 'MMap'
+      runtime.isParameterizedType(this.prop?.type) &&
+      this.prop?.type.selfType === 'MMap'
     );
   }
 
@@ -266,18 +266,18 @@ export class CombinedModelField {
    */
   get isReference(): boolean {
     const type = this.isArray
-      ? (this.prop.type as runtime.ArrayType).arrayElementType
-      : this.prop.type;
+      ? (this.prop?.type as runtime.ArrayType).arrayElementType
+      : this.prop?.type;
 
-    return runtime.isParameterizedType(type) && type.selfType === 'Ref';
+    return runtime.isParameterizedType(type) && type?.selfType === 'Ref';
   }
 
   get type(): runtime.Type {
     const type = this.isArray
-      ? (this.prop.type as runtime.ArrayType).arrayElementType
-      : this.prop.type;
+      ? (this.prop?.type as runtime.ArrayType).arrayElementType
+      : this.prop?.type;
 
-    return runtime.isParameterizedType(type) ? type.typeArgumentType : type;
+    return runtime.isParameterizedType(type) ? type?.typeArgumentType : type;
   }
 
   modelize(o: any, options: ModelizeOptions = {}): any {
