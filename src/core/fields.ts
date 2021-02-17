@@ -278,7 +278,7 @@ export class CombinedModelField {
     const fieldType = this.field?.type;
 
     if (_.isUndefined(o) && !this.prop?.optional) {
-      switch (this.prop.type) {
+      switch (this.prop?.type) {
         case 'string':
           return '';
         case 'number':
@@ -302,6 +302,21 @@ export class CombinedModelField {
 
     if (_.isFunction(fieldType)) {
       return (fieldType as Function)(o);
+    }
+
+    if (this.prop == null) {
+      return this.field.model
+        ? this.field.model.modelize(o, {
+            manager,
+            meta: {
+              $parent: options.meta?.$parent,
+              $path: options.meta?.$path,
+            },
+            attachFieldMetadata: options.attachFieldMetadata,
+            field: this,
+            allowReference: options.allowReference,
+          })
+        : o;
     }
 
     const propType = this.type;
