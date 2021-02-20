@@ -3,6 +3,7 @@ import * as _ from 'underscore';
 import { manager as _manager } from './manager';
 import { A7Model } from './configs';
 import { AsObject } from './types';
+import { Basic } from './decorators';
 import { DefaultDataLevel } from './levels';
 import { DocumentToObjectOptions, ModelizeOptions } from './fields';
 import { ModelizeError } from './errors';
@@ -181,7 +182,7 @@ export function isID(x: any): x is ID {
 
 @A7Model({})
 export class Model extends StrictModel {
-  _id?: ID;
+  @Basic() _id?: ID;
 }
 
 export type Attachment<T = object> = T & {

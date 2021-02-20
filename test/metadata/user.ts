@@ -64,6 +64,11 @@ export const userMetadata = {
       ],
     },
   },
-  fields: {},
+  fields: {
+    _id: {
+      name: '_id',
+      options: { level: 10 },
+    },
+  },
   name: 'User',
 };
