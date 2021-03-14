@@ -5,6 +5,7 @@ import { A7_MODEL_CONFIG, A7_MODEL_FIELD } from './tokens';
 import { Ark7ModelMetadata } from './configs';
 import { MetadataError } from './errors';
 import { ModelClass } from './fields';
+import { runtime } from '../runtime';
 
 const d = debug('ark7:model:Manager');
 
@@ -73,6 +74,140 @@ export class Manager {
 
     d('register model %O (%O).', name, this.metadataMap.size);
   }
+
+  private isEnabled(className: string, options: ClassUMLOptions): boolean {
+    return _.find(options.omitClasses, (c) => c === className) == null;
+  }
+
+  classUML(
+    className: string,
+    options: ClassUMLOptions = {},
+  ): mermaid.MermaidStatement[] {
+    if (!this.isEnabled(className, options)) {
+      return [];
+    }
+
+    const statements: mermaid.MermaidStatement[] = [];
+
+    const metadata = this.getMetadata(className);
+
+    _.each(Array.from(metadata.combinedFields.entries()), ([name, field]) => {
+      if (['$attach', 'toJSON', 'toObject'].indexOf(name) >= 0) {
+        return;
+      }
+
+      statements.push({
+        type: 'field',
+        className,
+        fieldName: name,
+        fieldType: runtime.typeName(field.prop.type),
+      });
+    });
+
+    if (metadata.superClass) {
+      const superClassName = metadata.superClass.$modelClassName;
+
+      if (this.isEnabled(superClassName, options)) {
+        statements.push(...this.classUML(superClassName, options));
+        statements.push({
+          type: 'relationship',
+          baseClass: metadata.superClass.$modelClassName,
+          targetClass: metadata.modelClass.$modelClassName,
+          relationship: 'inherit',
+        });
+      }
+    }
+
+    return statements;
+  }
+
+  UML(options: UMLOptions = {}): string {
+    const seedClasses =
+      options.seedClasses ?? Array.from(this.metadataMap.keys());
+
+    const omitClasses = options.omitClasses ?? ['StrictModel'];
+
+    const statements: mermaid.MermaidStatement[] = [];
+
+    _.each(seedClasses, (seedClass) => {
+      statements.push(
+        ...this.classUML(seedClass, {
+          omitClasses,
+        }),
+      );
+    });
+
+    return mermaid.toString(statements);
+  }
+}
+
+export namespace mermaid {
+  export function sortKey(statement: MermaidStatement): string {
+    switch (statement.type) {
+      case 'field':
+        return `1:${statement.className}`;
+
+      case 'relationship':
+        return `0`;
+    }
+  }
+
+  export function toString(
+    statement: MermaidStatement | MermaidStatement[],
+    previous?: MermaidStatement,
+  ): string {
+    if (_.isArray(statement)) {
+      const sortedStatements = _.sortBy(statement, sortKey);
+      return _.chain(sortedStatements)
+        .map((s, idx) => toString(s, sortedStatements[idx - 1]))
+        .join('\n')
+        .value();
+    }
+
+    let ret: string =
+      previous == null || sortKey(previous) === sortKey(statement) ? '' : '\n';
+
+    switch (statement.type) {
+      case 'field':
+        ret += `${statement.className} : ${statement.fieldType} ${statement.fieldName}`;
+        break;
+
+      case 'relationship':
+        switch (statement.relationship) {
+          case 'inherit':
+            ret += `${statement.baseClass} <|-- ${statement.targetClass}`;
+            break;
+        }
+        break;
+    }
+
+    return ret;
+  }
+
+  export type MermaidStatement =
+    | {
+        type: 'field';
+        className: string;
+        fieldName: string;
+        fieldType: string;
+      }
+    | {
+        type: 'relationship';
+        baseClass: string;
+        targetClass: string;
+        relationship: 'inherit';
+      };
+}
+
+export interface ClassUMLOptions {
+  maskClasses?: string[];
+  omitClasses?: string[];
+}
+
+export interface UMLOptions {
+  seedClasses?: string[];
+  maskClasses?: string[];
+  omitClasses?: string[];
 }
 
 export const manager = new Manager();

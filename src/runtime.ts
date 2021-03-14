@@ -1,3 +1,5 @@
+import * as _ from 'underscore';
+
 export namespace runtime {
   /** @since 1.5.0 */
   export type Type =
@@ -76,5 +78,21 @@ export namespace runtime {
 
   export function isParameterizedType(type: Type): type is ParameterizedType {
     return (type as ParameterizedType)?.selfType != null;
+  }
+
+  export function typeName(type: Type): string {
+    if (_.isString(type)) {
+      return type;
+    }
+
+    if (isReferenceType(type)) {
+      return type.referenceName;
+    }
+
+    if (isParameterizedType(type)) {
+      return `${type.selfType}<${typeName(type.typeArgumentType)}>`;
+    }
+
+    return type.toString();
   }
 }
