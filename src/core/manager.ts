@@ -109,35 +109,37 @@ export class Manager {
 
     const metadata = this.getMetadata(className);
 
-    _.each(Array.from(metadata.combinedFields.entries()), ([name, field]) => {
-      if (['$attach', 'toJSON', 'toObject'].indexOf(name) >= 0) {
-        return;
-      }
+    _.chain(Array.from(metadata.combinedFields.entries()))
+      .sortBy(([name]) => name)
+      .each(([name, field]) => {
+        if (['$attach', 'toJSON', 'toObject'].indexOf(name) >= 0) {
+          return;
+        }
 
-      if (field.prop == null) {
-        return;
-      }
+        if (field.prop == null) {
+          return;
+        }
 
-      const t = mermaid.getExtractedType(field.type);
+        const t = mermaid.getExtractedType(field.type);
 
-      if (t != null && this.isEnabled(t.referenceType, newOmits) && extend) {
+        if (t != null && this.isEnabled(t.referenceType, newOmits) && extend) {
+          statements.push({
+            type: 'relationship',
+            baseClass: className,
+            targetClass: t.referenceType,
+            relationship: 'composition',
+          });
+
+          statements.push(...this.classUML(t.referenceType, newOmits));
+        }
+
         statements.push({
-          type: 'relationship',
-          baseClass: className,
-          targetClass: t.referenceType,
-          relationship: 'composition',
+          type: 'field',
+          className,
+          fieldName: name,
+          fieldType: runtime.typeName(field.prop.type),
         });
-
-        statements.push(...this.classUML(t.referenceType, newOmits));
-      }
-
-      statements.push({
-        type: 'field',
-        className,
-        fieldName: name,
-        fieldType: runtime.typeName(field.prop.type),
       });
-    });
 
     if (metadata.superClass) {
       const superClassName = metadata.superClass.$modelClassName;

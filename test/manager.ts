@@ -51,10 +51,10 @@ ManagerModel1 <|-- ManagerModel2
 ManagerModel1 : string f1
 ManagerModel1 : ManagerEnumStatus status
 
+ManagerModel2 : string f1
 ManagerModel2 : string f2
 ManagerModel2 : ManagerModel3[] f3
 ManagerModel2 : Ref[ManagerModel4] f4
-ManagerModel2 : string f1
 ManagerModel2 : ManagerEnumStatus status
 
 ManagerModel3 : string fm1
