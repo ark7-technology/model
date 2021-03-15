@@ -40,7 +40,9 @@ describe('manager', () => {
         seedClasses: ['ManagerModel2'],
       });
 
-      uml.should.be.eql(`ManagerModel2 *-- ManagerModel3
+      uml.should.be.eql(`classDiagram
+
+ManagerModel2 *-- ManagerModel3
 ManagerModel2 *-- ManagerModel4
 ManagerModel2 *-- ManagerEnumStatus
 ManagerModel1 *-- ManagerEnumStatus
@@ -51,7 +53,7 @@ ManagerModel1 : ManagerEnumStatus status
 
 ManagerModel2 : string f2
 ManagerModel2 : ManagerModel3[] f3
-ManagerModel2 : Ref<ManagerModel4> f4
+ManagerModel2 : Ref[ManagerModel4] f4
 ManagerModel2 : string f1
 ManagerModel2 : ManagerEnumStatus status
 

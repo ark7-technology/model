@@ -103,6 +103,7 @@ export class Manager {
       { omitClasses: _.union(options.omitClasses, [className]) },
       options,
     );
+    const extend = !this.isEnded(className, options);
 
     const statements: mermaid.MermaidStatement[] = [];
 
@@ -119,7 +120,7 @@ export class Manager {
 
       const t = mermaid.getExtractedType(field.type);
 
-      if (t != null && this.isEnabled(t.referenceType, newOmits)) {
+      if (t != null && this.isEnabled(t.referenceType, newOmits) && extend) {
         statements.push({
           type: 'relationship',
           baseClass: className,
@@ -127,9 +128,7 @@ export class Manager {
           relationship: 'composition',
         });
 
-        if (!this.isEnded(t.referenceType, newOmits)) {
-          statements.push(...this.classUML(t.referenceType, newOmits));
-        }
+        statements.push(...this.classUML(t.referenceType, newOmits));
       }
 
       statements.push({
@@ -173,7 +172,9 @@ export class Manager {
     _.each(seedClasses, (seedClass) => {
       statements.push(
         ...this.classUML(seedClass, {
+          maskClasses: options.maskClasses,
           omitClasses,
+          endClasses: options.endClasses,
         }),
       );
     });
