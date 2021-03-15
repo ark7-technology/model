@@ -76,7 +76,13 @@ export class Manager {
   }
 
   private isEnabled(className: string, options: ClassUMLOptions): boolean {
-    return _.find(options.omitClasses, (c) => c === className) == null;
+    return (
+      className &&
+      this.hasMetadata(className) &&
+      (_.isEmpty(options.maskClasses) ||
+        options.maskClasses.indexOf(className) >= 0) &&
+      _.find(options.omitClasses, (c) => c === className) == null
+    );
   }
 
   classUML(
@@ -86,6 +92,7 @@ export class Manager {
     if (!this.isEnabled(className, options)) {
       return [];
     }
+    const newOmits = _.union(options.omitClasses, [className]);
 
     const statements: mermaid.MermaidStatement[] = [];
 
@@ -94,6 +101,28 @@ export class Manager {
     _.each(Array.from(metadata.combinedFields.entries()), ([name, field]) => {
       if (['$attach', 'toJSON', 'toObject'].indexOf(name) >= 0) {
         return;
+      }
+
+      if (field.prop == null) {
+        return;
+      }
+
+      const t = mermaid.getExtractedType(field.type);
+
+      if (t != null && this.isEnabled(t.referenceType, options)) {
+        statements.push({
+          type: 'relationship',
+          baseClass: className,
+          targetClass: t.referenceType,
+          relationship: 'composition',
+        });
+
+        statements.push(
+          ...this.classUML(
+            t.referenceType,
+            _.extend(options, { omits: newOmits }),
+          ),
+        );
       }
 
       statements.push({
@@ -108,12 +137,17 @@ export class Manager {
       const superClassName = metadata.superClass.$modelClassName;
 
       if (this.isEnabled(superClassName, options)) {
-        statements.push(...this.classUML(superClassName, options));
+        statements.push(
+          ...this.classUML(
+            superClassName,
+            _.extend(options, { omits: newOmits }),
+          ),
+        );
         statements.push({
           type: 'relationship',
           baseClass: metadata.superClass.$modelClassName,
           targetClass: metadata.modelClass.$modelClassName,
-          relationship: 'inherit',
+          relationship: 'inheritance',
         });
       }
     }
@@ -125,7 +159,7 @@ export class Manager {
     const seedClasses =
       options.seedClasses ?? Array.from(this.metadataMap.keys());
 
-    const omitClasses = options.omitClasses ?? ['StrictModel'];
+    const omitClasses = options.omitClasses ?? ['StrictModel', 'Model'];
 
     const statements: mermaid.MermaidStatement[] = [];
 
@@ -173,11 +207,19 @@ export namespace mermaid {
         break;
 
       case 'relationship':
+        let relation: string;
+
         switch (statement.relationship) {
-          case 'inherit':
-            ret += `${statement.baseClass} <|-- ${statement.targetClass}`;
+          case 'inheritance':
+            relation = '<|--';
+            break;
+
+          case 'composition':
+            relation = '*--';
             break;
         }
+
+        ret += `${statement.baseClass} ${relation} ${statement.targetClass}`;
         break;
     }
 
@@ -195,8 +237,34 @@ export namespace mermaid {
         type: 'relationship';
         baseClass: string;
         targetClass: string;
-        relationship: 'inherit';
+        relationship: 'inheritance' | 'composition';
       };
+
+  export function getExtractedType(type: runtime.Type): ExtractedType {
+    if (runtime.isReferenceType(type)) {
+      return {
+        isArray: false,
+        isModelReference: false,
+        referenceType: type.referenceName,
+      };
+    }
+
+    if (runtime.isArrayType(type)) {
+      const t = getExtractedType(type.arrayElementType);
+      return t ?? _.extend(t, { isArray: true });
+    }
+
+    if (runtime.isParameterizedType(type) && type.selfType === 'Ref') {
+      const t = getExtractedType(type.typeArgumentType);
+      return t ?? _.extend(t, { isModelReference: true });
+    }
+  }
+
+  export interface ExtractedType {
+    isArray: boolean;
+    isModelReference: boolean;
+    referenceType: string;
+  }
 }
 
 export interface ClassUMLOptions {

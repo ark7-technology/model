@@ -28,7 +28,7 @@ export class ManagerModel1 extends StrictModel {
 export class ManagerModel2 extends ManagerModel1 {
   f2: string;
 
-  f3: ManagerModel3;
+  f3: ManagerModel3[];
 
   f4: Ref<ManagerModel4>;
 }
@@ -40,16 +40,24 @@ describe('manager', () => {
         seedClasses: ['ManagerModel2'],
       });
 
-      uml.should.be.eql(`ManagerModel1 <|-- ManagerModel2
+      uml.should.be.eql(`ManagerModel2 *-- ManagerModel3
+ManagerModel2 *-- ManagerModel4
+ManagerModel2 *-- ManagerEnumStatus
+ManagerModel1 *-- ManagerEnumStatus
+ManagerModel1 <|-- ManagerModel2
 
 ManagerModel1 : string f1
 ManagerModel1 : ManagerEnumStatus status
 
 ManagerModel2 : string f2
-ManagerModel2 : ManagerModel3 f3
+ManagerModel2 : ManagerModel3[] f3
 ManagerModel2 : Ref<ManagerModel4> f4
 ManagerModel2 : string f1
-ManagerModel2 : ManagerEnumStatus status`);
+ManagerModel2 : ManagerEnumStatus status
+
+ManagerModel3 : string fm1
+
+ManagerModel4 : string fm1`);
     });
   });
 });

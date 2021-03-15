@@ -89,10 +89,14 @@ export namespace runtime {
       return type.referenceName;
     }
 
+    if (isArrayType(type)) {
+      return `${typeName(type.arrayElementType)}[]`;
+    }
+
     if (isParameterizedType(type)) {
       return `${type.selfType}<${typeName(type.typeArgumentType)}>`;
     }
 
-    return type.toString();
+    return type?.toString();
   }
 }
