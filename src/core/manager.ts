@@ -92,7 +92,10 @@ export class Manager {
     if (!this.isEnabled(className, options)) {
       return [];
     }
-    const newOmits = _.union(options.omitClasses, [className]);
+    const newOmits = _.defaults(
+      { omitClasses: _.union(options.omitClasses, [className]) },
+      options,
+    );
 
     const statements: mermaid.MermaidStatement[] = [];
 
@@ -109,7 +112,7 @@ export class Manager {
 
       const t = mermaid.getExtractedType(field.type);
 
-      if (t != null && this.isEnabled(t.referenceType, options)) {
+      if (t != null && this.isEnabled(t.referenceType, newOmits)) {
         statements.push({
           type: 'relationship',
           baseClass: className,
@@ -117,12 +120,7 @@ export class Manager {
           relationship: 'composition',
         });
 
-        statements.push(
-          ...this.classUML(
-            t.referenceType,
-            _.extend(options, { omits: newOmits }),
-          ),
-        );
+        statements.push(...this.classUML(t.referenceType, newOmits));
       }
 
       statements.push({
@@ -136,13 +134,8 @@ export class Manager {
     if (metadata.superClass) {
       const superClassName = metadata.superClass.$modelClassName;
 
-      if (this.isEnabled(superClassName, options)) {
-        statements.push(
-          ...this.classUML(
-            superClassName,
-            _.extend(options, { omits: newOmits }),
-          ),
-        );
+      if (this.isEnabled(superClassName, newOmits)) {
+        statements.push(...this.classUML(superClassName, newOmits));
         statements.push({
           type: 'relationship',
           baseClass: metadata.superClass.$modelClassName,
@@ -203,7 +196,10 @@ export namespace mermaid {
 
     switch (statement.type) {
       case 'field':
-        ret += `${statement.className} : ${statement.fieldType} ${statement.fieldName}`;
+        ret +=
+          statement.fieldType === 'method'
+            ? `${statement.className} : ${statement.fieldName}()`
+            : `${statement.className} : ${statement.fieldType} ${statement.fieldName}`;
         break;
 
       case 'relationship':
