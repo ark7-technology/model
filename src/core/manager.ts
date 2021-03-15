@@ -178,7 +178,7 @@ export class Manager {
       );
     });
 
-    return mermaid.toString(statements);
+    return `classDiagram\n\n${mermaid.toString(statements)}`;
   }
 }
 

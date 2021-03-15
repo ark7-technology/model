@@ -94,7 +94,7 @@ export namespace runtime {
     }
 
     if (isParameterizedType(type)) {
-      return `${type.selfType}<${typeName(type.typeArgumentType)}>`;
+      return `${type.selfType}[${typeName(type.typeArgumentType)}]`;
     }
 
     return type?.toString();
