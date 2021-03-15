@@ -85,6 +85,13 @@ export class Manager {
     );
   }
 
+  private isEnded(className: string, options: ClassUMLOptions): boolean {
+    return (
+      !_.isEmpty(options.endClasses) &&
+      options.endClasses.indexOf(className) >= 0
+    );
+  }
+
   classUML(
     className: string,
     options: ClassUMLOptions = {},
@@ -120,7 +127,9 @@ export class Manager {
           relationship: 'composition',
         });
 
-        statements.push(...this.classUML(t.referenceType, newOmits));
+        if (!this.isEnded(t.referenceType, newOmits)) {
+          statements.push(...this.classUML(t.referenceType, newOmits));
+        }
       }
 
       statements.push({
@@ -152,7 +161,12 @@ export class Manager {
     const seedClasses =
       options.seedClasses ?? Array.from(this.metadataMap.keys());
 
-    const omitClasses = options.omitClasses ?? ['StrictModel', 'Model'];
+    const omitClasses = options.omitClasses ?? [
+      'StrictModel',
+      'Model',
+      'Date',
+      'ID',
+    ];
 
     const statements: mermaid.MermaidStatement[] = [];
 
@@ -266,12 +280,11 @@ export namespace mermaid {
 export interface ClassUMLOptions {
   maskClasses?: string[];
   omitClasses?: string[];
+  endClasses?: string[];
 }
 
-export interface UMLOptions {
+export interface UMLOptions extends ClassUMLOptions {
   seedClasses?: string[];
-  maskClasses?: string[];
-  omitClasses?: string[];
 }
 
 export const manager = new Manager();
