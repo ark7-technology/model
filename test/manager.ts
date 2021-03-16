@@ -41,6 +41,9 @@ describe('manager', () => {
         enums: {
           enabled: true,
         },
+        fields: {
+          includeInherits: true,
+        },
       });
 
       uml.should.be.eql(`classDiagram

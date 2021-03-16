@@ -138,6 +138,13 @@ export class Manager {
           return;
         }
 
+        if (
+          !options.fields?.includeInherits &&
+          field.source !== metadata.modelClass
+        ) {
+          return;
+        }
+
         const t = mermaid.getExtractedType(field.type);
 
         if (t != null && this.isEnabled(t.referenceType, newOmits) && extend) {
@@ -320,6 +327,9 @@ export interface ClassUMLOptions {
   endClasses?: string[];
   enums?: {
     enabled?: boolean;
+  };
+  fields?: {
+    includeInherits?: boolean;
   };
 }
 

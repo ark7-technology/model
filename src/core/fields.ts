@@ -195,6 +195,7 @@ export class CombinedModelField {
     public prop: runtime.Property,
     public descriptor: PropertyDescriptor = null,
     public field: FieldOptions<any> = null,
+    public source: ModelClass<any> = null,
   ) {}
 
   merge(b: CombinedModelField): CombinedModelField {
@@ -203,6 +204,7 @@ export class CombinedModelField {
       this.prop ?? b.prop,
       this.descriptor ?? b.descriptor,
       this.field ?? b.field,
+      this.source ?? b.source,
     );
   }
 

@@ -156,7 +156,13 @@ export class Ark7ModelMetadata {
 
       this.combinedFields.set(
         name,
-        new CombinedModelField(name, prop, descriptor, field?.options),
+        new CombinedModelField(
+          name,
+          prop,
+          descriptor,
+          field?.options,
+          this.modelClass,
+        ),
       );
     }
 
