@@ -38,6 +38,9 @@ describe('manager', () => {
     it('should return from seed class', () => {
       const uml = manager.UML({
         seedClasses: ['ManagerModel2'],
+        enums: {
+          enabled: true,
+        },
       });
 
       uml.should.be.eql(`classDiagram
@@ -47,6 +50,8 @@ ManagerModel2 *-- ManagerModel4
 ManagerModel2 *-- ManagerEnumStatus
 ManagerModel1 *-- ManagerEnumStatus
 ManagerModel1 <|-- ManagerModel2
+
+ManagerEnumStatus : NONE
 
 ManagerModel1 : string f1
 ManagerModel1 : ManagerEnumStatus status

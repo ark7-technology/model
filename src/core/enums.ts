@@ -1,6 +1,8 @@
 import { ModelClass } from './fields';
 
-export class Enum {}
+export class Enum {
+  static enums: object;
+}
 
 export function createEnumModelClass(_enums: any): ModelClass<any> {
   class MEnum extends Enum {

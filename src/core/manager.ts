@@ -3,6 +3,7 @@ import * as debug from 'debug';
 
 import { A7_MODEL_CONFIG, A7_MODEL_FIELD } from './tokens';
 import { Ark7ModelMetadata } from './configs';
+import { Enum } from './enums';
 import { MetadataError } from './errors';
 import { ModelClass } from './fields';
 import { runtime } from '../runtime';
@@ -76,6 +77,10 @@ export class Manager {
   }
 
   private isEnabled(className: string, options: ClassUMLOptions): boolean {
+    if (!options.enums?.enabled && this.getMetadata(className).isEnum) {
+      return false;
+    }
+
     return (
       className &&
       this.hasMetadata(className) &&
@@ -108,6 +113,17 @@ export class Manager {
     const statements: mermaid.MermaidStatement[] = [];
 
     const metadata = this.getMetadata(className);
+
+    if (metadata.isEnum) {
+      _.each((metadata.modelClass as typeof Enum).enums, (val, key) => {
+        statements.push({
+          type: 'field',
+          className,
+          fieldName: key === val ? '' : key,
+          fieldType: val,
+        });
+      });
+    }
 
     _.chain(Array.from(metadata.combinedFields.entries()))
       .sortBy(([name]) => name)
@@ -173,11 +189,15 @@ export class Manager {
 
     _.each(seedClasses, (seedClass) => {
       statements.push(
-        ...this.classUML(seedClass, {
-          maskClasses: options.maskClasses,
-          omitClasses,
-          endClasses: options.endClasses,
-        }),
+        ...this.classUML(
+          seedClass,
+          _.defaults(
+            {
+              omitClasses,
+            },
+            _.omit(options, 'seedClasses'),
+          ),
+        ),
       );
     });
 
@@ -196,12 +216,22 @@ export namespace mermaid {
     }
   }
 
+  export function hashKey(statement: MermaidStatement): string {
+    switch (statement.type) {
+      case 'field':
+        return `1:${statement.className}:${statement.fieldName}:${statement.fieldType}`;
+
+      case 'relationship':
+        return `0:${statement.relationship}:${statement.baseClass}:${statement.targetClass}`;
+    }
+  }
+
   export function toString(
     statement: MermaidStatement | MermaidStatement[],
     previous?: MermaidStatement,
   ): string {
     if (_.isArray(statement)) {
-      const sortedStatements = _.sortBy(statement, sortKey);
+      const sortedStatements = _.sortBy(_.uniq(statement, hashKey), sortKey);
       return _.chain(sortedStatements)
         .map((s, idx) => toString(s, sortedStatements[idx - 1]))
         .join('\n')
@@ -216,7 +246,9 @@ export namespace mermaid {
         ret +=
           statement.fieldType === 'method'
             ? `${statement.className} : ${statement.fieldName}()`
-            : `${statement.className} : ${statement.fieldType} ${statement.fieldName}`;
+            : `${statement.className} : ${statement.fieldType}${
+                statement.fieldName ? ' ' + statement.fieldName : ''
+              }`;
         break;
 
       case 'relationship':
@@ -284,6 +316,9 @@ export interface ClassUMLOptions {
   maskClasses?: string[];
   omitClasses?: string[];
   endClasses?: string[];
+  enums?: {
+    enabled?: boolean;
+  };
 }
 
 export interface UMLOptions extends ClassUMLOptions {
