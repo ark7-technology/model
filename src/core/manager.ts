@@ -116,7 +116,7 @@ export class Manager {
 
     const metadata = this.getMetadata(className);
 
-    if (metadata.isEnum) {
+    if (metadata.isEnum && !options.fields?.disabled) {
       _.each((metadata.modelClass as typeof Enum).enums, (val, key) => {
         statements.push({
           type: 'field',
@@ -158,12 +158,14 @@ export class Manager {
           statements.push(...this.classUML(t.referenceType, newOmits));
         }
 
-        statements.push({
-          type: 'field',
-          className,
-          fieldName: name,
-          fieldType: runtime.typeName(field.prop.type),
-        });
+        if (!options.fields?.disabled) {
+          statements.push({
+            type: 'field',
+            className,
+            fieldName: name,
+            fieldType: runtime.typeName(field.prop.type),
+          });
+        }
       });
 
     if (metadata.superClass) {
@@ -329,6 +331,7 @@ export interface ClassUMLOptions {
     enabled?: boolean;
   };
   fields?: {
+    disabled?: boolean;
     includeInherits?: boolean;
   };
 }
