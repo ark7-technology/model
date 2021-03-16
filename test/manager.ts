@@ -67,7 +67,8 @@ ManagerModel2 : ManagerEnumStatus status
 
 ManagerModel3 : string fm1
 
-ManagerModel4 : string fm1`);
+ManagerModel4 : string fm1
+`);
     });
   });
 });
