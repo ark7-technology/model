@@ -77,13 +77,15 @@ export class Manager {
   }
 
   private isEnabled(className: string, options: ClassUMLOptions): boolean {
+    if (className == null || !this.hasMetadata(className)) {
+      return false;
+    }
+
     if (!options.enums?.enabled && this.getMetadata(className).isEnum) {
       return false;
     }
 
     return (
-      className &&
-      this.hasMetadata(className) &&
       (_.isEmpty(options.maskClasses) ||
         options.maskClasses.indexOf(className) >= 0) &&
       _.find(options.omitClasses, (c) => c === className) == null
