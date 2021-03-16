@@ -212,7 +212,7 @@ export class Manager {
       );
     });
 
-    return `classDiagram\n\n${mermaid.toString(statements)}`;
+    return `classDiagram\n\n${mermaid.toString(statements)}\n`;
   }
 }
 
