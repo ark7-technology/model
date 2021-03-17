@@ -54,6 +54,9 @@ ManagerModel2 *-- ManagerEnumStatus
 ManagerModel1 *-- ManagerEnumStatus
 ManagerModel1 <|-- ManagerModel2
 
+class ManagerEnumStatus {
+    <<enumeration>>
+}
 ManagerEnumStatus : NONE
 
 ManagerModel1 : string f1

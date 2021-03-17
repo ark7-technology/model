@@ -117,6 +117,12 @@ export class Manager {
     const metadata = this.getMetadata(className);
 
     if (metadata.isEnum && !options.fields?.disabled) {
+      statements.push({
+        type: 'classAnnotation',
+        className,
+        annotation: 'enumeration',
+      });
+
       _.each((metadata.modelClass as typeof Enum).enums, (val, key) => {
         statements.push({
           type: 'field',
@@ -220,6 +226,7 @@ export namespace mermaid {
   export function sortKey(statement: MermaidStatement): string {
     switch (statement.type) {
       case 'field':
+      case 'classAnnotation':
         return `1:${statement.className}`;
 
       case 'relationship':
@@ -231,6 +238,9 @@ export namespace mermaid {
     switch (statement.type) {
       case 'field':
         return `1:${statement.className}:${statement.fieldName}:${statement.fieldType}`;
+
+      case 'classAnnotation':
+        return `1:${statement.className}:${statement.annotation}`;
 
       case 'relationship':
         return `0:${statement.relationship}:${statement.baseClass}:${statement.targetClass}`;
@@ -277,6 +287,9 @@ export namespace mermaid {
 
         ret += `${statement.baseClass} ${relation} ${statement.targetClass}`;
         break;
+
+      case 'classAnnotation':
+        ret += `class ${statement.className} {\n    <<${statement.annotation}>>\n}`;
     }
 
     return ret;
@@ -294,6 +307,11 @@ export namespace mermaid {
         baseClass: string;
         targetClass: string;
         relationship: 'inheritance' | 'composition';
+      }
+    | {
+        type: 'classAnnotation';
+        className: string;
+        annotation: string;
       };
 
   export function getExtractedType(type: runtime.Type): ExtractedType {
@@ -324,19 +342,31 @@ export namespace mermaid {
 }
 
 export interface ClassUMLOptions {
+  /** Only the mask classes will exist in the result. */
   maskClasses?: string[];
+
+  /** Classes to be omitted in the result. */
   omitClasses?: string[];
+
+  /** Classes will be in the result but without expanding. */
   endClasses?: string[];
+
   enums?: {
+    /** If enum classes will be listed in the result. */
     enabled?: boolean;
   };
+
   fields?: {
+    /** If the fields will be listed in the result. */
     disabled?: boolean;
+
+    /** If the fields from parent or mixin classes will be listed. */
     includeInherits?: boolean;
   };
 }
 
 export interface UMLOptions extends ClassUMLOptions {
+  /** The seed classes to start with, default with all the classes. */
   seedClasses?: string[];
 }
 
