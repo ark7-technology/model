@@ -166,7 +166,7 @@ export class Manager {
             type: 'relationship',
             baseClass: className,
             targetClass: t.referenceType,
-            relationship: 'composition',
+            relationship: t.isModelReference ? 'aggregation' : 'composition',
           });
 
           statements.push(...this.classUML(t.referenceType, newOmits));
@@ -291,6 +291,10 @@ export namespace mermaid {
           case 'composition':
             relation = '*--';
             break;
+
+          case 'aggregation':
+            relation = 'o--';
+            break;
         }
 
         ret += `${statement.baseClass} ${relation} ${statement.targetClass}`;
@@ -314,7 +318,7 @@ export namespace mermaid {
         type: 'relationship';
         baseClass: string;
         targetClass: string;
-        relationship: 'inheritance' | 'composition';
+        relationship: 'inheritance' | 'composition' | 'aggregation';
       }
     | {
         type: 'classAnnotation';
