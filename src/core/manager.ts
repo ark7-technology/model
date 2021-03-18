@@ -146,14 +146,16 @@ export class Manager {
       });
     }
 
-    _.chain(Array.from(metadata.combinedFields.entries()))
-      .sortBy(([name]) => name)
-      .each(([name, field]) => {
+    const entries = Array.from(metadata.combinedFields.entries());
+
+    _.each(
+      options.fields?.sortByKey ? _.sortBy(entries, ([name]) => name) : entries,
+      ([name, field]) => {
         if (['$attach', 'toJSON', 'toObject'].indexOf(name) >= 0) {
           return;
         }
 
-        if (field.prop == null) {
+        if (field.prop == null || field.name === '_id') {
           return;
         }
 
@@ -189,7 +191,8 @@ export class Manager {
             fieldType: runtime.typeName(field.prop.type),
           });
         }
-      });
+      },
+    );
 
     if (metadata.superClass) {
       const superClassName = metadata.superClass.$modelClassName;
@@ -441,6 +444,8 @@ export interface ClassUMLOptions {
 
     /** If the fields from parent or mixin classes will be listed. */
     includeInherits?: boolean;
+
+    sortByKey?: boolean;
   };
 }
 

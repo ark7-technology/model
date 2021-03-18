@@ -64,18 +64,16 @@ ManagerEnumStatus : NONE
 class ManagerModel1 {
   <<model>>
 }
-ManagerModel1 : ID _id
 ManagerModel1 : string f1
 ManagerModel1 : ManagerEnumStatus status
 
 class ManagerModel2 {
   <<model>>
 }
-ManagerModel2 : ID _id
-ManagerModel2 : string f1
 ManagerModel2 : string f2
 ManagerModel2 : ManagerModel3[] f3
 ManagerModel2 : Ref<ManagerModel4> f4
+ManagerModel2 : string f1
 ManagerModel2 : ManagerEnumStatus status
 
 ManagerModel3 : string fm1
