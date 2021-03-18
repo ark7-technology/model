@@ -103,11 +103,16 @@ export class Manager {
     className: string,
     options: ClassUMLOptions = {},
   ): mermaid.MermaidStatement[] {
+    if (_.find(options.visitedClasses, (c) => c === className)) {
+      return [];
+    }
+
     if (!this.isEnabled(className, options)) {
       return [];
     }
-    const newOmits = _.defaults(
-      { omitClasses: _.union(options.omitClasses, [className]) },
+
+    const newOpt = _.defaults(
+      { visitedClasses: _.union(options.visitedClasses, [className]) },
       options,
     );
     const extend = !this.isEnded(className, options);
@@ -159,17 +164,21 @@ export class Manager {
           return;
         }
 
-        const t = mermaid.getExtractedType(field.type);
+        const t = mermaid.getExtractedType(field.prop.type);
 
-        if (t != null && this.isEnabled(t.referenceType, newOmits) && extend) {
+        if (t != null && this.isEnabled(t.referenceType, newOpt) && extend) {
           statements.push({
             type: 'relationship',
             baseClass: className,
             targetClass: t.referenceType,
-            relationship: t.isModelReference ? 'aggregation' : 'composition',
+            relationship: t.isModelReference
+              ? t.isArray
+                ? 'aggregation'
+                : 'association'
+              : 'composition',
           });
 
-          statements.push(...this.classUML(t.referenceType, newOmits));
+          statements.push(...this.classUML(t.referenceType, newOpt));
         }
 
         if (!options.fields?.disabled) {
@@ -185,8 +194,8 @@ export class Manager {
     if (metadata.superClass) {
       const superClassName = metadata.superClass.$modelClassName;
 
-      if (this.isEnabled(superClassName, newOmits)) {
-        statements.push(...this.classUML(superClassName, newOmits));
+      if (this.isEnabled(superClassName, newOpt)) {
+        statements.push(...this.classUML(superClassName, newOpt));
         statements.push({
           type: 'relationship',
           baseClass: metadata.superClass.$modelClassName,
@@ -255,16 +264,43 @@ export namespace mermaid {
     }
   }
 
+  export function isReverseRelationship(
+    a: MermaidStatement,
+    b: MermaidStatement,
+  ): boolean {
+    return (
+      a.type === 'relationship' &&
+      b.type === 'relationship' &&
+      a.baseClass === b.targetClass &&
+      a.targetClass === b.baseClass
+    );
+  }
+
   export function toString(
     statement: MermaidStatement | MermaidStatement[],
-    previous?: MermaidStatement,
+    allStatements?: MermaidStatement[],
+    idx?: number,
   ): string {
     if (_.isArray(statement)) {
       const sortedStatements = _.sortBy(_.uniq(statement, hashKey), sortKey);
       return _.chain(sortedStatements)
-        .map((s, idx) => toString(s, sortedStatements[idx - 1]))
+        .map((s, idx) => toString(s, sortedStatements, idx))
+        .filter((x) => !!x)
         .join('\n')
         .value();
+    }
+
+    const previous = allStatements && allStatements[idx - 1];
+    let reverse: MermaidStatement;
+
+    for (let i = 0; i < allStatements.length; i++) {
+      if (i < idx && isReverseRelationship(allStatements[i], statement)) {
+        return null;
+      }
+      if (i > idx && isReverseRelationship(allStatements[i], statement)) {
+        reverse = allStatements[i];
+        break;
+      }
     }
 
     let ret: string =
@@ -295,6 +331,30 @@ export namespace mermaid {
           case 'aggregation':
             relation = 'o--';
             break;
+
+          case 'association':
+            relation = '<--';
+            break;
+        }
+
+        if (reverse && reverse.type === 'relationship') {
+          switch (reverse.relationship) {
+            case 'inheritance':
+              relation += '|>';
+              break;
+
+            case 'composition':
+              relation += '*';
+              break;
+
+            case 'aggregation':
+              relation += 'o';
+              break;
+
+            case 'association':
+              relation += '>';
+              break;
+          }
         }
 
         ret += `${statement.baseClass} ${relation} ${statement.targetClass}`;
@@ -318,7 +378,11 @@ export namespace mermaid {
         type: 'relationship';
         baseClass: string;
         targetClass: string;
-        relationship: 'inheritance' | 'composition' | 'aggregation';
+        relationship:
+          | 'inheritance'
+          | 'composition'
+          | 'aggregation'
+          | 'association';
       }
     | {
         type: 'classAnnotation';
@@ -337,12 +401,12 @@ export namespace mermaid {
 
     if (runtime.isArrayType(type)) {
       const t = getExtractedType(type.arrayElementType);
-      return t ?? _.extend(t, { isArray: true });
+      return t && _.extend(t, { isArray: true });
     }
 
     if (runtime.isParameterizedType(type) && type.selfType === 'Ref') {
       const t = getExtractedType(type.typeArgumentType);
-      return t ?? _.extend(t, { isModelReference: true });
+      return t && _.extend(t, { isModelReference: true });
     }
   }
 
@@ -362,6 +426,9 @@ export interface ClassUMLOptions {
 
   /** Classes will be in the result but without expanding. */
   endClasses?: string[];
+
+  /** Classes have been visited before. */
+  visitedClasses?: string[];
 
   enums?: {
     /** If enum classes will be listed in the result. */

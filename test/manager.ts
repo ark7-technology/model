@@ -15,6 +15,8 @@ export class ManagerModel3 extends StrictModel {
 @A7Model({})
 export class ManagerModel4 extends StrictModel {
   fm1: string;
+
+  fm2: Ref<ManagerModel2>[];
 }
 
 @A7Model({})
@@ -49,7 +51,7 @@ describe('manager', () => {
       uml.should.be.eql(`classDiagram
 
 ManagerModel2 *-- ManagerModel3
-ManagerModel2 *-- ManagerModel4
+ManagerModel2 <--o ManagerModel4
 ManagerModel2 *-- ManagerEnumStatus
 ManagerModel1 *-- ManagerEnumStatus
 ManagerModel1 <|-- ManagerModel2
@@ -79,6 +81,7 @@ ManagerModel2 : ManagerEnumStatus status
 ManagerModel3 : string fm1
 
 ManagerModel4 : string fm1
+ManagerModel4 : Ref<ManagerModel2>[] fm2
 `);
     });
   });
