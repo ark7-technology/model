@@ -133,6 +133,14 @@ export class Manager {
       });
     }
 
+    if (metadata.combinedFields.has('_id')) {
+      statements.push({
+        type: 'classAnnotation',
+        className,
+        annotation: 'model',
+      });
+    }
+
     _.chain(Array.from(metadata.combinedFields.entries()))
       .sortBy(([name]) => name)
       .each(([name, field]) => {
@@ -289,7 +297,7 @@ export namespace mermaid {
         break;
 
       case 'classAnnotation':
-        ret += `class ${statement.className} {\n    <<${statement.annotation}>>\n}`;
+        ret += `class ${statement.className} {\n  <<${statement.annotation}>>\n}`;
     }
 
     return ret;

@@ -1,6 +1,6 @@
 import 'should';
 
-import { A7Model, Ref, StrictModel, manager } from '../src';
+import { A7Model, Model, Ref, StrictModel, manager } from '../src';
 
 export enum ManagerEnumStatus {
   NONE = 'NONE',
@@ -18,7 +18,7 @@ export class ManagerModel4 extends StrictModel {
 }
 
 @A7Model({})
-export class ManagerModel1 extends StrictModel {
+export class ManagerModel1 extends Model {
   f1: string;
 
   status: ManagerEnumStatus;
@@ -55,17 +55,25 @@ ManagerModel1 *-- ManagerEnumStatus
 ManagerModel1 <|-- ManagerModel2
 
 class ManagerEnumStatus {
-    <<enumeration>>
+  <<enumeration>>
 }
 ManagerEnumStatus : NONE
 
+class ManagerModel1 {
+  <<model>>
+}
+ManagerModel1 : ID _id
 ManagerModel1 : string f1
 ManagerModel1 : ManagerEnumStatus status
 
+class ManagerModel2 {
+  <<model>>
+}
+ManagerModel2 : ID _id
 ManagerModel2 : string f1
 ManagerModel2 : string f2
 ManagerModel2 : ManagerModel3[] f3
-ManagerModel2 : Ref[ManagerModel4] f4
+ManagerModel2 : Ref<ManagerModel4> f4
 ManagerModel2 : ManagerEnumStatus status
 
 ManagerModel3 : string fm1
