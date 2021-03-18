@@ -187,7 +187,7 @@ export class Manager {
           statements.push({
             type: 'field',
             className,
-            fieldName: name,
+            fieldName: `${name}${field.isVirtualReference ? '*' : ''}`,
             fieldType: runtime.typeName(field.prop.type),
           });
         }
