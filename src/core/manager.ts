@@ -51,12 +51,10 @@ export class Manager {
         Reflect.getOwnMetadata(A7_MODEL_CONFIG, metadata.modelClass) || {};
     }
 
-    if (metadata.fields == null) {
-      metadata.fields =
-        (metadata.modelClass.prototype
-          ? Reflect.getMetadata(A7_MODEL_FIELD, metadata.modelClass.prototype)
-          : {}) || {};
-    }
+    metadata.fields =
+      (metadata.modelClass.prototype
+        ? Reflect.getMetadata(A7_MODEL_FIELD, metadata.modelClass.prototype)
+        : {}) || {};
 
     metadata.createCombinedFields(this);
 

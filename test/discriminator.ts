@@ -21,6 +21,7 @@ describe('discriminator', () => {
         name: 'EventModel',
         modelClass: EventModel.prototype.constructor,
         superClass: StrictModel.prototype.constructor,
+        discriminations: [MouseEvent.prototype.constructor],
         configs: {
           schema: {
             name: 'EventModel',
@@ -41,6 +42,7 @@ describe('discriminator', () => {
         name: 'MouseEvent',
         modelClass: MouseEvent.prototype.constructor,
         superClass: EventModel.prototype.constructor,
+        discriminations: [],
         configs: {
           schema: {
             name: 'MouseEvent',

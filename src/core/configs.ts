@@ -60,6 +60,7 @@ export function Config<T = object>(
 
     if (schema != null) {
       manager.register(name ?? schema.name ?? cls.name, cls);
+      manager.getMetadata(cls); // Trigger discriminator calculation.
     }
   };
 }
@@ -76,12 +77,14 @@ export class Ark7ModelMetadata {
   name: string;
   modelClass: ModelClass<any>;
   superClass: ModelClass<any>;
-  configs: ConfigOptions;
+  discriminations: ModelClass<any>[] = [];
   fields: Ark7ModelFields;
 
   combinedFields: Map<string, CombinedModelField>;
 
-  constructor(cls: ModelClass<any>, name?: string) {
+  private _configs: ConfigOptions;
+
+  constructor(private cls: ModelClass<any>, name?: string) {
     this.name = name || cls?.name;
     this.modelClass = cls;
     const superClass = cls?.prototype?.__proto__?.constructor;
@@ -89,6 +92,26 @@ export class Ark7ModelMetadata {
       superClass != null && superClass !== Object.prototype.constructor
         ? superClass
         : null;
+  }
+
+  get configs(): ConfigOptions {
+    return this._configs;
+  }
+
+  set configs(configs: ConfigOptions) {
+    this._configs = configs;
+
+    if (
+      this.superClass &&
+      this.superClass !== Enum &&
+      this.superClass !== Converter
+    ) {
+      const metadata = manager.getMetadata(this.superClass);
+      console.log(metadata.name);
+      if (metadata.configs.discriminatorKey) {
+        metadata.discriminations.push(this.cls);
+      }
+    }
   }
 
   get isCustomizedType(): boolean {
@@ -135,10 +158,6 @@ export class Ark7ModelMetadata {
   }
 
   createCombinedFields(manager: Manager) {
-    if (this.combinedFields != null) {
-      return;
-    }
-
     this.combinedFields = new Map();
 
     const propNames = _.map(this.configs.schema.props, (p) => p.name);
