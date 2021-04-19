@@ -60,7 +60,8 @@ export function Config<T = object>(
 
     if (schema != null) {
       manager.register(name ?? schema.name ?? cls.name, cls);
-      manager.getMetadata(cls); // Trigger discriminator calculation.
+      // TODO: Enable this still gives side effects with statics methods.
+      // manager.getMetadata(cls); // Trigger discriminator calculation.
     }
   };
 }
