@@ -107,7 +107,6 @@ export class Ark7ModelMetadata {
       this.superClass !== Converter
     ) {
       const metadata = manager.getMetadata(this.superClass);
-      console.log(metadata.name);
       if (metadata.configs.discriminatorKey) {
         metadata.discriminations.push(this.cls);
       }
