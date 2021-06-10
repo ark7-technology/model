@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 import * as _ from 'underscore';
 
-import { A7_MODEL_CONFIG, A7_MODEL_FIELD } from './tokens';
+import { A7_MODEL_FIELD } from './tokens';
 import {
   CompoundIndexOptionsFields,
   CompoundIndexOptionsOptions,
@@ -28,12 +28,6 @@ export function Field<T = StrictFieldOption>(
       target,
     );
   };
-}
-
-export function getArk7ModelConfig<T extends object, P = object>(
-  target: ModelClass<T>,
-): ConfigOptions<P> {
-  return Reflect.getOwnMetadata(A7_MODEL_CONFIG, target) || {};
 }
 
 export function getArk7ModelField<T>(target: ModelClass<T>): Ark7ModelFields {

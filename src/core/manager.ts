@@ -1,8 +1,8 @@
 import * as _ from 'underscore';
 import * as debug from 'debug';
 
-import { A7_MODEL_CONFIG, A7_MODEL_FIELD } from './tokens';
-import { Ark7ModelMetadata } from './configs';
+import { A7_MODEL_FIELD } from './tokens';
+import { Ark7ModelMetadata, getArk7ModelConfig } from './configs';
 import { Enum } from './enums';
 import { MetadataError } from './errors';
 import { ModelClass } from './fields';
@@ -47,8 +47,7 @@ export class Manager {
     }
 
     if (metadata.configs == null) {
-      metadata.configs =
-        Reflect.getOwnMetadata(A7_MODEL_CONFIG, metadata.modelClass) || {};
+      metadata.configs = getArk7ModelConfig(metadata.modelClass);
     }
 
     metadata.fields =

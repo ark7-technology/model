@@ -30,10 +30,7 @@ export function Config<T = object>(
       ? converter(constructor, name)
       : createEnumModelClass(constructor);
 
-    const configOptions: ConfigOptions = Reflect.getOwnMetadata(
-      A7_MODEL_CONFIG,
-      cls,
-    );
+    const configOptions: ConfigOptions = getArk7ModelConfig(cls);
 
     const resolver = options.resolver ?? DEFAULT_OPTIONS_RESOLVER;
 
@@ -47,11 +44,12 @@ export function Config<T = object>(
       newOptions.discriminatorKey = cls.$discriminatorKey;
     }
 
-    Reflect.defineMetadata(
-      A7_MODEL_CONFIG,
-      _.defaults({ schema }, newOptions),
-      cls,
-    );
+    if (schema != null) {
+      _.defaults(configOptions, { schema });
+    }
+    _.extend(configOptions, newOptions);
+
+    defineArk7ModelConfig(cls, configOptions);
 
     // discriminator key is required to pass down.
     if (newOptions.discriminatorKey) {
@@ -64,6 +62,26 @@ export function Config<T = object>(
       // manager.getMetadata(cls); // Trigger discriminator calculation.
     }
   };
+}
+
+export function getArk7ModelConfig<T extends object, P = object>(
+  target: ModelClass<T>,
+): ConfigOptions<P> {
+  let config = Reflect.getOwnMetadata(A7_MODEL_CONFIG, target);
+
+  if (config == null) {
+    config = {};
+    Reflect.defineMetadata(A7_MODEL_CONFIG, {}, target);
+  }
+
+  return config;
+}
+
+export function defineArk7ModelConfig<T extends object, P = object>(
+  target: ModelClass<T>,
+  config: ConfigOptions<P>,
+) {
+  Reflect.defineMetadata(A7_MODEL_CONFIG, config, target);
 }
 
 export function A7Model<T = object>(

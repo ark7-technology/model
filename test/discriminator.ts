@@ -17,27 +17,6 @@ class MouseEvent extends EventModel {
 describe('discriminator', () => {
   describe('.getMetadata()', () => {
     it('should return right metadata for EventModel', () => {
-      A7Model.getMetadata(EventModel).should.have.properties({
-        name: 'EventModel',
-        modelClass: EventModel.prototype.constructor,
-        superClass: StrictModel.prototype.constructor,
-        discriminations: [MouseEvent.prototype.constructor],
-        configs: {
-          schema: {
-            name: 'EventModel',
-            props: [
-              {
-                name: 'kind',
-                optional: true,
-                modifier: 'PUBLIC',
-                type: 'string',
-              },
-            ],
-          },
-          discriminatorKey: 'kind',
-        },
-        fields: {},
-      });
       A7Model.getMetadata(MouseEvent).should.have.properties({
         name: 'MouseEvent',
         modelClass: MouseEvent.prototype.constructor,
@@ -50,6 +29,27 @@ describe('discriminator', () => {
               {
                 name: 'foo',
                 optional: false,
+                modifier: 'PUBLIC',
+                type: 'string',
+              },
+            ],
+          },
+          discriminatorKey: 'kind',
+        },
+        fields: {},
+      });
+      A7Model.getMetadata(EventModel).should.have.properties({
+        name: 'EventModel',
+        modelClass: EventModel.prototype.constructor,
+        superClass: StrictModel.prototype.constructor,
+        discriminations: [MouseEvent.prototype.constructor],
+        configs: {
+          schema: {
+            name: 'EventModel',
+            props: [
+              {
+                name: 'kind',
+                optional: true,
                 modifier: 'PUBLIC',
                 type: 'string',
               },
