@@ -99,6 +99,14 @@ export function Never(passLevelMap?: PassLevelMap): PropertyDecorator {
   );
 }
 
+export function BasicToBasic(): PropertyDecorator {
+  return Basic({
+    [DefaultDataLevel.SHORT]: DefaultDataLevel.BASIC,
+    [DefaultDataLevel.DETAIL]: DefaultDataLevel.BASIC,
+    [DefaultDataLevel.CONFIDENTIAL]: DefaultDataLevel.BASIC,
+  });
+}
+
 export function ShortToBasic(): PropertyDecorator {
   return Short({
     [DefaultDataLevel.SHORT]: DefaultDataLevel.BASIC,
@@ -115,9 +123,24 @@ export function DetailToBasic(): PropertyDecorator {
 }
 
 export function ShortToShort(): PropertyDecorator {
+  return Short({
+    [DefaultDataLevel.SHORT]: DefaultDataLevel.SHORT,
+    [DefaultDataLevel.DETAIL]: DefaultDataLevel.SHORT,
+    [DefaultDataLevel.CONFIDENTIAL]: DefaultDataLevel.SHORT,
+  });
+}
+
+export function DetailToShort(): PropertyDecorator {
   return Detail({
     [DefaultDataLevel.DETAIL]: DefaultDataLevel.SHORT,
     [DefaultDataLevel.CONFIDENTIAL]: DefaultDataLevel.SHORT,
+  });
+}
+
+export function DetailToDetail(): PropertyDecorator {
+  return Detail({
+    [DefaultDataLevel.DETAIL]: DefaultDataLevel.DETAIL,
+    [DefaultDataLevel.CONFIDENTIAL]: DefaultDataLevel.DETAIL,
   });
 }
 
