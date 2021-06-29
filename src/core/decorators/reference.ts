@@ -37,3 +37,11 @@ export const $$ = asModel;
 export function isModel<M>(x: Ref<M>): x is M {
   return !isID(x);
 }
+
+export function idOf<M>(x: Ref<M>, options: IdOfOptions = {}): ID {
+  return isID(x) ? x : (x as any)[options.idField ?? '_id'];
+}
+
+export interface IdOfOptions {
+  idField?: string;
+}
