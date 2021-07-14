@@ -39,7 +39,7 @@ export function isModel<M>(x: Ref<M>): x is M {
 }
 
 export function idOf<M>(x: Ref<M>, options: IdOfOptions = {}): ID {
-  return isID(x) ? x : (x as any)[options.idField ?? '_id'];
+  return x == null ? null : isID(x) ? x : (x as any)[options.idField ?? '_id'];
 }
 
 export interface IdOfOptions {
