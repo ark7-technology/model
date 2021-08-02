@@ -1,6 +1,6 @@
 {
   "name": "@ark7/model",
-  "version": "1.0.114",
+  "version": "1.0.115",
   "description": "Ark7 model used for both backend and frontend",
   "types": "index.d.ts",
   "main": "index.js",
