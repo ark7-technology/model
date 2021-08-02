@@ -21,7 +21,7 @@ A7Model.provide<Moment>({
 });
 
 A7Model.provide<Duration>({
-  modelize: (x: any) => (x == null ? x : moment.duration(x)),
+  modelize: (x: any) => (x === '' ? null : x == null ? x : moment.duration(x)),
   toObject: (x: Duration) => {
     return x == null ? x : _.isString(x) ? x : x.toISOString && x.toISOString();
   },
