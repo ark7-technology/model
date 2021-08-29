@@ -66,14 +66,7 @@ export function Config<T = object>(
       const superClass = cls?.prototype?.__proto__?.constructor;
 
       if (superClass != null) {
-        superClass.discriminations = _.unique(
-          _.union(
-            [cls],
-            superClass.__proto__?.discriminations === superClass.discriminations
-              ? []
-              : superClass.discriminations,
-          ),
-        );
+        Ark7ModelMetadata.addDiscriminations(superClass, cls);
       }
     }
   };
@@ -116,6 +109,20 @@ export class Ark7ModelMetadata {
 
   combinedFields: Map<string, CombinedModelField>;
 
+  static discriminationsMap = new Map<ModelClass<any>, ModelClass<any>[]>();
+
+  static addDiscriminations(parentCls: ModelClass<any>, cls: ModelClass<any>) {
+    if (!this.discriminationsMap.has(parentCls)) {
+      this.discriminationsMap.set(parentCls, []);
+    }
+
+    this.discriminationsMap.get(parentCls).push(cls);
+  }
+
+  static getDiscriminations(cls: ModelClass<any>) {
+    return this.discriminationsMap.get(cls) ?? [];
+  }
+
   private _configs: ConfigOptions;
 
   constructor(private cls: ModelClass<any>, name?: string) {
@@ -127,13 +134,7 @@ export class Ark7ModelMetadata {
         ? superClass
         : null;
 
-    const c: any = cls;
-    if (
-      c.discriminations != null &&
-      c.discriminations !== c.__proto__?.discriminations
-    ) {
-      this.discriminations.push(...c.discriminations);
-    }
+    this.discriminations.push(...Ark7ModelMetadata.getDiscriminations(cls));
   }
 
   get configs(): ConfigOptions {
