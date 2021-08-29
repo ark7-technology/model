@@ -61,6 +61,16 @@ export function Config<T = object>(
       // TODO: Enable this still gives side effects with statics methods.
       // manager.getMetadata(cls); // Trigger discriminator calculation.
     }
+
+    if (newOptions.discriminatorKey != null) {
+      const superClass = cls?.prototype?.__proto__?.constructor;
+
+      if (superClass != null) {
+        superClass.discriminations = _.unique(
+          _.union([cls], superClass.discriminations),
+        );
+      }
+    }
   };
 }
 
@@ -111,6 +121,10 @@ export class Ark7ModelMetadata {
       superClass != null && superClass !== Object.prototype.constructor
         ? superClass
         : null;
+
+    if ((cls as any).discriminations != null) {
+      this.discriminations.push(...(cls as any).discriminations);
+    }
   }
 
   get configs(): ConfigOptions {
@@ -126,7 +140,10 @@ export class Ark7ModelMetadata {
       this.superClass !== Converter
     ) {
       const metadata = manager.getMetadata(this.superClass);
-      if (metadata.configs.discriminatorKey) {
+      if (
+        metadata.configs.discriminatorKey &&
+        !metadata.discriminations.includes(this.cls)
+      ) {
         metadata.discriminations.push(this.cls);
       }
     }
