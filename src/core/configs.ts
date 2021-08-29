@@ -67,7 +67,12 @@ export function Config<T = object>(
 
       if (superClass != null) {
         superClass.discriminations = _.unique(
-          _.union([cls], superClass.discriminations),
+          _.union(
+            [cls],
+            superClass.__proto__?.discriminations === superClass.discriminations
+              ? []
+              : superClass.discriminations,
+          ),
         );
       }
     }
@@ -122,8 +127,12 @@ export class Ark7ModelMetadata {
         ? superClass
         : null;
 
-    if ((cls as any).discriminations != null) {
-      this.discriminations.push(...(cls as any).discriminations);
+    const c: any = cls;
+    if (
+      c.discriminations != null &&
+      c.discriminations !== c.__proto__?.discriminations
+    ) {
+      this.discriminations.push(...c.discriminations);
     }
   }
 
