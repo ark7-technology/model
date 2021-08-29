@@ -117,6 +117,10 @@ export class Ark7ModelMetadata {
     }
 
     this.discriminationsMap.get(parentCls).push(cls);
+
+    if (manager.hasMetadata(parentCls)) {
+      manager.getMetadata(parentCls).discriminations.push(cls);
+    }
   }
 
   static getDiscriminations(cls: ModelClass<any>) {
@@ -288,6 +292,10 @@ export namespace A7Model {
     model: string | ModelClass<T>,
   ): Ark7ModelMetadata {
     return manager.getMetadata(model);
+  }
+
+  export function hasMetadata<T>(name: string | ModelClass<T>): boolean {
+    return manager.hasMetadata(name);
   }
 
   export function reset() {
