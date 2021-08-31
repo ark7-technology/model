@@ -42,7 +42,7 @@ export interface IndexOptions {
 }
 
 export interface CompoundIndexOptionsFields {
-  [key: string]: number | 'text';
+  [key: string]: number | 'text' | 'hashed';
 }
 
 export interface CompoundIndexOptionsOptions {
