@@ -80,6 +80,10 @@ export class StrictModel {
       return o as any;
     }
 
+    if (o instanceof this) {
+      return o as any;
+    }
+
     const manager = options.manager ?? _manager;
 
     const metadata = manager.getMetadata(this.prototype.constructor);
