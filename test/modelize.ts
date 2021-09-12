@@ -39,7 +39,7 @@ interface ModelizeModel1 extends ModelizeModel3 {}
 
 @A7Model({})
 class ModelizeModel4 extends StrictModel {
-  @Default(ModelizeModel3.modelize({}))
+  @Default({})
   f3?: ModelizeModel3;
 }
 
