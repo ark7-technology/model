@@ -222,16 +222,18 @@ export class Ark7ModelMetadata {
         name,
       );
 
-      this.combinedFields.set(
-        name,
-        new CombinedModelField(
+      if (descriptor != null || prop != null) {
+        this.combinedFields.set(
           name,
-          prop,
-          descriptor,
-          field?.options,
-          this.modelClass,
-        ),
-      );
+          new CombinedModelField(
+            name,
+            prop,
+            descriptor,
+            field?.options,
+            this.modelClass,
+          ),
+        );
+      }
     }
 
     const mixinClasses = _.filter(
