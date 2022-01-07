@@ -19,7 +19,7 @@ describe('fields', () => {
 
   interface FieldTestModel extends FieldTestModel2 {}
 
-  Field({ default: () => ({}), model: FieldEmbeddedModel })(
+  Field({ default: () => ({}), model: FieldEmbeddedModel, manual: true })(
     FieldTestModel.prototype,
     'foo',
   );

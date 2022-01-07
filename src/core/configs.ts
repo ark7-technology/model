@@ -222,7 +222,7 @@ export class Ark7ModelMetadata {
         name,
       );
 
-      if (descriptor != null || prop != null) {
+      if (descriptor != null || prop != null || field?.options?.manual) {
         this.combinedFields.set(
           name,
           new CombinedModelField(

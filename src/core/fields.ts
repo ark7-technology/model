@@ -70,7 +70,7 @@ export type BaseOptions<T = object> = T & {
 
 export type OptionsResolver<
   T = object,
-  O extends BaseOptions<T> = BaseOptions<T>
+  O extends BaseOptions<T> = BaseOptions<T>,
 > = (baseOptions: O, options: O) => O;
 
 export type FieldOptionsResolver<T = object> = OptionsResolver<FieldOptions<T>>;
@@ -98,6 +98,8 @@ export interface StrictFieldOption {
 
   getter?: boolean;
   setter?: boolean;
+
+  manual?: boolean; // Manually set the current field.
 }
 
 export type FieldOptions<T = StrictFieldOption> = BaseOptions<
