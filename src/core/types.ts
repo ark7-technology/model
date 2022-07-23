@@ -1,13 +1,7 @@
 // Returns the function names of an interface.
-//
-export type FunctionPropertyNames<T> = Diff<
-  keyof T,
-  NonFunctionPropertyNames<T>
->;
-// Another approach:
-// export type _FunctionPropertyNames<T> = {
-// [K in keyof T]: T[K] extends Function ? K : never;
-// }[keyof T];
+export type FunctionPropertyNames<T> = {
+  [K in keyof T]: T[K] extends Function ? K : never;
+}[keyof T];
 
 // Returns the non-function names of an interface.
 export type NonFunctionPropertyNames<T> = {
@@ -51,6 +45,10 @@ export type PickReadonlyProperties<T> = Pick<T, ReadonlyPropertyNames<T>>;
 
 export type OmitReadonlyProperties<T> = Omit<T, ReadonlyPropertyNames<T>>;
 
+export type Writable<T> = {
+  -readonly [P in keyof T]: T[P];
+};
+
 export type PartialReadonlyProperties<T> = OmitReadonlyProperties<T> &
   Writable<Partial<PickReadonlyProperties<T>>>;
 
@@ -61,14 +59,16 @@ export interface POJO<V> {
   [key: string]: V;
 }
 
+type _AsObjectPure<T> = T extends Map<infer K, infer V>
+  ? V extends object
+    ? POJO<AsObject<V>> | Map<K, AsObject<V>> | T
+    : POJO<V> | Map<K, V>
+  : T extends object
+  ? AsObject<T>
+  : T;
+
 export type _AsObjectDeep<T> = {
-  [P in keyof T]: T[P] extends Map<infer K, infer V>
-    ? V extends object
-      ? POJO<AsObject<V>> | Map<K, AsObject<V>> | T[P]
-      : POJO<V> | Map<K, V>
-    : T[P] extends object
-    ? AsObject<T[P]>
-    : T[P];
+  [P in keyof T]: _AsObjectPure<T[P]>;
 };
 
 export type AsObject<T> = _AsObjectDeep<
@@ -82,7 +82,3 @@ export type WritableKeys<T> = {
     P
   >;
 }[keyof T];
-
-export type Writable<T> = {
-  -readonly [P in keyof T]: T[P];
-};

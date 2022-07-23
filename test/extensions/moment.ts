@@ -15,7 +15,7 @@ class MomentModel extends StrictModel {
 describe('extensions/moment', () => {
   it('should modelize duration', () => {
     const ins1 = MomentModel.modelize({
-      d1: 'P2Y',
+      d1: 'P2Y' as any,
     });
 
     moment.isDuration(ins1.d1).should.be.true();
