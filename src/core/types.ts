@@ -1,11 +1,11 @@
-// Returns the function names of an interface.
+// Returns the function names of an interface, doesn't include 'any' type.
 export type FunctionPropertyNames<T> = {
-  [K in keyof T]: T[K] extends Function ? K : never;
+  [K in keyof T]: T[K] extends Function ? IfEquals<T[K], any, never, K> : never;
 }[keyof T];
 
 // Returns the non-function names of an interface.
 export type NonFunctionPropertyNames<T> = {
-  [K in keyof T]: T[K] extends Function ? never : K;
+  [K in keyof T]: T[K] extends Function ? IfEquals<T[K], any, K, never> : K;
 }[keyof T];
 
 // Returns the function properties of an interface.

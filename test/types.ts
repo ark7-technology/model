@@ -53,6 +53,7 @@ abstract class B {
   b1: string;
   b2: A;
   b3: () => A;
+  b4: any;
 }
 
 export const _testA_FunctionNames: IfEquals<
@@ -92,6 +93,27 @@ export const _testA_AsObject: IfEquals<
     a2?: number;
     a3: {};
     a6?: string;
+  },
+  'true'
+> = 'true';
+
+export const _testB_FunctionNames: IfEquals<
+  FunctionPropertyNames<B>,
+  'b3',
+  'true'
+> = 'true';
+
+export const _testB_AsObject: IfEquals<
+  AsObject<B>,
+  {
+    b1: string;
+    b2: {
+      a1: string;
+      a2?: number;
+      a3: {};
+      a6?: string;
+    };
+    b4: any;
   },
   'true'
 > = 'true';
