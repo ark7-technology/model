@@ -1,12 +1,22 @@
-// Returns the function names of an interface, doesn't include 'any' type.
-export type FunctionPropertyNames<T> = {
-  [K in keyof T]: T[K] extends Function ? IfEquals<T[K], any, never, K> : never;
+// Returns the names of an interface as type of any.
+export type PropertyAnyNames<T> = {
+  [K in keyof T]: IfEquals<T[K], any, K, never>;
 }[keyof T];
 
+// Returns the function names of an interface, doesn't include 'any' type.
+export type FunctionPropertyNames<T> = Diff<
+  {
+    [K in keyof T]: T[K] extends Function ? K : never;
+  }[keyof T],
+  PropertyAnyNames<T>
+>;
+
 // Returns the non-function names of an interface.
-export type NonFunctionPropertyNames<T> = {
-  [K in keyof T]: T[K] extends Function ? IfEquals<T[K], any, K, never> : K;
-}[keyof T];
+export type NonFunctionPropertyNames<T> =
+  | {
+      [K in keyof T]: T[K] extends Function ? never : K;
+    }[keyof T]
+  | PropertyAnyNames<T>;
 
 // Returns the function properties of an interface.
 export type PickFunctionProperties<T> = Pick<T, FunctionPropertyNames<T>>;

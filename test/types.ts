@@ -4,6 +4,7 @@ import {
   IfEquals,
   NonFunctionPropertyNames,
   NonReadonlyPropertyNames,
+  PropertyAnyNames,
   ReadonlyPropertyNames,
   Writable,
 } from '../src';
@@ -94,6 +95,12 @@ export const _testA_AsObject: IfEquals<
     a3: {};
     a6?: string;
   },
+  'true'
+> = 'true';
+
+export const _testB_PropertyAnyNames: IfEquals<
+  PropertyAnyNames<B>,
+  'b4',
   'true'
 > = 'true';
 
