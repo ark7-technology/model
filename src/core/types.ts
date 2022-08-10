@@ -55,6 +55,9 @@ export type PickReadonlyProperties<T> = Pick<T, ReadonlyPropertyNames<T>>;
 
 export type OmitReadonlyProperties<T> = Omit<T, ReadonlyPropertyNames<T>>;
 
+export type OneOrMany<T> = T | T[];
+export type OneOrArray<T> = T | T[];
+
 export type Writable<T> = {
   -readonly [P in keyof T]: T[P];
 };
