@@ -7,6 +7,7 @@ import {
   CompoundIndexOptionsFields,
   CompoundIndexOptionsOptions,
   LevelOptions,
+  RequiredOptions,
 } from './decorators';
 import { DEFAULT_OPTIONS_RESOLVER } from './resolvers';
 import { DefaultDataLevel } from './levels';
@@ -276,6 +277,26 @@ export class CombinedModelField {
       : this.prop?.type;
 
     return runtime.isParameterizedType(type) ? type?.typeArgumentType : type;
+  }
+
+  isRequired(val: any = {}): boolean {
+    if ((this.field as RequiredOptions)?.required != null) {
+      const k = (this.field as RequiredOptions)?.required;
+
+      if (_.isBoolean(k)) {
+        return k;
+      }
+
+      if (_.isFunction(k)) {
+        return k.call(val);
+      }
+    }
+
+    if (this.prop != null) {
+      return !this.prop.optional;
+    }
+
+    return false;
   }
 
   modelize(o: any, options: ModelizeOptions = {}): any {
