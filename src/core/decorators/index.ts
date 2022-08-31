@@ -7,4 +7,5 @@ export * from './no-persist';
 export * from './readonly';
 export * from './reference';
 export * from './required';
+export * from './tag';
 export * from './virtual';

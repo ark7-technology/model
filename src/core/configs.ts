@@ -261,6 +261,12 @@ export class Ark7ModelMetadata {
     }
   }
 
+  getFieldsByTag(tag: string): CombinedModelField[] {
+    return _.filter(Array.from(this.combinedFields.values()), (f) =>
+      f.hasTag(tag),
+    );
+  }
+
   toObject(obj: any, options: DocumentToObjectOptions = {}): any {
     if (obj == null) {
       return obj;

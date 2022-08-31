@@ -85,6 +85,7 @@ export interface StrictFieldOption {
   };
   readonly?: boolean;
   autogen?: boolean;
+  tags?: string[];
 
   /** Virtual fields */
   ref?: string | ModelClass<any>;
@@ -277,6 +278,10 @@ export class CombinedModelField {
       : this.prop?.type;
 
     return runtime.isParameterizedType(type) ? type?.typeArgumentType : type;
+  }
+
+  hasTag(tag: string): boolean {
+    return this.field?.tags.includes(tag);
   }
 
   isRequired(val: any = {}): boolean {
