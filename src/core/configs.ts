@@ -206,6 +206,17 @@ export class Ark7ModelMetadata {
       .value();
   }
 
+  /**
+   * All the tags for the fields.
+   */
+  get tags(): string[] {
+    return _.chain(Array.from(this.combinedFields.values()))
+      .map((f) => f.field.tags)
+      .flatten()
+      .uniq()
+      .value();
+  }
+
   createCombinedFields(manager: Manager) {
     this.combinedFields = new Map();
 

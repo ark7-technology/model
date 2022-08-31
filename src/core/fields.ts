@@ -280,6 +280,10 @@ export class CombinedModelField {
     return runtime.isParameterizedType(type) ? type?.typeArgumentType : type;
   }
 
+  get hasNoTags(): boolean {
+    return _.isEmpty(this.field?.tags);
+  }
+
   hasTag(tag: string): boolean {
     return this.field?.tags.includes(tag);
   }
