@@ -285,7 +285,7 @@ export class CombinedModelField {
   }
 
   hasTag(tag: string): boolean {
-    return this.field?.tags.includes(tag);
+    return this.field?.tags?.includes(tag);
   }
 
   isRequired(val: any = {}): boolean {
