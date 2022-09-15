@@ -7,6 +7,7 @@ import {
   CompoundIndexOptionsFields,
   CompoundIndexOptionsOptions,
   LevelOptions,
+  PresentOptions,
   RequiredOptions,
 } from './decorators';
 import { DEFAULT_OPTIONS_RESOLVER } from './resolvers';
@@ -286,6 +287,22 @@ export class CombinedModelField {
 
   hasTag(tag: string): boolean {
     return this.field?.tags?.includes(tag);
+  }
+
+  isPresent(val: any = {}): boolean {
+    if ((this.field as PresentOptions)?.present != null) {
+      const k = (this.field as PresentOptions)?.present;
+
+      if (_.isBoolean(k)) {
+        return k;
+      }
+
+      if (_.isFunction(k)) {
+        return k.call(val);
+      }
+    }
+
+    return true;
   }
 
   isRequired(val: any = {}): boolean {

@@ -4,6 +4,7 @@ export * from './indexes';
 export * from './map';
 export * from './mixin';
 export * from './no-persist';
+export * from './present';
 export * from './readonly';
 export * from './reference';
 export * from './required';
