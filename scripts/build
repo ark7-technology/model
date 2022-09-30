@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+npm run clean
+
+npm run compile:src:pure
+
+rm -rf dist/core
+
+npm run compile:src
+
+npm test
+
+npm run clean
+
+npm run compile:src:pure
+
+rm -rf dist/core
+
+npm run compile:src
+
+cp package.json LICENSE README.md dist
+
+cd dist
+
+npm link

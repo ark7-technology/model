@@ -10,3 +10,4 @@ export * from './reference';
 export * from './required';
 export * from './tag';
 export * from './virtual';
+export * from './encrypted';
