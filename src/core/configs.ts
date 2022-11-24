@@ -16,7 +16,7 @@ import { Converter, converter } from './converter';
 import { DEFAULT_OPTIONS_RESOLVER } from './resolvers';
 import { DefaultDataLevel } from './levels';
 import { Enum, createEnumModelClass } from './enums';
-import { Manager, manager } from './manager';
+import { GetMetadataOptions, Manager, manager } from './manager';
 import { runtime } from '../runtime';
 
 const d = debug('ark7:model:configs');
@@ -257,7 +257,9 @@ export class Ark7ModelMetadata {
     );
 
     for (const mixinClass of mixinClasses.reverse()) {
-      const superMetadata = manager.getMetadata(mixinClass);
+      const superMetadata = manager.getMetadata(mixinClass, {
+        forceFields: true,
+      });
       const allNames = _.union([
         ...this.combinedFields.keys(),
         ...superMetadata.combinedFields.keys(),
@@ -315,8 +317,9 @@ export class Ark7ModelMetadata {
 export namespace A7Model {
   export function getMetadata<T>(
     model: string | ModelClass<T>,
+    options?: GetMetadataOptions,
   ): Ark7ModelMetadata {
-    return manager.getMetadata(model);
+    return manager.getMetadata(model, options);
   }
 
   export function hasMetadata<T>(name: string | ModelClass<T>): boolean {

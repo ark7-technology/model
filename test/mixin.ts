@@ -138,7 +138,6 @@ describe('mixin', () => {
   }
 
   @A7Model({})
-  @Mixin(MixinParent1Mixin)
   class MixinParent1 extends StrictModel {}
 
   interface MixinParent1 extends MixinParent1Mixin {}
@@ -149,8 +148,22 @@ describe('mixin', () => {
   @A7Model({})
   class MixinChild3 extends MixinParent2 {}
 
+  A7Model.getMetadata(MixinParent1);
+  A7Model.getMetadata(MixinParent2);
+  A7Model.getMetadata(MixinChild3);
+
+  Mixin(MixinParent1Mixin)(MixinParent1);
+
   it('should modelize with the deep parent model', () => {
     const i = MixinChild3.modelize({});
     i.whoami.should.be.equal('MixinParent1Mixin');
+
+    A7Model.getMetadata(MixinChild3)
+      .combinedFields.has('whoami')
+      .should.be.false();
+
+    A7Model.getMetadata(MixinChild3, { forceFields: true })
+      .combinedFields.has('whoami')
+      .should.be.true();
   });
 });

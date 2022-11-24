@@ -28,7 +28,10 @@ export class Manager {
     return this.metadataMap.has(key);
   }
 
-  getMetadata<T>(name: string | ModelClass<T>): Ark7ModelMetadata {
+  getMetadata<T>(
+    name: string | ModelClass<T>,
+    options?: GetMetadataOptions,
+  ): Ark7ModelMetadata {
     d('getMetadata started.');
     const eKey = _.isString(name) ? name : name.$modelClassName;
     if (eKey == null) {
@@ -51,12 +54,14 @@ export class Manager {
       metadata.configs = getArk7ModelConfig(metadata.modelClass);
     }
 
-    if (metadata.fields == null) {
+    if (metadata.fields == null || options?.forceFields) {
       metadata.fields =
         (metadata.modelClass.prototype
           ? Reflect.getMetadata(A7_MODEL_FIELD, metadata.modelClass.prototype)
           : {}) || {};
+    }
 
+    if (metadata.combinedFields == null || options?.forceFields) {
       metadata.createCombinedFields(this);
     }
 
@@ -456,3 +461,7 @@ export interface UMLOptions extends ClassUMLOptions {
 }
 
 export const manager = new Manager();
+
+export interface GetMetadataOptions {
+  forceFields?: boolean;
+}
