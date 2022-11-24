@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 
 import * as _ from 'underscore';
+import * as debug from 'debug';
 
 import { A7_MODEL_CONFIG } from './tokens';
 import {
@@ -17,6 +18,8 @@ import { DefaultDataLevel } from './levels';
 import { Enum, createEnumModelClass } from './enums';
 import { Manager, manager } from './manager';
 import { runtime } from '../runtime';
+
+const d = debug('ark7:model:configs');
 
 export function Config<T = object>(
   options: ConfigOptions<T>,
@@ -218,6 +221,7 @@ export class Ark7ModelMetadata {
   }
 
   createCombinedFields(manager: Manager) {
+    d('createCombinedFields started.');
     this.combinedFields = new Map();
 
     const propNames = _.map(this.configs.schema.props, (p) => p.name);
@@ -270,6 +274,8 @@ export class Ark7ModelMetadata {
         }
       }
     }
+
+    d('createCombinedFields completed.');
   }
 
   getFieldsByTag(tag: string): CombinedModelField[] {

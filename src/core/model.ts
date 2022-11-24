@@ -116,6 +116,7 @@ export class StrictModel {
     const desc = Object.getOwnPropertyDescriptor(this.prototype, '$mixed');
 
     if (desc == null) {
+      d('set $mixed propertype property.');
       Object.defineProperty(this.prototype, '$mixed', { value: true });
 
       for (const cls of metadata.classes.reverse()) {
