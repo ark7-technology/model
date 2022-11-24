@@ -51,12 +51,14 @@ export class Manager {
       metadata.configs = getArk7ModelConfig(metadata.modelClass);
     }
 
-    metadata.fields =
-      (metadata.modelClass.prototype
-        ? Reflect.getMetadata(A7_MODEL_FIELD, metadata.modelClass.prototype)
-        : {}) || {};
+    if (metadata.fields == null) {
+      metadata.fields =
+        (metadata.modelClass.prototype
+          ? Reflect.getMetadata(A7_MODEL_FIELD, metadata.modelClass.prototype)
+          : {}) || {};
 
-    metadata.createCombinedFields(this);
+      metadata.createCombinedFields(this);
+    }
 
     d('getMetadata completed.');
     return metadata;
