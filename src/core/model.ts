@@ -1,4 +1,5 @@
 import * as _ from 'underscore';
+import * as debug from 'debug';
 
 import { manager as _manager } from './manager';
 import { A7Model } from './configs';
@@ -8,6 +9,8 @@ import { DefaultDataLevel } from './levels';
 import { DocumentToObjectOptions, ModelizeOptions } from './fields';
 import { ModelizeError } from './errors';
 import { runtime } from '../runtime';
+
+const d = debug('ark7:model:StrictModel');
 
 @A7Model({})
 export class StrictModel {
@@ -76,11 +79,14 @@ export class StrictModel {
     o: AsObject<InstanceType<T>>,
     options: ModelizeOptions = {},
   ): InstanceType<T> {
+    d('modelize started.');
     if (o == null) {
+      d('modelize return empty.');
       return o as any;
     }
 
     if (o instanceof this) {
+      d('modelize return this.');
       return o as any;
     }
 
@@ -98,6 +104,7 @@ export class StrictModel {
       const key = (o as any)[metadata.configs.discriminatorKey];
       if (key != null && key.toLowerCase() !== metadata.name.toLowerCase()) {
         const m = manager.getMetadata(key);
+        d('modelize return discrimination.');
         return (m.modelClass as any).modelize.call(m.modelClass, o, options);
       }
 
@@ -128,36 +135,38 @@ export class StrictModel {
 
     Object.setPrototypeOf(ret, this.prototype);
 
-    for (const name of metadata.combinedFields.keys()) {
-      const field = metadata.combinedFields.get(name);
-      if (
-        field.isMethod ||
-        (field.isGetter && !field.isSetter) ||
-        field.prop?.modifier === runtime.Modifier.PROTECTED ||
-        field.prop?.modifier === runtime.Modifier.PRIVATE
-      ) {
-        continue;
-      }
-
-      try {
-        const val = field.modelize(ret[name], {
-          manager,
-          meta: {
-            $parent: ret,
-            $path: name,
-          },
-          attachFieldMetadata: options.attachFieldMetadata,
-          allowReference: options.allowReference,
-        });
-
-        if (!_.isUndefined(val)) {
-          ret[name] = val;
+    if (!options.noSubFields) {
+      for (const name of metadata.combinedFields.keys()) {
+        const field = metadata.combinedFields.get(name);
+        if (
+          field.isMethod ||
+          (field.isGetter && !field.isSetter) ||
+          field.prop?.modifier === runtime.Modifier.PROTECTED ||
+          field.prop?.modifier === runtime.Modifier.PRIVATE
+        ) {
+          continue;
         }
-      } catch (error) {
-        if (error instanceof ModelizeError) {
-          throw ModelizeError.fromNested(error, this, name);
-        } else {
-          throw new ModelizeError(name, this, error);
+
+        try {
+          const val = field.modelize(ret[name], {
+            manager,
+            meta: {
+              $parent: ret,
+              $path: name,
+            },
+            attachFieldMetadata: options.attachFieldMetadata,
+            allowReference: options.allowReference,
+          });
+
+          if (!_.isUndefined(val)) {
+            ret[name] = val;
+          }
+        } catch (error) {
+          if (error instanceof ModelizeError) {
+            throw ModelizeError.fromNested(error, this, name);
+          } else {
+            throw new ModelizeError(name, this, error);
+          }
         }
       }
     }
@@ -166,6 +175,7 @@ export class StrictModel {
       (ret as StrictModel).$attach(options.meta || {});
     }
 
+    d('modelize completed.');
     return ret as any;
   }
 }

@@ -148,6 +148,8 @@ export interface ModelizeOptions {
   //   { user: { _id: '58a606de-d0f3-495a-a36a-da5da8ea68de' } } based on the
   //   User schema.
   allowReference?: boolean;
+
+  noSubFields?: boolean;
 }
 
 export interface DocumentToObjectOptions {
