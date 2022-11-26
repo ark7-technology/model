@@ -62,6 +62,7 @@ export const userMetadata = {
           type: 'method',
         },
       ],
+      fileName: process.cwd() + '/test/models/users.ts',
     },
   },
   fields: {

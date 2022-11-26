@@ -31,6 +31,7 @@ describe('readonly', () => {
               type: 'string',
             },
           ],
+          fileName: process.cwd() + '/test/readonly.ts',
         },
       },
       fields: {

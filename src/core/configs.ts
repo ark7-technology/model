@@ -27,11 +27,13 @@ export function Config<T = object>(
   name?: string,
 ): ClassDecorator {
   return (constructor: object | ProvideOptions<any> | ModelClass<any>) => {
-    const cls: ModelClass<any> = _.isFunction(constructor)
-      ? constructor
-      : _.isEmpty(schema) /** a registered type */
-      ? converter(constructor, name)
-      : createEnumModelClass(constructor);
+    const cls: ModelClass<any> = (
+      _.isFunction(constructor)
+        ? constructor
+        : _.isEmpty(schema) /** a registered type */
+        ? converter(constructor, name)
+        : createEnumModelClass(constructor)
+    ) as any;
 
     const configOptions: ConfigOptions = getArk7ModelConfig(cls);
 

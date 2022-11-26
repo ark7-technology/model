@@ -96,6 +96,7 @@ describe('mixin', () => {
               type: { referenceName: 'ExtendMixinModel' },
             },
           ],
+          fileName: process.cwd() + '/test/mixin.ts',
         },
         mixinClasses: [Mixin2Model, Mixin1Model],
       },

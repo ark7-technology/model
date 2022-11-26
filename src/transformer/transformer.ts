@@ -1,3 +1,4 @@
+import * as _ from 'underscore';
 import * as ts from 'typescript';
 
 import { buildInterface } from './runtime-schema';
@@ -49,11 +50,27 @@ function visitNode(node: ts.Node, program: ts.Program): ts.Node {
   ) {
     const parent: any = node.parent;
 
+    let sourceFile: any;
+
+    for (let root = parent; root != null; root = root.parent) {
+      if (root.constructor.name === 'SourceFileObject') {
+        sourceFile = root;
+        break;
+      }
+    }
+
+    const fileName = sourceFile.fileName;
+
     const type = typeChecker.getTypeAtLocation(parent);
 
     const literal = ts.createRegularExpressionLiteral(
       JSON.stringify(
-        buildInterface(type.symbol.escapedName as string, type, typeChecker),
+        _.extend(
+          buildInterface(type.symbol.escapedName as string, type, typeChecker),
+          {
+            fileName,
+          },
+        ),
       ),
     );
 
@@ -79,6 +96,17 @@ function visitNode(node: ts.Node, program: ts.Program): ts.Node {
     return badInterface;
   }
 
+  let sourceFile: any;
+
+  for (let root = node.parent; root != null; root = root.parent) {
+    if (root.constructor.name === 'SourceFileObject') {
+      sourceFile = root;
+      break;
+    }
+  }
+
+  const fileName = sourceFile.fileName;
+
   if (node.typeArguments?.length) {
     const typeNode = node.typeArguments[0];
 
@@ -100,7 +128,11 @@ function visitNode(node: ts.Node, program: ts.Program): ts.Node {
       const name = ts.createStringLiteral(t.symbol.escapedName);
 
       const literal = ts.createRegularExpressionLiteral(
-        JSON.stringify(buildInterface(t.symbol.escapedName, t, typeChecker)),
+        JSON.stringify(
+          _.extend(buildInterface(t.symbol.escapedName, t, typeChecker), {
+            fileName,
+          }),
+        ),
       );
 
       const elements = [...node.arguments, literal, name];

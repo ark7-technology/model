@@ -36,6 +36,7 @@ describe('abstracts', () => {
               abstract: true,
             },
           ],
+          fileName: process.cwd() + '/test/abstracts.ts',
         },
       },
       fields: {},

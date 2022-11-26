@@ -38,6 +38,7 @@ describe('maps', () => {
                 type: { selfType: 'MMap', typeArgumentType: 'number' },
               },
             ],
+            fileName: process.cwd() + '/test/maps.ts',
           },
         },
         fields: {},

@@ -24,9 +24,12 @@
   },
   "homepage": "https://github.com/ark7-technology/model#readme",
   "devDependencies": {
+    "@types/change-case": "^2.3.1",
     "@types/mocha": "^8.0.3",
     "@types/moment": "^2.13.0",
+    "@types/node": "^18.11.9",
     "@types/should": "^13.0.0",
+    "change-case": "^4.1.2",
     "gulp": "^4.0.2",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-typescript": "^6.0.0-alpha.1",

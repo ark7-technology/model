@@ -33,6 +33,7 @@ describe('enums', () => {
           schema: {
             name: 'SAME_KEY_VALUE',
             props: [],
+            fileName: process.cwd() + '/test/enums.ts',
           },
         },
         fields: {},

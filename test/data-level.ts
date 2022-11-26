@@ -39,6 +39,7 @@ describe('data-level', () => {
                 type: 'string',
               },
             ],
+            fileName: process.cwd() + '/test/data-level.ts',
           },
         },
         fields: {

@@ -66,6 +66,7 @@ export namespace runtime {
   export interface Schema {
     name: string;
     props: Property[];
+    fileName?: string;
   }
 
   export function isReferenceType(type: Type): type is ReferenceType {

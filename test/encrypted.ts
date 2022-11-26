@@ -1,6 +1,6 @@
 import 'should';
 
-import { A7Model, Encrypted, EncryptAlgorithm } from '../src';
+import { A7Model, EncryptAlgorithm, Encrypted } from '../src';
 
 describe('encrypted', () => {
   @A7Model({})
@@ -44,6 +44,7 @@ describe('encrypted', () => {
               type: 'string',
             },
           ],
+          fileName: process.cwd() + '/test/encrypted.ts',
         },
       },
       fields: {

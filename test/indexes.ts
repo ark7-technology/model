@@ -33,6 +33,7 @@ describe('indexes', () => {
               type: 'string',
             },
           ],
+          fileName: process.cwd() + '/test/indexes.ts',
         },
         indexes: [
           {
