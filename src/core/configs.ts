@@ -333,18 +333,33 @@ export namespace A7Model {
   }
 
   /** target is an enum */
-  export function provide(target: object): void;
+  export function provide(
+    target: object,
+    customOptions?: CustomProvideOptions,
+  ): void;
   /** target is a model */
-  export function provide(target: ModelClass<any>): void;
+  export function provide(
+    target: ModelClass<any>,
+    customOptions?: CustomProvideOptions,
+  ): void;
   /** target is a customized type */
   export function provide<T>(options?: ProvideOptions<T>): void;
 
   export function provide<T>(
     target?: object | ProvideOptions<T> | ModelClass<any>,
-    schema?: runtime.Schema,
-    name?: string,
+    schema?: runtime.Schema | CustomProvideOptions,
+    name?: string | runtime.Schema,
+    extraName?: string,
   ) {
-    A7Model({}, schema, name)(target as any);
+    if (extraName != null) {
+      A7Model(
+        {},
+        _.extend(name, schema) as runtime.Schema,
+        extraName,
+      )(target as any);
+    } else {
+      A7Model({}, schema as runtime.Schema, name as string)(target as any);
+    }
   }
 }
 
@@ -352,4 +367,8 @@ export interface ProvideOptions<T> {
   name?: string;
   modelize?: (val: any, options: ModelizeOptions) => T;
   toObject?: (val: any, options: DocumentToObjectOptions) => any;
+}
+
+export interface CustomProvideOptions {
+  protoNestedIn?: any;
 }

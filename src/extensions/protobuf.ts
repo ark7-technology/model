@@ -11,12 +11,18 @@ export interface ProtobufMessageField {
 
 export interface ProtobufMessage {
   name: string;
+  fileName: string;
+  location: string;
+
   fields: ProtobufMessageField[];
   nestedItems: ProtobufItem[];
 }
 
 export interface ProtobufEnum {
   name: string;
+  fileName: string;
+  location: string;
+
   values: string[];
 }
 
@@ -42,6 +48,9 @@ export function isProtobufEnum(item: ProtobufItem): item is ProtobufEnum {
 export class ModelProtobuf {
   files: ProtobufFile[] = [];
 
+  schemaMap: Map<string, ProtobufItem> = new Map();
+  attachingSchema: Map<string, Set<string>> = new Map();
+
   constructor(protected options: ModelProtobufOptions = {}) {}
 
   addModel(
@@ -51,16 +60,20 @@ export class ModelProtobuf {
     const metadata =
       model instanceof Ark7ModelMetadata ? model : A7Model.getMetadata(model);
     const file = this.getFile(metadata);
-    file.items.push(this.getItem(metadata));
+    const item = this.getItem(metadata, { file });
+
+    if (item != null) {
+      this.schemaMap.set(metadata.name, item);
+      file.items.push(item);
+    }
   }
 
-  saveFiles() {
-    const fileString: string[] = [];
-    for (const file of this.files) {
-      let content: string[] = [];
-      content.push('// File path: ' + file.path);
+  toFiles(): ModelProtobufToFile[] {
+    const files: ModelProtobufToFile[] = [];
 
-      content.push('');
+    for (const file of this.files) {
+      const content: string[] = [];
+      content.push('// File path: ' + file.path);
       content.push('syntax = "proto3";');
       content.push('');
       content.push(`package ${file.package};`);
@@ -80,10 +93,13 @@ export class ModelProtobuf {
         content.push(...this.convertItem(item));
       }
 
-      fileString.push(content.join('\n'));
+      files.push({
+        path: file.path,
+        content: content.join('\n'),
+      });
     }
 
-    return fileString;
+    return files;
   }
 
   private pushContent(content: string[], c: string, indent: number = 0) {
@@ -99,6 +115,11 @@ export class ModelProtobuf {
 
     if (isProtobufMessage(item)) {
       this.pushContent(content, `message ${item.name} {`, indent);
+
+      for (const nestedItem of item.nestedItems) {
+        content.push(...this.convertItem(nestedItem, indent + 1));
+        content.push('');
+      }
 
       _.each(item.fields, (field, idx) => {
         this.pushContent(
@@ -127,7 +148,10 @@ export class ModelProtobuf {
     return content;
   }
 
-  private getTypeString(type: runtime.Type): string {
+  private getTypeString(
+    type: runtime.Type,
+    options: ModelProtobufGetTypeOptions,
+  ): string {
     if (type === 'string') {
       return 'string';
     }
@@ -137,29 +161,87 @@ export class ModelProtobuf {
     }
 
     if (runtime.isReferenceType(type)) {
+      const item = this.schemaMap.get(type.referenceName);
+
+      if (item.fileName === options.fileName) {
+        if (item.location === options.location) {
+          return type.referenceName;
+        } else {
+          return `${item.location}.${type.referenceName}`;
+        }
+      }
+
       return type.referenceName;
     }
 
     return 'string';
   }
 
-  private getItem(metadata: Ark7ModelMetadata): ProtobufItem {
-    return metadata.isEnum
-      ? {
-          name: metadata.name,
-          values: _.values((metadata.modelClass as any).enums),
+  private getItem(
+    metadata: Ark7ModelMetadata,
+    options: ModelProtobufGetItemOptions,
+  ): ProtobufItem {
+    if (metadata.isEnum) {
+      const protoNestedIn = metadata.configs.schema?.protoNestedIn;
+
+      if (protoNestedIn && options.location == null) {
+        if (!this.attachingSchema.has(protoNestedIn)) {
+          this.attachingSchema.set(protoNestedIn, new Set());
         }
-      : {
+
+        this.attachingSchema.get(protoNestedIn).add(metadata.name);
+
+        return null;
+      } else {
+        return {
           name: metadata.name,
-          fields: _.map(Array.from(metadata.combinedFields.keys()), (key) => {
-            const field = metadata.combinedFields.get(key);
-            return {
-              name: field.name,
-              type: this.getTypeString(field.type),
-            };
-          }),
-          nestedItems: [],
+          fileName: options.file.path,
+          location: options.location,
+          values: _.values((metadata.modelClass as any).enums),
         };
+      }
+    }
+
+    const nestedItems = this.attachingSchema.has(metadata.name)
+      ? _.map(
+          Array.from(this.attachingSchema.get(metadata.name).values()),
+          (name) => {
+            const item = this.getItem(
+              A7Model.getMetadata(name),
+              _.defaults(
+                {
+                  location: metadata.name,
+                },
+                options,
+              ),
+            );
+
+            this.schemaMap.set(name, item);
+
+            return item;
+          },
+        )
+      : [];
+
+    return {
+      name: metadata.name,
+      fileName: options.file.path,
+      location: '',
+      fields: _.chain(Array.from(metadata.combinedFields.values()))
+        .filter((field) => !field.isMethod)
+        .map((field) => {
+          return {
+            name: field.name,
+            type: this.getTypeString(field.type, {
+              fileName: options.file.path,
+              location: metadata.name,
+              file: options.file,
+            }),
+          };
+        })
+        .value(),
+      nestedItems,
+    };
   }
 
   private getFilePath(metadata: Ark7ModelMetadata): string {
@@ -193,7 +275,10 @@ export class ModelProtobuf {
     let file = _.find(this.files, (f: ProtobufFile) => f.path === path);
 
     const parts = filename.replace('.proto', '').split('/');
-    const packageName = _.first(parts, parts.length - 1).join('.');
+
+    const packageName = _.first(parts, parts.length - 1)
+      .join('.')
+      .replace(/-/g, '_');
 
     if (file == null) {
       file = {
@@ -202,6 +287,12 @@ export class ModelProtobuf {
         imports: [],
         items: [],
       };
+
+      if (this.options.javaPackagePrefix != null) {
+        file.javaPackage = [this.options.javaPackagePrefix, packageName].join(
+          '.',
+        );
+      }
 
       this.files.push(file);
     }
@@ -213,6 +304,23 @@ export class ModelProtobuf {
 export interface ModelProtobufOptions {
   srcDir?: string;
   dstDir?: string;
+  javaPackagePrefix?: string;
 }
 
 export interface ModelProtobufAddModelOptions {}
+
+export interface ModelProtobufToFile {
+  path: string;
+  content: string;
+}
+
+export interface ModelProtobufGetItemOptions {
+  file: ProtobufFile;
+  location?: string;
+}
+
+export interface ModelProtobufGetTypeOptions {
+  fileName: string;
+  location: string;
+  file: ProtobufFile;
+}
