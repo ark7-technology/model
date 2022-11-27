@@ -224,7 +224,9 @@ export class Ark7ModelMetadata {
 
   createCombinedFields(manager: Manager) {
     d('createCombinedFields started.');
-    this.combinedFields = new Map();
+    const combinedFields = new Map();
+
+    const nameSet = new Set<string>(); // Determines the prop orders.
 
     const propNames = _.map(this.configs.schema.props, (p) => p.name);
     const fieldNames = _.keys(this.fields);
@@ -240,7 +242,7 @@ export class Ark7ModelMetadata {
       );
 
       if (descriptor != null || prop != null || field?.options?.manual) {
-        this.combinedFields.set(
+        combinedFields.set(
           name,
           new CombinedModelField(
             name,
@@ -263,20 +265,34 @@ export class Ark7ModelMetadata {
         forceFields: true,
       });
       const allNames = _.union([
-        ...this.combinedFields.keys(),
+        ...combinedFields.keys(),
         ...superMetadata.combinedFields.keys(),
       ]);
 
+      for (const key of superMetadata.combinedFields.keys()) {
+        nameSet.add(key);
+      }
+
       for (const name of allNames) {
-        const a = this.combinedFields.get(name);
+        const a = combinedFields.get(name);
         const b = superMetadata.combinedFields.get(name);
 
         if (a == null || b == null) {
-          this.combinedFields.set(name, a ?? b);
+          combinedFields.set(name, a ?? b);
         } else {
-          this.combinedFields.set(name, a.merge(b));
+          combinedFields.set(name, a.merge(b));
         }
       }
+    }
+
+    for (const name of names) {
+      nameSet.add(name);
+    }
+
+    this.combinedFields = new Map();
+
+    for (const name of nameSet) {
+      this.combinedFields.set(name, combinedFields.get(name));
     }
 
     d('createCombinedFields completed.');

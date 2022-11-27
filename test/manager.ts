@@ -50,9 +50,9 @@ describe('manager', () => {
 
       uml.should.be.eql(`classDiagram
 
+ManagerModel2 *-- ManagerEnumStatus
 ManagerModel2 *-- ManagerModel3
 ManagerModel2 <--o ManagerModel4
-ManagerModel2 *-- ManagerEnumStatus
 ManagerModel1 *-- ManagerEnumStatus
 ManagerModel1 <|-- ManagerModel2
 
@@ -70,11 +70,11 @@ ManagerModel1 : ManagerEnumStatus status
 class ManagerModel2 {
   <<model>>
 }
+ManagerModel2 : string f1
+ManagerModel2 : ManagerEnumStatus status
 ManagerModel2 : string f2
 ManagerModel2 : ManagerModel3[] f3
 ManagerModel2 : Ref<ManagerModel4> f4
-ManagerModel2 : string f1
-ManagerModel2 : ManagerEnumStatus status
 
 ManagerModel3 : string fm1
 
