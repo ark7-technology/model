@@ -21,7 +21,7 @@ export const nameMetadata = {
           type: 'string',
         },
       ],
-      fileName: process.cwd() + '/test/models/name.ts',
+      fileName: 'test/models/name.ts',
     },
   },
   fields: {},

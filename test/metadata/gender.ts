@@ -6,7 +6,7 @@ export const genderMetadata: any = {
     schema: {
       name: 'Gender',
       props: [],
-      fileName: process.cwd() + '/test/models/users.ts',
+      fileName: 'test/models/users.ts',
     },
   },
   fields: {},

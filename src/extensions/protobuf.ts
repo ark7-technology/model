@@ -64,6 +64,9 @@ export class ModelProtobuf {
 
     if (item != null) {
       this.schemaMap.set(metadata.name, item);
+    }
+
+    if (item != null && !options.noGenerate) {
       file.items.push(item);
     }
   }
@@ -73,7 +76,11 @@ export class ModelProtobuf {
 
     for (const file of this.files) {
       const content: string[] = [];
-      content.push('// File path: ' + file.path);
+      content.push(`/**`);
+      content.push(` * This is an automatic generated file from A7Model.`);
+      content.push(` *`);
+      content.push(` * File path: ${file.path}`);
+      content.push(` */`);
       content.push('syntax = "proto3";');
       content.push('');
       content.push(`package ${file.package};`);
@@ -83,9 +90,19 @@ export class ModelProtobuf {
 
       if (!_.isEmpty(file.imports)) {
         content.push('');
-        for (const imp of file.imports) {
-          content.push(`import ${imp};`);
-        }
+
+        _.chain(file.imports)
+          .uniq()
+          .sortBy((x) => x)
+          .each((imp) => {
+            content.push(
+              `import "${
+                this.options.packagePrefix
+                  ? this.options.packagePrefix + '/'
+                  : ''
+              }${imp}";`,
+            );
+          });
       }
 
       for (const item of file.items) {
@@ -93,8 +110,16 @@ export class ModelProtobuf {
         content.push(...this.convertItem(item));
       }
 
+      const parts: string[] = _.chain([
+        this.options.dstDir,
+        this.options.packagePrefix,
+        file.path,
+      ])
+        .filter((x) => x)
+        .value();
+
       files.push({
-        path: file.path,
+        path: parts.join('/'),
         content: content.join('\n'),
       });
     }
@@ -124,7 +149,7 @@ export class ModelProtobuf {
       _.each(item.fields, (field, idx) => {
         this.pushContent(
           content,
-          `${field.type} ${field.name} = ${idx + 1};`,
+          `${field.type} ${changeCase.snakeCase(field.name)} = ${idx + 1};`,
           indent + 1,
         );
       });
@@ -152,6 +177,15 @@ export class ModelProtobuf {
     type: runtime.Type,
     options: ModelProtobufGetTypeOptions,
   ): string {
+    if (options.isMap) {
+      const inner = this.getTypeString(
+        type,
+        _.defaults({ isMap: false, options }),
+      );
+
+      return `map<string, ${inner}>`;
+    }
+
     if (type === 'string') {
       return 'string';
     }
@@ -163,12 +197,19 @@ export class ModelProtobuf {
     if (runtime.isReferenceType(type)) {
       const item = this.schemaMap.get(type.referenceName);
 
+      if (item == null) {
+        console.warn(`Unknown type ${type.referenceName}`, new Error().stack);
+        throw new Error(`Unknown type ${type.referenceName}`);
+      }
+
       if (item.fileName === options.fileName) {
         if (item.location === options.location) {
           return type.referenceName;
         } else {
           return `${item.location}.${type.referenceName}`;
         }
+      } else {
+        options.file.imports.push(item.fileName);
       }
 
       return type.referenceName;
@@ -228,7 +269,7 @@ export class ModelProtobuf {
       fileName: options.file.path,
       location: '',
       fields: _.chain(Array.from(metadata.combinedFields.values()))
-        .filter((field) => !field.isMethod)
+        .filter((field) => !field.isMethod && !field.isGetter)
         .map((field) => {
           return {
             name: field.name,
@@ -236,6 +277,7 @@ export class ModelProtobuf {
               fileName: options.file.path,
               location: metadata.name,
               file: options.file,
+              isMap: field.isMap,
             }),
           };
         })
@@ -268,17 +310,21 @@ export class ModelProtobuf {
       ? metadata
       : this.getFilePath(metadata as Ark7ModelMetadata);
 
-    const path = this.options.dstDir
-      ? `${this.options.dstDir}/${filename}`
-      : filename;
+    const path = filename;
 
     let file = _.find(this.files, (f: ProtobufFile) => f.path === path);
 
     const parts = filename.replace('.proto', '').split('/');
 
-    const packageName = _.first(parts, parts.length - 1)
+    const packageName = _.chain([this.options.packagePrefix])
+      .union([
+        _.first(parts, parts.length - 1)
+          .join('.')
+          .replace(/-/g, '_'),
+      ])
+      .filter((x) => x)
       .join('.')
-      .replace(/-/g, '_');
+      .value();
 
     if (file == null) {
       file = {
@@ -304,10 +350,13 @@ export class ModelProtobuf {
 export interface ModelProtobufOptions {
   srcDir?: string;
   dstDir?: string;
+  packagePrefix?: string;
   javaPackagePrefix?: string;
 }
 
-export interface ModelProtobufAddModelOptions {}
+export interface ModelProtobufAddModelOptions {
+  noGenerate?: boolean;
+}
 
 export interface ModelProtobufToFile {
   path: string;
@@ -323,4 +372,5 @@ export interface ModelProtobufGetTypeOptions {
   fileName: string;
   location: string;
   file: ProtobufFile;
+  isMap?: boolean;
 }

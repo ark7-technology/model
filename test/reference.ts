@@ -58,7 +58,7 @@ describe('reference', () => {
               },
             },
           ],
-          fileName: process.cwd() + '/test/reference.ts',
+          fileName: 'test/reference.ts',
         },
       },
       fields: {

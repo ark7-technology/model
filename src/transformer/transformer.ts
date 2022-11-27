@@ -3,6 +3,10 @@ import * as ts from 'typescript';
 
 import { buildInterface } from './runtime-schema';
 
+declare global {
+  var process: any;
+}
+
 export function transform(
   program: ts.Program,
 ): ts.TransformerFactory<ts.SourceFile> {
@@ -44,22 +48,28 @@ const badInterface = ts.createRegularExpressionLiteral(
 function visitNode(node: ts.Node, program: ts.Program): ts.Node {
   const typeChecker = program.getTypeChecker();
 
+  let sourceFile: any;
+
+  for (let root = node.parent; root != null; root = root.parent) {
+    if (root.constructor.name === 'SourceFileObject') {
+      sourceFile = root;
+      break;
+    }
+  }
+
+  let fileName = sourceFile?.fileName;
+
+  if (typeof process !== 'undefined' && fileName != null) {
+    if (fileName.startsWith(process.cwd())) {
+      fileName = fileName.substring(process.cwd().length + 1);
+    }
+  }
+
   if (
     ts.isDecorator(node) &&
     (node.expression as any)?.expression?.escapedText === 'A7Model'
   ) {
     const parent: any = node.parent;
-
-    let sourceFile: any;
-
-    for (let root = parent; root != null; root = root.parent) {
-      if (root.constructor.name === 'SourceFileObject') {
-        sourceFile = root;
-        break;
-      }
-    }
-
-    const fileName = sourceFile.fileName;
 
     const type = typeChecker.getTypeAtLocation(parent);
 
@@ -95,17 +105,6 @@ function visitNode(node: ts.Node, program: ts.Program): ts.Node {
   if (!node.arguments?.length && !node.typeArguments?.length) {
     return badInterface;
   }
-
-  let sourceFile: any;
-
-  for (let root = node.parent; root != null; root = root.parent) {
-    if (root.constructor.name === 'SourceFileObject') {
-      sourceFile = root;
-      break;
-    }
-  }
-
-  const fileName = sourceFile.fileName;
 
   if (node.typeArguments?.length) {
     const typeNode = node.typeArguments[0];

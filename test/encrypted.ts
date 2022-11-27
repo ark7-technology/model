@@ -44,7 +44,7 @@ describe('encrypted', () => {
               type: 'string',
             },
           ],
-          fileName: process.cwd() + '/test/encrypted.ts',
+          fileName: 'test/encrypted.ts',
         },
       },
       fields: {

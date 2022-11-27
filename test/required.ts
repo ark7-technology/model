@@ -43,7 +43,7 @@ describe('required', () => {
               type: 'string',
             },
           ],
-          fileName: process.cwd() + '/test/required.ts',
+          fileName: 'test/required.ts',
         },
       },
       fields: {
