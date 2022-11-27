@@ -124,6 +124,7 @@ export interface StrictConfigOptions {
     options?: CompoundIndexOptionsOptions;
   }>;
   mixinClasses?: ModelClass<any>[];
+  protoNestedIn?: string;
 }
 
 export type ConfigOptions<T = StrictConfigOptions> = BaseOptions<

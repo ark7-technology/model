@@ -370,5 +370,5 @@ export interface ProvideOptions<T> {
 }
 
 export interface CustomProvideOptions {
-  protoNestedIn?: any;
+  protoNestedIn?: string;
 }
