@@ -5,5 +5,5 @@ export function Proto(options: ProtoFieldOptions): PropertyDecorator {
 }
 
 export interface ProtoFieldOptions {
-  protoFieldType?: 'none' | 'int32' | 'int64' | 'string' | 'float';
+  protoFieldType?: 'none' | 'int32' | 'int64' | 'string' | 'float' | 'double';
 }
