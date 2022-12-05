@@ -387,4 +387,5 @@ export interface ProvideOptions<T> {
 
 export interface CustomProvideOptions {
   protoNestedIn?: string;
+  protoEnumName?: string;
 }

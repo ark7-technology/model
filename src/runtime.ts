@@ -68,6 +68,7 @@ export namespace runtime {
     props: Property[];
     fileName?: string;
     protoNestedIn?: string;
+    protoMessageName?: string;
   }
 
   export function isReferenceType(type: Type): type is ReferenceType {

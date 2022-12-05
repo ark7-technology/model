@@ -125,6 +125,7 @@ export interface StrictConfigOptions {
   }>;
   mixinClasses?: ModelClass<any>[];
   protoNestedIn?: string;
+  protoMessageName?: string;
 }
 
 export type ConfigOptions<T = StrictConfigOptions> = BaseOptions<
