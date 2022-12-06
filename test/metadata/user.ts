@@ -68,7 +68,7 @@ export const userMetadata = {
   fields: {
     _id: {
       name: '_id',
-      options: { level: 10 },
+      options: { protoAssignedId: 1, level: 10 },
     },
   },
   name: 'User',

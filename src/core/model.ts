@@ -4,7 +4,7 @@ import * as debug from 'debug';
 import { manager as _manager } from './manager';
 import { A7Model } from './configs';
 import { AsObject } from './types';
-import { Basic } from './decorators';
+import { Basic, Proto } from './decorators';
 import { DefaultDataLevel } from './levels';
 import { DocumentToObjectOptions, ModelizeOptions } from './fields';
 import { ModelizeError } from './errors';
@@ -197,7 +197,9 @@ export function isID(x: any): x is ID {
 
 @A7Model({})
 export class Model extends StrictModel {
-  @Basic() _id?: ID;
+  @Basic()
+  @Proto({ protoAssignedId: 1 })
+  _id?: ID;
 }
 
 export type Attachment<T = object> = T & {
