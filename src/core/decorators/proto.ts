@@ -6,4 +6,5 @@ export function Proto(options: ProtoFieldOptions): PropertyDecorator {
 
 export interface ProtoFieldOptions {
   protoFieldType?: 'none' | 'int32' | 'int64' | 'string' | 'float' | 'double';
+  protoAssignedId?: number;
 }
