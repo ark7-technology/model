@@ -15,6 +15,8 @@ export function Editable(options: EditableOptions): PropertyDecorator {
 export interface EditableOptions {
   type?: 'input' | 'textarea' | 'select' | 'select-toggle';
 
+  options?: object | Array<{ label: any; value: any }>;
+
   hint?: string;
   info?: string;
 
