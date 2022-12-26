@@ -13,6 +13,8 @@ export function Editable(options: EditableOptions): PropertyDecorator {
  * Options for Editable annotation.
  */
 export interface EditableOptions {
+  type?: 'input' | 'textarea' | 'select' | 'select-toggle';
+
   hint?: string;
   info?: string;
 
