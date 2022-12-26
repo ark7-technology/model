@@ -36,9 +36,16 @@ export interface EditableOptions {
 }
 
 export interface EditableOptionsReference {
-  query?: object | (() => object) | (() => Promise<object>);
+  query?: object | (() => object);
+  navigate?: EditableOptionsNavigation;
 }
 
 export interface EditableFieldOptions {
   editable: EditableOptions;
+}
+
+export interface EditableOptionsNavigation {
+  routerLink?: string;
+  queryParams?: object;
+  fragment?: string;
 }
