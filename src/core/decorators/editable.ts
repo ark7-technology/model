@@ -28,6 +28,15 @@ export interface EditableOptions {
   hideDisplay?: boolean;
   hideEditing?: boolean;
   hide?: boolean;
+
+  /**
+   * Reference options.
+   */
+  reference?: EditableOptionsReference;
+}
+
+export interface EditableOptionsReference {
+  query?: object | (() => object) | (() => Promise<object>);
 }
 
 export interface EditableFieldOptions {
