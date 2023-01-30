@@ -55,6 +55,7 @@ export type EditableEvaluate<T> = T | ((this: any) => T);
 
 export type EditableType =
   | 'input'
+  | 'textarea'
   | 'list-input'
   | 'select'
   | 'money'
