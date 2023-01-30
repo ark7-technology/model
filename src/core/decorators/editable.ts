@@ -13,7 +13,8 @@ export function Editable(options: EditableOptions): PropertyDecorator {
  * Options for Editable annotation.
  */
 export interface EditableOptions {
-  type?: EditableEvaluate<'input' | 'textarea' | 'select' | 'select-toggle'>;
+  type?: EditableEvaluate<EditableType>;
+  inputType?: EditableEvaluate<EditableInputType>;
 
   options?: EditableEvaluate<object | Array<{ label: any; value: any }>>;
 
@@ -51,3 +52,28 @@ export interface EditableOptionsNavigation {
 }
 
 export type EditableEvaluate<T> = T | ((this: any) => T);
+
+export type EditableType =
+  | 'input'
+  | 'list-input'
+  | 'select'
+  | 'money'
+  | 'dynamic'
+  | 'unknown'
+  | 'select-toggle'
+  | 'model-reference';
+
+export type EditableInputType =
+  | 'area'
+  | 'text'
+  | 'date'
+  | 'datetime'
+  | 'currency'
+  | 'percent'
+  | 'number'
+  | 'boolean'
+  | 'email'
+  | 'password'
+  | 'link'
+  | 'duration'
+  | 'phone';
