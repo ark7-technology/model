@@ -50,4 +50,4 @@ export interface EditableOptionsNavigation {
   fragment?: string;
 }
 
-export type EditableEvaluate<T> = T | ((model: any) => T);
+export type EditableEvaluate<T> = T | ((this: any) => T);
