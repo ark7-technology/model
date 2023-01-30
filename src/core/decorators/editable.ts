@@ -13,12 +13,12 @@ export function Editable(options: EditableOptions): PropertyDecorator {
  * Options for Editable annotation.
  */
 export interface EditableOptions {
-  type?: 'input' | 'textarea' | 'select' | 'select-toggle';
+  type?: EditableEvaluate<'input' | 'textarea' | 'select' | 'select-toggle'>;
 
-  options?: object | Array<{ label: any; value: any }>;
+  options?: EditableEvaluate<object | Array<{ label: any; value: any }>>;
 
-  hint?: string;
-  info?: string;
+  hint?: EditableEvaluate<string>;
+  info?: EditableEvaluate<string>;
 
   displayWidth?: string | number;
   editWidth?: string | number;
@@ -49,3 +49,5 @@ export interface EditableOptionsNavigation {
   queryParams?: object;
   fragment?: string;
 }
+
+export type EditableEvaluate<T> = T | ((model: any) => T);
