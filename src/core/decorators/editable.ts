@@ -42,19 +42,19 @@ export interface EditableOptions {
    */
   listItemRemovable?: EditableEvaluate<boolean, [any]>;
 
-  displayWidth?: string | number;
-  editWidth?: string | number;
-  width?: string | number;
+  displayWidth?: EditableEvaluate<string | number>;
+  editWidth?: EditableEvaluate<string | number>;
+  width?: EditableEvaluate<string | number>;
 
-  autoHide?: boolean;
-  hideDisplay?: boolean;
-  hideEditing?: boolean;
-  hide?: boolean;
+  autoHide?: EditableEvaluate<boolean>;
+  hideDisplay?: EditableEvaluate<boolean>;
+  hideEditing?: EditableEvaluate<boolean>;
+  hide?: EditableEvaluate<boolean>;
 
   /**
    * Reference options.
    */
-  reference?: EditableOptionsReference;
+  reference?: EditableEvaluate<EditableOptionsReference>;
 }
 
 export interface EditableOptionsReference {
