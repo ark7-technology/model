@@ -21,6 +21,27 @@ export interface EditableOptions {
   hint?: EditableEvaluate<string>;
   info?: EditableEvaluate<string>;
 
+  /**
+   * Control if the field is disabled.
+   */
+  disabled?: EditableEvaluate<boolean>;
+
+  /**
+   * For list item, check if the list item is removable.
+   *
+   * @example
+   * The following code disables the removable function if the author has any
+   * publications:
+   *
+   * ```
+   * @EditableOptions({
+   *   listItemRemovable: (author: Author) => author.publications === 0;
+   * })
+   * authors: Ref<Author>[];
+   * ```
+   */
+  listItemRemovable?: EditableEvaluate<boolean, [any]>;
+
   displayWidth?: string | number;
   editWidth?: string | number;
   width?: string | number;
@@ -51,7 +72,9 @@ export interface EditableOptionsNavigation {
   fragment?: string;
 }
 
-export type EditableEvaluate<T> = T | ((this: any) => T);
+export type EditableEvaluate<T, Args extends Array<any> = []> =
+  | T
+  | ((this: any, ...a: Args) => T);
 
 export type EditableType =
   | 'input'
