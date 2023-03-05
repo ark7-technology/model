@@ -115,7 +115,7 @@ export class StrictModel {
       const key = (o as any)[metadata.configs.discriminatorKey];
       if (key != null && key.toLowerCase() !== metadata.name.toLowerCase()) {
         const m = manager.getMetadata(key);
-        d('modelize return discrimination.');
+        // d('modelize return discrimination.');
         return (m.modelClass as any).modelize.call(m.modelClass, o, options);
       }
 
