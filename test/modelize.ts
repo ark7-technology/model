@@ -154,7 +154,7 @@ describe('modelize', () => {
           model: '12345',
           models: [{ foo: 'bar' }],
         } as any,
-        { allowReference: true },
+        { allowReference: true, patchInstance: true },
       );
     }
     d('performance test finished');

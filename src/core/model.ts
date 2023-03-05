@@ -101,13 +101,17 @@ export class StrictModel {
 
     // d('modelize(): got metadata');
 
-    let ret: any = _.clone(o);
+    let ret: any = options.patchInstance ? o : _.clone(o);
 
     if (_.isString(ret) && options.allowReference) {
       ret = { _id: ret };
     }
 
     if (metadata.configs?.discriminatorKey) {
+      if (options.patchInstance) {
+        ret = _.clone(o);
+      }
+
       const key = (o as any)[metadata.configs.discriminatorKey];
       if (key != null && key.toLowerCase() !== metadata.name.toLowerCase()) {
         const m = manager.getMetadata(key);

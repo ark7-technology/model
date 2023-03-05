@@ -151,6 +151,11 @@ export interface ModelizeOptions {
   //   User schema.
   allowReference?: boolean;
 
+  /**
+   * Patch instance directly for better performance.
+   */
+  patchInstance?: boolean;
+
   noSubFields?: boolean;
 }
 
@@ -373,6 +378,7 @@ export class CombinedModelField {
             attachFieldMetadata: options.attachFieldMetadata,
             field: this,
             allowReference: options.allowReference,
+            patchInstance: options.patchInstance,
           })
         : o;
     }
@@ -400,6 +406,7 @@ export class CombinedModelField {
             attachFieldMetadata: options.attachFieldMetadata,
             field,
             allowReference: options.allowReference,
+            patchInstance: options.patchInstance,
           });
         } catch (error) {
           if (error instanceof ModelizeError) {
