@@ -333,7 +333,7 @@ export class CombinedModelField {
   }
 
   modelize(o: any, options: ModelizeOptions = {}): any {
-    d('CombinedModelField.modelize(%o, %o)', o, options);
+    d('CombinedModelField.modelize(%o)', o);
 
     const manager = options.manager ?? _manager;
     const fieldType = this.field?.type;

@@ -83,7 +83,7 @@ export class StrictModel {
     o: AsObject<InstanceType<T>>,
     options: ModelizeOptions = {},
   ): InstanceType<T> {
-    d('StrictModel.modelize(%o, %o)', o, options);
+    d('StrictModel.modelize(%o)', o);
     if (o == null) {
       d('modelize return empty.');
       return o as any;
