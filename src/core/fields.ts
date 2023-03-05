@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 
 import * as _ from 'underscore';
+import * as debug from 'debug';
 
 import { A7_MODEL_FIELD } from './tokens';
 import {
@@ -16,6 +17,8 @@ import { Manager, manager as _manager } from './manager';
 import { ModelizeError } from './errors';
 import { StrictModel } from './model';
 import { runtime } from '../runtime';
+
+const d = debug('ark7:model:Fields');
 
 export function Field<T = StrictFieldOption>(
   options?: FieldOptions<T>,
@@ -330,6 +333,8 @@ export class CombinedModelField {
   }
 
   modelize(o: any, options: ModelizeOptions = {}): any {
+    d('CombinedModelField.modelize(%o, %o)', o, options);
+
     const manager = options.manager ?? _manager;
     const fieldType = this.field?.type;
 

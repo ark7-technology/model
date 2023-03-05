@@ -1,11 +1,11 @@
 # @ark7/model
 
-A critical problem which always leads to many bugs is the duplication of the
-same models. @ark7/model is a model class layer which is shareable across
-multiple environments, so that the logics are kept in sync.
+One major issue that often results in numerous bugs is the replication of identical models. To mitigate this problem, the @ark7/model library offers a model
+class layer that can be utilized across various environments, ensuring consistent logic throughout.
 
 - [Nodejs (MongoDB)](https://github.com/ark7-technology/model-mongoose)
 - Browser
+- ProtocolBuffer
 
 ## Table of Contents
 

@@ -25,6 +25,8 @@ export class StrictModel {
   }
 
   $attach?<T>(data?: T): Attachment<T> {
+    d('StrictModel.$attach(%o)', data);
+
     const proto = (this as any).__proto__;
 
     if (data == null) {
@@ -45,6 +47,8 @@ export class StrictModel {
   }
 
   toJSON(options: DocumentToObjectOptions = {}): AsObject<this> {
+    d('StrictModel.toJSON(%o)', options);
+
     const ret: any = {};
     const metadata = A7Model.getMetadata((this as any).__proto__.constructor);
 
@@ -79,7 +83,7 @@ export class StrictModel {
     o: AsObject<InstanceType<T>>,
     options: ModelizeOptions = {},
   ): InstanceType<T> {
-    d('modelize started.');
+    d('StrictModel.modelize(%o, %o)', o, options);
     if (o == null) {
       d('modelize return empty.');
       return o as any;

@@ -32,7 +32,7 @@ export class Manager {
     name: string | ModelClass<T>,
     options?: GetMetadataOptions,
   ): Ark7ModelMetadata {
-    d('getMetadata started.');
+    d('Manager.getMetadata(%o, %o)', name, options);
     const eKey = _.isString(name) ? name : name.$modelClassName;
     if (eKey == null) {
       console.error(
@@ -51,10 +51,12 @@ export class Manager {
     }
 
     if (metadata.configs == null) {
+      d('getMetadata(): setConfigs');
       metadata.configs = getArk7ModelConfig(metadata.modelClass);
     }
 
     if (metadata.fields == null || options?.forceFields) {
+      d('getMetadata(): setFields');
       metadata.fields =
         (metadata.modelClass.prototype
           ? Reflect.getMetadata(A7_MODEL_FIELD, metadata.modelClass.prototype)
@@ -62,10 +64,11 @@ export class Manager {
     }
 
     if (metadata.combinedFields == null || options?.forceFields) {
+      d('getMetadata(): createCombinedFields');
       metadata.createCombinedFields(this);
     }
 
-    d('getMetadata completed.');
+    d('getMetadata(): Completed.');
     return metadata;
   }
 
