@@ -1,5 +1,7 @@
 import 'should';
 
+import debug from 'debug';
+
 import {
   A7Model,
   Default,
@@ -9,6 +11,8 @@ import {
   Never,
   StrictModel,
 } from '../src';
+
+const d = debug('test:Default');
 
 @A7Model({})
 class ModelizeModel3 extends StrictModel {
@@ -140,5 +144,19 @@ describe('modelize', () => {
         },
         models: [],
       });
+  });
+
+  it('test performance', () => {
+    d('performance test started');
+    for (let i = 0; i < 100000; i++) {
+      ModelizeModel1.modelize(
+        {
+          model: '12345',
+          models: [{ foo: 'bar' }],
+        } as any,
+        { allowReference: true },
+      );
+    }
+    d('performance test finished');
   });
 });

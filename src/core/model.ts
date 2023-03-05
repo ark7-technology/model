@@ -83,20 +83,23 @@ export class StrictModel {
     o: AsObject<InstanceType<T>>,
     options: ModelizeOptions = {},
   ): InstanceType<T> {
-    d('StrictModel.modelize(%o)', o);
+    // d('StrictModel.modelize(%o)', o);
+
     if (o == null) {
-      d('modelize return empty.');
+      // d('modelize return empty.');
       return o as any;
     }
 
     if (o instanceof this) {
-      d('modelize return this.');
+      // d('modelize return this.');
       return o as any;
     }
 
     const manager = options.manager ?? _manager;
 
     const metadata = manager.getMetadata(this.prototype.constructor);
+
+    // d('modelize(): got metadata');
 
     let ret: any = _.clone(o);
 
@@ -120,7 +123,7 @@ export class StrictModel {
     const desc = Object.getOwnPropertyDescriptor(this.prototype, '$mixed');
 
     if (desc == null) {
-      d('set $mixed propertype property.');
+      d('set $mixed prototype property.');
       Object.defineProperty(this.prototype, '$mixed', { value: true });
 
       for (const cls of metadata.classes.reverse()) {
@@ -180,7 +183,7 @@ export class StrictModel {
       (ret as StrictModel).$attach(options.meta || {});
     }
 
-    d('modelize completed.');
+    // d('modelize completed.');
     return ret as any;
   }
 }

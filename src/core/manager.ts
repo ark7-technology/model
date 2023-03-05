@@ -32,7 +32,7 @@ export class Manager {
     name: string | ModelClass<T>,
     options?: GetMetadataOptions,
   ): Ark7ModelMetadata {
-    d('Manager.getMetadata(%o, %o)', name, options);
+    // d('Manager.getMetadata(%o, %o)', name, options);
     const eKey = _.isString(name) ? name : name.$modelClassName;
     if (eKey == null) {
       console.error(
@@ -68,7 +68,7 @@ export class Manager {
       metadata.createCombinedFields(this);
     }
 
-    d('getMetadata(): Completed.');
+    // d('getMetadata(): Completed.');
     return metadata;
   }
 
