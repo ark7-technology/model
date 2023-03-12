@@ -39,6 +39,11 @@ export interface IndexOptions {
   index: boolean;
   unique?: boolean;
   sparse?: boolean;
+
+  /**
+   * Disable current and all nested indexes.
+   */
+  indexDisabled?: boolean;
 }
 
 export interface CompoundIndexOptionsFields {
