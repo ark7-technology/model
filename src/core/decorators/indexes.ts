@@ -5,7 +5,12 @@ import { Field } from '../fields';
 import { concatResolver } from '../resolvers';
 
 /**
- * Indicate a field has an index.
+ * Create an index on current field.
+ *
+ * @param options.index Enable current field index.
+ * @param options.unique Indicate it's a unique index.
+ * @param options.sparse Indicate it could be nullable.
+ * @param options.indexDisabled Disable all current and nested field indexes.
  */
 export function Index(options: Partial<IndexOptions> = {}): PropertyDecorator {
   return Field<IndexOptions>(
@@ -14,12 +19,16 @@ export function Index(options: Partial<IndexOptions> = {}): PropertyDecorator {
         index: true,
       },
       options,
+      options.indexDisabled && !options.index ? { index: false } : {},
     ),
   );
 }
 
 /**
  * Indicate a field is unique.
+ *
+ * @param options.unique Indicate it's a unique index.
+ * @param options.sparse Indicate it could be nullable.
  */
 export function Unique(
   options: { unique?: boolean; sparse?: boolean } = {},
