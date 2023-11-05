@@ -2,6 +2,7 @@ export * from './data-level';
 export * from './default';
 export * from './editable';
 export * from './ids';
+export * from './important';
 export * from './indexes';
 export * from './map';
 export * from './mixin';

@@ -1,6 +1,6 @@
 import 'should';
 
-import { A7Model, Mixin } from '../src';
+import { A7Model, Important, Mixin } from '../src';
 
 @A7Model({})
 class ParentMixin {}
@@ -10,7 +10,16 @@ class ParentMixin {}
 class Parent {}
 
 @A7Model({})
-class ChildMixin {}
+class ChildMixin {
+  @Important()
+  f1() {
+    return 'f1.mixin';
+  }
+
+  f2() {
+    return 'f2.mixin';
+  }
+}
 
 @A7Model({})
 class ChildMixin2 {}
@@ -18,7 +27,15 @@ class ChildMixin2 {}
 @A7Model({})
 @Mixin(ChildMixin2)
 @Mixin(ChildMixin)
-class Child extends Parent {}
+class Child extends Parent {
+  f1() {
+    return 'f1.class';
+  }
+
+  f2() {
+    return 'f2.mixin';
+  }
+}
 
 describe('orders', () => {
   it('generates expected orders', () => {
@@ -29,5 +46,11 @@ describe('orders', () => {
       ChildMixin2,
       Child,
     ]);
+
+    const f1 = A7Model.getMetadata(Child).combinedFields.get('f1');
+    const f2 = A7Model.getMetadata(Child).combinedFields.get('f2');
+
+    f2.source.name.should.be.equal('Child');
+    f1.source.name.should.be.equal('ChildMixin');
   });
 });

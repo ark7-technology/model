@@ -207,6 +207,14 @@ export class CombinedModelField {
   ) {}
 
   merge(b: CombinedModelField): CombinedModelField {
+    if (
+      b?.field?.importance != null &&
+      (this.field?.importance == null ||
+        b.field.importance > this.field.importance)
+    ) {
+      return b.merge(this);
+    }
+
     return new CombinedModelField(
       this.name,
       this.prop ?? b.prop,
