@@ -70,6 +70,11 @@ export interface EditableOptionsNavigation {
   routerLink?: string;
   queryParams?: object;
   fragment?: string;
+
+  /**
+   * Link the value to an external link.
+   */
+  externalLink?: string;
 }
 
 export type EditableEvaluate<T, Args extends Array<any> = []> =
