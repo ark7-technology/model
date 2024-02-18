@@ -38,7 +38,7 @@ function visitNodeAndChildren(
   );
 }
 
-const badInterface = ts.createRegularExpressionLiteral(
+const badInterface = ts.factory.createRegularExpressionLiteral(
   JSON.stringify({
     name: 'never',
     props: [],
@@ -73,7 +73,7 @@ function visitNode(node: ts.Node, program: ts.Program): ts.Node {
 
     const type = typeChecker.getTypeAtLocation(parent);
 
-    const literal = ts.createRegularExpressionLiteral(
+    const literal = ts.factory.createRegularExpressionLiteral(
       JSON.stringify(
         _.extend(
           buildInterface(type.symbol.escapedName as string, type, typeChecker),
@@ -88,14 +88,14 @@ function visitNode(node: ts.Node, program: ts.Program): ts.Node {
 
     const exp: any = node.expression;
 
-    const expression = ts.updateCall(
+    const expression = ts.factory.updateCallExpression(
       exp,
       exp.expression,
       exp.typeArguments,
       elements,
     );
 
-    return ts.updateDecorator(node, expression);
+    return ts.factory.updateDecorator(node, expression);
   }
 
   if (!isRuntimeTypeCallExpression(node, typeChecker)) {
@@ -109,24 +109,34 @@ function visitNode(node: ts.Node, program: ts.Program): ts.Node {
   if (node.typeArguments?.length) {
     const typeNode = node.typeArguments[0];
 
-    const name = ts.createStringLiteral(typeNode.getText());
+    const name = ts.factory.createStringLiteral(typeNode.getText());
 
-    const literal = ts.createRegularExpressionLiteral(JSON.stringify({}));
+    const literal = ts.factory.createRegularExpressionLiteral(
+      JSON.stringify({}),
+    );
 
     const elements = [...node.arguments, literal, name];
 
-    const args = ts.createNodeArray(elements, node.arguments.hasTrailingComma);
+    const args = ts.factory.createNodeArray(
+      elements,
+      node.arguments.hasTrailingComma,
+    );
 
-    return ts.updateCall(node, node.expression, node.typeArguments, args);
+    return ts.factory.updateCallExpression(
+      node,
+      node.expression,
+      node.typeArguments,
+      args,
+    );
   } else {
     const i = node.arguments[0];
 
     if (ts.isIdentifier(i)) {
       const t = typeChecker.getTypeAtLocation(i) as any;
 
-      const name = ts.createStringLiteral(t.symbol.escapedName);
+      const name = ts.factory.createStringLiteral(t.symbol.escapedName);
 
-      const literal = ts.createRegularExpressionLiteral(
+      const literal = ts.factory.createRegularExpressionLiteral(
         JSON.stringify(
           _.extend(buildInterface(t.symbol.escapedName, t, typeChecker), {
             fileName,
@@ -136,12 +146,17 @@ function visitNode(node: ts.Node, program: ts.Program): ts.Node {
 
       const elements = [...node.arguments, literal, name];
 
-      const args = ts.createNodeArray(
+      const args = ts.factory.createNodeArray(
         elements,
         node.arguments.hasTrailingComma,
       );
 
-      return ts.updateCall(node, node.expression, node.typeArguments, args);
+      return ts.factory.updateCallExpression(
+        node,
+        node.expression,
+        node.typeArguments,
+        args,
+      );
     }
   }
 }

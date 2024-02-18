@@ -86,10 +86,10 @@ function propertyReadonly(symbol: ts.Symbol): boolean {
   return (
     symbol.declarations &&
     symbol.declarations.some(
-      (d) =>
+      (d: any) =>
         d.modifiers &&
         d.modifiers.some(
-          (modifier) => modifier.kind === ts.SyntaxKind.ReadonlyKeyword,
+          (modifier: any) => modifier.kind === ts.SyntaxKind.ReadonlyKeyword,
         ),
     )
   );
@@ -97,7 +97,7 @@ function propertyReadonly(symbol: ts.Symbol): boolean {
 
 function isAbstract(symbol: ts.Symbol): boolean {
   for (const declaration of symbol.declarations) {
-    for (const modifier of declaration.modifiers || []) {
+    for (const modifier of (declaration as any).modifiers || []) {
       if (modifier.kind === ts.SyntaxKind.AbstractKeyword) {
         return true;
       }
@@ -113,7 +113,7 @@ function propertyModifier(symbol: ts.Symbol): runtime.Modifier {
   }
 
   for (const declaration of symbol.declarations) {
-    for (const modifier of declaration.modifiers || []) {
+    for (const modifier of (declaration as any).modifiers || []) {
       switch (modifier.kind) {
         case ts.SyntaxKind.PrivateKeyword:
           return runtime.Modifier.PRIVATE;
@@ -225,13 +225,14 @@ function getTypeFromSignature(
     case ts.SyntaxKind.TypeLiteral:
       const members: Map<string, ts.Symbol> = (propertySignature as any).symbol
         .members;
+      console.log('members:', members);
       return {
         props: Array.from(members.values())
-          .map((m) => buildInterfaceProperty(m as ts.Symbol, typeChecker))
+          .map((m) => buildInterfaceProperty(m, typeChecker))
           .filter((x) => x != null),
       };
     case ts.SyntaxKind.UnionType:
-      const union = ((propertySignature as any) as ts.UnionTypeNode).types.map(
+      const union = (propertySignature as any as ts.UnionTypeNode).types.map(
         (t) => {
           return getTypeFromSignature(t as any, typeChecker);
         },

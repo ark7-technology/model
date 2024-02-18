@@ -19,10 +19,14 @@ export type NonFunctionPropertyNames<T> =
   | PropertyAnyNames<T>;
 
 // Returns the function properties of an interface.
-export type PickFunctionProperties<T> = Pick<T, FunctionPropertyNames<T>>;
+export type PickFunctionProperties<T> = T extends Array<any>
+  ? T
+  : Pick<T, FunctionPropertyNames<T>>;
 
 // Omit the function properties from an interface.
-export type OmitFunctionProperties<T> = Omit<T, FunctionPropertyNames<T>>;
+export type OmitFunctionProperties<T> = T extends Array<any>
+  ? T
+  : Omit<T, FunctionPropertyNames<T>>;
 
 // A helper function to check if X == Y then A else B.
 export type IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X
@@ -51,9 +55,13 @@ export type NonReadonlyPropertyNames<T> = {
   >;
 }[keyof T];
 
-export type PickReadonlyProperties<T> = Pick<T, ReadonlyPropertyNames<T>>;
+export type PickReadonlyProperties<T> = T extends Array<any>
+  ? T
+  : Pick<T, ReadonlyPropertyNames<T>>;
 
-export type OmitReadonlyProperties<T> = Omit<T, ReadonlyPropertyNames<T>>;
+export type OmitReadonlyProperties<T> = T extends Array<any>
+  ? T
+  : Omit<T, ReadonlyPropertyNames<T>>;
 
 export type OneOrMany<T> = T | T[];
 export type OneOrArray<T> = T | T[];
