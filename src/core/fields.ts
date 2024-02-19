@@ -272,6 +272,22 @@ export class CombinedModelField {
     return runtime.isArrayType(this.prop?.type);
   }
 
+  get isIDArray(): boolean {
+    return (
+      runtime.isArrayType(this.prop?.type) &&
+      runtime.isReferenceType(this.prop.type.arrayElementType) &&
+      this.prop.type.arrayElementType.referenceName === 'ID'
+    );
+  }
+
+  get isDateArray(): boolean {
+    return (
+      runtime.isArrayType(this.prop?.type) &&
+      runtime.isReferenceType(this.prop.type.arrayElementType) &&
+      this.prop.type.arrayElementType.referenceName === 'Date'
+    );
+  }
+
   get isMap(): boolean {
     return (
       runtime.isParameterizedType(this.prop?.type) &&
