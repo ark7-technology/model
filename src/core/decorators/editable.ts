@@ -4,6 +4,8 @@ import { Field } from '../fields';
 
 /**
  * Annotate the property with Editable options.
+ *
+ * @param options - The options to set for the Editable field.
  */
 export function Editable(options: EditableOptions): PropertyDecorator {
   return Field<EditableFieldOptions>({ editable: options });
@@ -13,6 +15,9 @@ export function Editable(options: EditableOptions): PropertyDecorator {
  * Options for Editable annotation.
  */
 export interface EditableOptions {
+  /**
+   * Specify the type of the field.
+   */
   type?: EditableEvaluate<EditableType>;
   inputType?: EditableEvaluate<EditableInputType>;
 

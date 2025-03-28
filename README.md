@@ -1,26 +1,32 @@
 # @ark7/model
 
-One major issue that often results in numerous bugs is the replication of identical models. To mitigate this problem, the @ark7/model library offers a model
-class layer that can be utilized across various environments, ensuring consistent logic throughout.
+In many projects, duplicating identical models can lead to a multitude of bugs.
+The **@ark7/model** library addresses this challenge by providing a unified
+model class layer that works seamlessly across different environments, ensuring
+consistent business logic and reducing redundancy.
 
-- [Nodejs (MongoDB)](https://github.com/ark7-technology/model-mongoose)
+Supported Platforms:
+
+- [Node.js (MongoDB)](https://github.com/ark7-technology/model-mongoose)
 - Browser
 - ProtocolBuffer
+
+---
 
 ## Table of Contents
 
 - [Installation](#installation)
 - [Quick Start](#quick-start)
-  - [Define a Model](#define-a-model)
+  - [Defining a Model](#defining-a-model)
 - [Model](#model)
   - [Model Metadata](#model-metadata)
   - [Model Definition](#model-definition)
   - [Discrimination](#discrimination)
   - [Mixin](#mixin)
 - [Field](#field)
-  - [Required v.s. Optional](#required-v.s.-optional)
+  - [Required vs. Optional](#required-vs-optional)
   - [Readonly](#readonly)
-  - [Default](#default)
+  - [Default Values](#default-values)
   - [Model.modelize()](#modelmodelize)
   - [.toObject() & .toJSON()](#toobject--tojson)
   - [Data Level](#data-level)
@@ -29,12 +35,14 @@ class layer that can be utilized across various environments, ensuring consisten
   - [Email](#email)
   - [UUID](#uuid)
 
+---
+
 ## Installation
 
-Install the dependencies package:
+Install the package using npm:
 
 ```shell
-$ npm install @ark7/model
+npm install @ark7/model
 ```
 
 Add transform plugin to tsconfig.json:
