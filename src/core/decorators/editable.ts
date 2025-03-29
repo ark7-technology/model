@@ -3,9 +3,12 @@ import * as _ from 'underscore';
 import { Field } from '../fields';
 
 /**
- * Annotate the property with Editable options.
+ * Decorates a class property with editable options.
  *
- * @param options - The options to set for the Editable field.
+ * Use this decorator to configure dynamic, editable behaviors for your model fields.
+ * More examples can be found [here](https://github.com/ark7-technology/model/blob/main/docs/Editable.md).
+ *
+ * @param options - The configuration options for the editable field.
  */
 export function Editable(options: EditableOptions): PropertyDecorator {
   return Field<EditableFieldOptions>({ editable: options });
@@ -19,6 +22,41 @@ export interface EditableOptions {
    * Specify the type of the field.
    */
   type?: EditableEvaluate<EditableType>;
+
+  /**
+   * Specifies the type of input element to render for the editable field.
+   *
+   * Allowed values:
+   * - `'area'`: Renders a textarea for multi-line text input.
+   * - `'text'`: Renders a standard single-line text input.
+   * - `'date'`: Renders a date picker.
+   * - `'datetime'`: Renders a date and time picker.
+   * - `'currency'`: Renders an input formatted for currency values.
+   * - `'percent'`: Renders an input formatted for percentage values.
+   * - `'number'`: Renders a numeric input.
+   * - `'boolean'`: Renders a checkbox or toggle for boolean values.
+   * - `'email'`: Renders an input for email addresses.
+   * - `'password'`: Renders a password input.
+   * - `'link'`: Renders an input for URLs.
+   * - `'duration'`: Renders an input for time durations.
+   * - `'phone'`: Renders an input formatted for phone numbers.
+   *
+   * The property accepts either a direct value or a function that returns one.
+   *
+   * @example
+   * // Use a text input for a name field.
+   * @Editable({
+   *   inputType: 'text'
+   * })
+   * name: string;
+   *
+   * @example
+   * // Use a textarea for a multi-line description.
+   * @Editable({
+   *   inputType: 'area'
+   * })
+   * description: string;
+   */
   inputType?: EditableEvaluate<EditableInputType>;
 
   options?: EditableEvaluate<object | Array<{ label: any; value: any }>>;

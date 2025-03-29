@@ -7,13 +7,10 @@ import { Field } from '../fields';
  *
  * @param tag - The tag to add to the field.
  *
- * @example Set the tag directly:
- * ```typescript
- * class Model {
- *   @Tag('ConfigField')
- *   settings: Settings;
- * }
- * ```
+ * @example
+ * // Set the tag directly:
+ * @Tag('ConfigField')
+ * settings: Settings;
  */
 export function Tag(tag: string | string[]): PropertyDecorator {
   return Field<TagOptions>({
