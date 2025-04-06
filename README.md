@@ -1,8 +1,8 @@
 # @ark7/model
 
-In many projects, duplicating identical models can lead to a multitude of bugs.
-The **@ark7/model** library addresses this challenge by providing a unified
-model class layer that works seamlessly across different environments, ensuring
+In many projects, duplicating identical models can lead to numerous bugs. The
+**@ark7/model** library addresses this challenge by offering a unified model
+class layer that operates seamlessly across various environments, ensuring
 consistent business logic and reducing redundancy.
 
 Supported Platforms:
@@ -62,8 +62,7 @@ Add transform plugin to tsconfig.json:
 
 ### Define a Model
 
-Models are defined by decorating the class with `A7Model`, or using
-`A7Model.provide(ModelClass)`.
+Models are defined by decorating the class with `A7Model` or using `A7Model.provide(ModelClass)`.
 
 ```Typescript
 // models/users.ts
@@ -102,8 +101,7 @@ export class User {
 
 ### Model Metadata
 
-Once the model is defined, class metadata, field metadata, and model schema are
-retrievable through `A7Model.getMetadata(ModelClass)`. For example:
+Once a model is defined, class metadata, field metadata, and model schema can be retrieved through `A7Model.getMetadata(ModelClass)`. For example:
 
 ```Typescript
 @A7Model({})
@@ -143,7 +141,7 @@ A7Model.getMetadata(Name).should.be.deepEqual({
 
 ### Model Definition
 
-Model level configuration can be injected by either `@A7Model()` or `@Config()`:
+Model-level configuration can be injected using either `@A7Model()` or `@Config()`:
 
 ```Typescript
 @A7Model<ModelConfig>({ foo: 'bar' })
@@ -194,7 +192,7 @@ ins2.toObject().should.be.deepEqual({
 
 ### Mixin
 
-A model can mixin other models.
+A model can mix in other models.
 
 ```Typescript
 @A7Model({})
@@ -219,7 +217,7 @@ interface CombinedModel extends M1, M2 {}
 
 ### Required v.s. Optional
 
-The `required` modifier can be declared on `field metadata` or `schema` level:
+The `required` modifier can be declared at the `field metadata` or `schema` level:
 
 ```Typescript
 class Name {
@@ -230,7 +228,7 @@ class Name {
 }
 ```
 
-Sometimes, the two levels may have conflict opinions:
+Sometimes, the two levels may have conflicting opinions:
 
 ```Typescript
 class Name {
@@ -241,11 +239,11 @@ class Name {
 }
 ```
 
-It depends on the adaptor to deal with those conflicts.
+It depends on the adapter to resolve these conflicts.
 
 ### Readonly
 
-The `readonly` modifier can be declared on `field metadata` or `schema` level:
+The `readonly` modifier can be declared at the `field metadata` or `schema` level:
 
 ```Typescript
 class Name {
@@ -256,11 +254,11 @@ class Name {
 }
 ```
 
-It depends on the adaptor to deal with the conflicts.
+It depends on the adapter to resolve these conflicts.
 
 ### Default
 
-The `default` value can be set on `field metadata`:
+The `default` value can be set at the `field metadata` level:
 
 ```Typescript
 class Name {
@@ -337,9 +335,7 @@ user.toObject().should.be.instanceof({
 
 ### Data Level
 
-Each field will be assigned a level number. The higher the level number, the
-more restrict or confidential the field is. We have pre-defined five data
-levels:
+Each field is assigned a level number. The higher the level number, the more restricted or confidential the field is. We have predefined five data levels:
 
     1. BASIC (10) - The basic field that will be used in the most scenarios.
                     Usually, presented when it's referenced by other model.
@@ -356,7 +352,7 @@ levels:
 
     5. NEVER (1000) - The fields that are never returns.
 
-**Projection**
+**Projection:**
 
 We can do the projection by providing a filter level. Any fields with level
 numbers that are smaller or equal to the filter level will be projected. You can
@@ -396,7 +392,7 @@ user.toObject({ level: DefaultDataLevel.SHORT }).should.be.instanceof({
 });
 ```
 
-**Population**
+**Population:**
 
 For a reference field, when the filter level is greater than the
 populateLevel specified by the option, the field will be populated.
@@ -417,7 +413,7 @@ export class Post extends Model {
 
 ### Attachment
 
-Sometimes, we need to attach metadata to an instance.
+Sometimes, it's necessary to attach metadata to an instance.
 
 ```Typescript
 import { A7Model, StrictModel } from '@ark7/model';

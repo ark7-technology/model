@@ -19,9 +19,25 @@ export function Editable(options: EditableOptions): PropertyDecorator;
 - **Parameters**:
   - options: An object of type EditableOptions that specifies the editable configuration for the field.
 
-## Example Usage
+## Field Visibility
 
-### Config Field Type
+The `@Editable` decorator provides options to control the visibility of fields in different modes. You can use the `hideDisplay`, `hideEditing`, and `hide` properties to conditionally hide fields based on the state of the instance.
+
+### hideDisplay
+
+The `hideDisplay` property allows you to hide a field in display mode. This can be useful when you want to show or hide fields based on certain conditions.
+
+#### Example
+
+````typescript
+@Editable({
+  hideDisplay(this: ThisClass) {
+    return this.conditionalFieldValue;
+  }
+})
+fieldName: string;
+
+### Config Field
 
 Below is an example demonstrating how to use the Editable decorator in a model:
 
@@ -43,7 +59,7 @@ class Book {
   })
   authors: Ref<Author>[];
 }
-```
+````
 
 ### Control the UI Element
 

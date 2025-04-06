@@ -59,6 +59,12 @@ export interface EditableOptions {
    */
   inputType?: EditableEvaluate<EditableInputType>;
 
+  /**
+   * Options for select fields.
+   *
+   * This property is used to provide a list of options for select fields.
+   * It can be an object or an array of objects, each containing a label and a value.
+   */
   options?: EditableEvaluate<object | Array<{ label: any; value: any }>>;
 
   hint?: EditableEvaluate<string>;
@@ -89,9 +95,51 @@ export interface EditableOptions {
   editWidth?: EditableEvaluate<string | number>;
   width?: EditableEvaluate<string | number>;
 
+  /**
+   * Automatically hide the field in display mode if the value is false or non-existent.
+   */
   autoHide?: EditableEvaluate<boolean>;
+
+  /**
+   * Determines if the field should be hidden in display mode.
+   *
+   * @example
+   * // Hide the field in display mode based on a condition.
+   * @Editable({
+   *   hideDisplay(this: ThisClass) {
+   *     return this.conditionalFieldValue;
+   *   }
+   * })
+   * fieldName: string;
+   */
   hideDisplay?: EditableEvaluate<boolean>;
+
+  /**
+   * Determines if the field should be hidden in editing mode.
+   *
+   * @example
+   * // Hide the field in editing mode based on a condition.
+   * @Editable({
+   *   hideEditing(this: ThisClass) {
+   *     return this.conditionalFieldValue;
+   *   }
+   * })
+   * fieldName: string;
+   */
   hideEditing?: EditableEvaluate<boolean>;
+
+  /**
+   * Determines if the field should be hidden in both display and editing modes.
+   *
+   * @example
+   * // Hide the field in both display and editing modes based on a condition.
+   * @Editable({
+   *   hide(this: ThisClass) {
+   *     return this.conditionalFieldValue;
+   *   }
+   * })
+   * fieldName: string;
+   */
   hide?: EditableEvaluate<boolean>;
 
   /**
