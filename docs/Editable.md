@@ -54,10 +54,10 @@ be useful when you want to show or hide fields based on certain conditions.
 
 ```typescript
 @Editable({
-        hideDisplay(this: ThisClass) {
-        return this.conditionalFieldValue;
-        }
-        })
+  hideDisplay(this: ThisClass) {
+    return this.conditionalFieldValue;
+  }
+})
 fieldName: string;
 ```
 
