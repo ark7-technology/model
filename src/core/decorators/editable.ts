@@ -144,6 +144,17 @@ export interface EditableOptions {
 
   /**
    * Reference options.
+   *
+   * @example
+   * // Example of using reference with query and navigate options.
+   * reference: {
+   *   query: {},
+   *   navigate: {
+   *     routerLink: '/flow/characters/${_id}',
+   *     queryParams: {},
+   *     fragment: 'Settings',
+   *   },
+   * }
    */
   reference?: EditableEvaluate<EditableOptionsReference>;
 }

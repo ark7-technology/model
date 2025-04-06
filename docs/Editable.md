@@ -121,3 +121,25 @@ class UserProfile {
   bio: string;
 }
 ```
+
+## Reference Options
+
+The `reference` option in the `@Editable` decorator allows you to define navigation and query parameters for a field. This is particularly useful when you want to link a field to another resource or page within your application.
+
+### Example Usage
+
+Here is an example of how to use the `reference` option:
+
+```typescript
+@Editable({
+  reference: {
+    query: {},
+    navigate: {
+      routerLink: '/flow/characters/${_id}',
+      queryParams: {},
+      fragment: 'Settings',
+    },
+  }
+})
+characterLink: string;
+```
