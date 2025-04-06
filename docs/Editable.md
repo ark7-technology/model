@@ -29,13 +29,14 @@ The `hideDisplay` property allows you to hide a field in display mode. This can 
 
 #### Example
 
-````typescript
+```typescript
 @Editable({
   hideDisplay(this: ThisClass) {
     return this.conditionalFieldValue;
   }
 })
 fieldName: string;
+```
 
 ### Config Field
 
@@ -59,7 +60,7 @@ class Book {
   })
   authors: Ref<Author>[];
 }
-````
+```
 
 ### Control the UI Element
 
