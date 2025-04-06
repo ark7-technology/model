@@ -17,24 +17,47 @@ export function Editable(options: EditableOptions): PropertyDecorator;
 ```
 
 - **Parameters**:
-  - options: An object of type EditableOptions that specifies the editable configuration for the field.
+- options: An object of type EditableOptions that specifies the editable
+  configuration for the field.
 
 ## Field Visibility
 
-The `@Editable` decorator provides options to control the visibility of fields in different modes. You can use the `hideDisplay`, `hideEditing`, and `hide` properties to conditionally hide fields based on the state of the instance.
+The `@Editable` decorator provides options to control the visibility of fields
+in different modes. You can use the `hideDisplay`, `hideEditing`, and `hide`
+properties to conditionally hide fields based on the state of the instance.
+
+### hideDisplay vs hideEditing vs hide
+
+- **hideDisplay**: This property is used to hide a field when it is in display
+  (read-only) mode. It is useful for scenarios where you want to show or hide
+  fields based on certain conditions when the field is not being edited.
+
+- **hideEditing**: This property is used to hide a field when it is in editing
+  mode. It allows you to control the visibility of fields specifically when they
+  are being edited, which can be useful for fields that should not be modified
+  under certain conditions.
+
+- **hide**: This property is a more general option that can be used to hide a
+  field in both display and editing modes. It provides a broader control over the
+  field's visibility regardless of the mode.
+
+These properties allow for flexible control over the visibility of fields in
+different states, enabling dynamic UI adjustments based on the application's
+logic.
 
 ### hideDisplay
 
-The `hideDisplay` property allows you to hide a field in display mode. This can be useful when you want to show or hide fields based on certain conditions.
+The `hideDisplay` property allows you to hide a field in display mode. This can
+be useful when you want to show or hide fields based on certain conditions.
 
 #### Example
 
 ```typescript
 @Editable({
-  hideDisplay(this: ThisClass) {
-    return this.conditionalFieldValue;
-  }
-})
+        hideDisplay(this: ThisClass) {
+        return this.conditionalFieldValue;
+        }
+        })
 fieldName: string;
 ```
 
