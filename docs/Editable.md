@@ -1,5 +1,15 @@
 # Editable Function Documentation
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Function Signature](#function-signature)
+- [Field Visibility](#field-visibility)
+  - [hideDisplay vs hideEditing vs hide](#hidedisplay-vs-hideediting-vs-hide)
+  - [hideDisplay](#hidedisplay)
+- [Config Field](#config-field)
+- [Control the UI Element](#control-the-ui-element)
+
 This document explains the usage and configuration options for the `Editable`
 function, which is used to annotate class properties with editable options in a
 TypeScript model.
