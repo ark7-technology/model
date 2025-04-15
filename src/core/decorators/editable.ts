@@ -207,4 +207,6 @@ export type EditableInputType =
   | 'password'
   | 'link'
   | 'duration'
-  | 'phone';
+  | 'phone'
+  | 'typescript'
+  | 'javascript';
