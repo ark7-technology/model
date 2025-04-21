@@ -96,6 +96,11 @@ export interface EditableOptions {
   width?: EditableEvaluate<string | number>;
 
   /**
+   * Specify the text to copy.
+   */
+  copyText?: EditableEvaluate<string>;
+
+  /**
    * Automatically hide the field in display mode if the value is false or non-existent.
    */
   autoHide?: EditableEvaluate<boolean>;
