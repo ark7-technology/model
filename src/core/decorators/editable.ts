@@ -214,4 +214,5 @@ export type EditableInputType =
   | 'duration'
   | 'phone'
   | 'typescript'
-  | 'javascript';
+  | 'javascript'
+  | 'markdown';
