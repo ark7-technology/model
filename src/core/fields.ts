@@ -173,7 +173,7 @@ export interface DocumentToObjectOptions {
    * @param options The options in use (either schema options or the options
    *                passed inline)
    */
-  transform?: (doc: any, ret: any, options: any) => any;
+  transform?: boolean | ((doc: any, ret: any, options: any) => any);
   /** depopulate any populated paths, replacing them with their original refs
    * (defaults to false) */
   depopulate?: boolean;
