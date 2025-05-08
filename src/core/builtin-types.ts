@@ -11,9 +11,9 @@ A7Model.provide<Email>({
   modelize: (val) => val,
 });
 
-export interface UUID extends String {}
+export interface StringUUID extends String {}
 
-A7Model.provide<UUID>({
+A7Model.provide<StringUUID>({
   modelize: (val) => val,
 });
 

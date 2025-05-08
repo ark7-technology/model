@@ -446,6 +446,6 @@ name.toObject().should.be.deepEqual({
 
 Email address.
 
-### UUID
+### StringUUID
 
-UUID.
+StringUUID.
