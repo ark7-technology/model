@@ -163,7 +163,7 @@ export interface DocumentToObjectOptions {
   /** apply all getters (path and virtual getters) */
   getters?: boolean;
   /** apply virtual getters (can override getters option) */
-  virtuals?: boolean;
+  virtuals?: boolean | string[];
   /** remove empty objects (defaults to true) */
   minimize?: boolean;
   /**
