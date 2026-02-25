@@ -4,6 +4,25 @@
   "description": "Ark7 model used for both backend and frontend",
   "types": "index.d.ts",
   "main": "index.js",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./transformer": {
+      "types": "./transformer/index.d.ts",
+      "default": "./transformer/index.js"
+    },
+    "./resource": {
+      "types": "./plugins/resource/index.d.ts",
+      "default": "./plugins/resource/index.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "resource": ["plugins/resource/index.d.ts"]
+    }
+  },
   "scripts": {
     "build": "scripts/build",
     "clean": "rm -rf dist",
