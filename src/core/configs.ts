@@ -21,6 +21,26 @@ import { runtime } from '../runtime';
 
 const d = debug('ark7:model:configs');
 
+/**
+ * Low-level class decorator that registers a model with the A7Model system.
+ *
+ * Merges the provided {@link ConfigOptions} with any existing config on the
+ * class (via the options resolver), attaches the transformer-generated
+ * schema, and registers the class with the global {@link Manager}. Also
+ * handles discriminator key propagation for polymorphic model hierarchies.
+ *
+ * Most users should use the {@link A7Model} alias instead of calling this
+ * directly.
+ *
+ * @param options - Model configuration options (defaultLevel, toObject,
+ *   toJSON, discriminatorKey, mixinClasses, etc.).
+ * @param schema - The transformer-generated schema containing property type
+ *   information. Injected automatically by the TypeScript transformer at
+ *   compile time.
+ * @param name - Optional override for the model registration name. Defaults
+ *   to the schema name or the class name.
+ * @returns A class decorator.
+ */
 export function Config<T = object>(
   options: ConfigOptions<T>,
   schema?: runtime.Schema,
@@ -77,6 +97,13 @@ export function Config<T = object>(
   };
 }
 
+/**
+ * Retrieves the {@link ConfigOptions} stored on a model class via
+ * `reflect-metadata`. If no config exists yet, initializes an empty one.
+ *
+ * @param target - The model class to read config from.
+ * @returns The current configuration options for the class.
+ */
 export function getArk7ModelConfig<T extends object, P = object>(
   target: ModelClass<T>,
 ): ConfigOptions<P> {
@@ -90,6 +117,13 @@ export function getArk7ModelConfig<T extends object, P = object>(
   return config;
 }
 
+/**
+ * Stores {@link ConfigOptions} on a model class via `reflect-metadata`,
+ * replacing any existing config.
+ *
+ * @param target - The model class to attach config to.
+ * @param config - The configuration options to store.
+ */
 export function defineArk7ModelConfig<T extends object, P = object>(
   target: ModelClass<T>,
   config: ConfigOptions<P>,
@@ -97,6 +131,48 @@ export function defineArk7ModelConfig<T extends object, P = object>(
   Reflect.defineMetadata(A7_MODEL_CONFIG, config, target);
 }
 
+/**
+ * Class decorator that registers a model with the A7Model system.
+ *
+ * This is the primary decorator for defining models. The TypeScript
+ * transformer automatically injects the `schema` parameter at compile time,
+ * so typical usage only requires the `options` argument.
+ *
+ * At decoration time, A7Model:
+ * 1. Merges `options` with any inherited config from parent classes.
+ * 2. Attaches the transformer-generated schema (property names, types,
+ *    modifiers).
+ * 3. Registers the class in the global model {@link Manager} so it can be
+ *    looked up by name for reference resolution and modelize.
+ * 4. Propagates `discriminatorKey` for polymorphic hierarchies.
+ *
+ * @param options - Model configuration options. Common options include:
+ *   - `defaultLevel` — Default data level for field visibility.
+ *   - `toObject` / `toJSON` — Default {@link DocumentToObjectOptions} for
+ *     serialization.
+ *   - `discriminatorKey` — Field name used for polymorphic discrimination.
+ *   - `mixinClasses` — Additional classes whose fields are merged into this
+ *     model.
+ * @param schema - Transformer-generated schema. Injected automatically at
+ *   compile time — do not pass manually.
+ * @param name - Optional registration name override. Defaults to the class
+ *   name.
+ * @returns A class decorator.
+ *
+ * @example
+ * ```typescript
+ * @A7Model({})
+ * class User extends Model {
+ *   email: string;
+ *   name?: string;
+ * }
+ *
+ * @A7Model({ defaultLevel: DefaultDataLevel.SHORT })
+ * class Profile extends StrictModel {
+ *   bio?: string;
+ * }
+ * ```
+ */
 export function A7Model<T = object>(
   options: ConfigOptions<T>,
   schema?: runtime.Schema,
@@ -105,17 +181,52 @@ export function A7Model<T = object>(
   return Config(options, schema, name);
 }
 
+/**
+ * Runtime metadata for a model class registered with {@link A7Model}.
+ *
+ * Each `@A7Model` decorated class has a corresponding `Ark7ModelMetadata`
+ * instance managed by the global {@link Manager}. It holds the merged schema,
+ * field definitions, inheritance chain, and discriminator mappings used by
+ * `modelize()`, `toObject()`, and other core operations.
+ *
+ * Retrieve metadata via {@link A7Model.getMetadata}:
+ * ```typescript
+ * const metadata = A7Model.getMetadata(User);
+ * metadata.name;           // 'User'
+ * metadata.combinedFields; // Map of all fields (own + inherited)
+ * ```
+ */
 export class Ark7ModelMetadata {
+  /** The registered name of the model (usually the class name). */
   name: string;
+
+  /** The model class constructor. */
   modelClass: ModelClass<any>;
+
+  /** The direct parent class, or null if the class extends Object. */
   superClass: ModelClass<any>;
+
+  /** Subclasses registered as discriminator variants of this model. */
   discriminations: ModelClass<any>[] = [];
+
+  /** Field-level decorator options keyed by field name. */
   fields: Ark7ModelFields;
 
+  /**
+   * Merged map of all fields (own + inherited + mixin). Built lazily by
+   * {@link createCombinedFields} and used by `modelize()` and `toObject()`.
+   */
   combinedFields: Map<string, CombinedModelField>;
 
+  /** Global map tracking discriminator parent → child class relationships. */
   static discriminationsMap = new Map<ModelClass<any>, ModelClass<any>[]>();
 
+  /**
+   * Register a child class as a discriminator variant of a parent class.
+   *
+   * @param parentCls - The parent model class.
+   * @param cls - The discriminator child class.
+   */
   static addDiscriminations(parentCls: ModelClass<any>, cls: ModelClass<any>) {
     if (!this.discriminationsMap.has(parentCls)) {
       this.discriminationsMap.set(parentCls, []);
@@ -128,12 +239,19 @@ export class Ark7ModelMetadata {
     }
   }
 
+  /**
+   * Returns all discriminator child classes registered for the given parent.
+   */
   static getDiscriminations(cls: ModelClass<any>) {
     return this.discriminationsMap.get(cls) ?? [];
   }
 
   private _configs: ConfigOptions;
 
+  /**
+   * @param cls - The model class this metadata describes.
+   * @param name - Optional registration name override.
+   */
   constructor(private cls: ModelClass<any>, name?: string) {
     this.name = name || cls?.name;
     this.modelClass = cls;
@@ -146,10 +264,15 @@ export class Ark7ModelMetadata {
     this.discriminations.push(...Ark7ModelMetadata.getDiscriminations(cls));
   }
 
+  /** The model's {@link ConfigOptions} (schema, defaultLevel, toObject, etc.). */
   get configs(): ConfigOptions {
     return this._configs;
   }
 
+  /**
+   * Sets the config and registers discriminator relationships with the
+   * parent class if a `discriminatorKey` is present.
+   */
   set configs(configs: ConfigOptions) {
     this._configs = configs;
 
@@ -168,24 +291,29 @@ export class Ark7ModelMetadata {
     }
   }
 
+  /** Whether this model is a customized type (extends {@link Converter}). */
   get isCustomizedType(): boolean {
     return this.modelClass.prototype instanceof Converter;
   }
 
+  /** Whether this model is an enum type (extends {@link Enum}). */
   get isEnum(): boolean {
     return this.modelClass.prototype instanceof Enum;
   }
 
+  /** The enum key-value mapping (only meaningful when {@link isEnum} is true). */
   get enums(): object {
     return (this.modelClass as any).enums;
   }
 
+  /** Whether the enum's values are `'string'` or `'number'`. */
   get enumType(): 'string' | 'number' {
     const values = _.values(this.enums);
 
     return _.find(values, (v) => _.isNumber(v)) != null ? 'number' : 'string';
   }
 
+  /** The enum's values, filtered to the detected {@link enumType}. */
   get enumValues(): string[] | number[] {
     const type = this.enumType;
     const values = _.values(this.enums);
@@ -222,6 +350,16 @@ export class Ark7ModelMetadata {
       .value();
   }
 
+  /**
+   * Builds the {@link combinedFields} map by merging the model's own schema
+   * properties, field decorator options, and prototype descriptors with those
+   * inherited from superclasses and mixin classes.
+   *
+   * Called lazily by the {@link Manager} when metadata is first accessed.
+   * The resulting map is ordered: superclass fields first, then own fields.
+   *
+   * @param manager - The global model manager used to resolve parent metadata.
+   */
   createCombinedFields(manager: Manager) {
     d('createCombinedFields started.');
     const combinedFields = new Map();
@@ -298,12 +436,28 @@ export class Ark7ModelMetadata {
     d('createCombinedFields completed.');
   }
 
+  /**
+   * Returns all combined fields that have the specified tag.
+   *
+   * @param tag - The tag string to filter by.
+   */
   getFieldsByTag(tag: string): CombinedModelField[] {
     return _.filter(Array.from(this.combinedFields.values()), (f) =>
       f.hasTag(tag),
     );
   }
 
+  /**
+   * Converts a model instance to a plain object, respecting data levels
+   * and field-level serialization rules.
+   *
+   * Iterates over {@link combinedFields}, skipping methods and fields above
+   * the requested data level, and recursively calls each field's `toObject`.
+   *
+   * @param obj - The model instance to serialize.
+   * @param options - Serialization options (level, etc.).
+   * @returns A plain JavaScript object.
+   */
   toObject(obj: any, options: DocumentToObjectOptions = {}): any {
     if (obj == null) {
       return obj;
@@ -332,7 +486,27 @@ export class Ark7ModelMetadata {
   }
 }
 
+/**
+ * Namespace providing static helper methods for interacting with the A7Model
+ * system at runtime.
+ */
 export namespace A7Model {
+  /**
+   * Retrieves the {@link Ark7ModelMetadata} for a registered model, by class
+   * reference or by name.
+   *
+   * @param model - The model class or registered name string.
+   * @param options - Options (e.g. `forceFields` to ensure combinedFields
+   *   are built).
+   * @returns The metadata for the model.
+   * @throws If the model is not registered.
+   *
+   * @example
+   * ```typescript
+   * const meta = A7Model.getMetadata(User);
+   * const meta2 = A7Model.getMetadata('User');
+   * ```
+   */
   export function getMetadata<T>(
     model: string | ModelClass<T>,
     options?: GetMetadataOptions,
@@ -340,14 +514,45 @@ export namespace A7Model {
     return manager.getMetadata(model, options);
   }
 
+  /**
+   * Checks whether a model is registered in the A7Model system.
+   *
+   * @param name - The model class or registered name string.
+   */
   export function hasMetadata<T>(name: string | ModelClass<T>): boolean {
     return manager.hasMetadata(name);
   }
 
+  /**
+   * Resets all registered model metadata. Primarily used in tests.
+   */
   export function reset() {
     manager.reset();
   }
 
+  /**
+   * Programmatically register a model, enum, or customized type with the
+   * A7Model system without using the `@A7Model` decorator.
+   *
+   * Useful for registering plain objects, enums, or third-party classes that
+   * cannot be decorated directly.
+   *
+   * @example
+   * ```typescript
+   * // Register an enum
+   * A7Model.provide(MyEnum);
+   *
+   * // Register a model class
+   * A7Model.provide(MyModel);
+   *
+   * // Register a customized type with modelize/toObject
+   * A7Model.provide<Date>({
+   *   name: 'Date',
+   *   modelize: (val) => new Date(val),
+   *   toObject: (val) => val.toISOString(),
+   * });
+   * ```
+   */
   /** target is an enum */
   export function provide(
     target: object,
@@ -379,13 +584,27 @@ export namespace A7Model {
   }
 }
 
+/**
+ * Options for registering a customized type via {@link A7Model.provide}.
+ *
+ * @typeParam T - The runtime type being registered (e.g. `Date`, `Moment`).
+ */
 export interface ProvideOptions<T> {
+  /** Registration name for the type. */
   name?: string;
+  /** Custom modelize function that converts raw input to an instance of T. */
   modelize?: (val: any, options: ModelizeOptions) => T;
+  /** Custom serialization function for `toObject` / `toJSON`. */
   toObject?: (val: any, options: DocumentToObjectOptions) => any;
 }
 
+/**
+ * Additional options for {@link A7Model.provide} that control protobuf
+ * generation behavior.
+ */
 export interface CustomProvideOptions {
+  /** Nest this type's protobuf message inside another message. */
   protoNestedIn?: string;
+  /** Override the protobuf enum name. */
   protoEnumName?: string;
 }
