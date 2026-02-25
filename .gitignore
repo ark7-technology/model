@@ -104,3 +104,6 @@ dist
 .tern-port
 
 .vim
+
+# TypeDoc output
+api-docs

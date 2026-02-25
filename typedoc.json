@@ -1,0 +1,11 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["src/index.ts"],
+  "out": "api-docs",
+  "name": "@ark7/model",
+  "readme": "README.md",
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "includeVersion": true,
+  "tsconfig": "src/tsconfig.pure.json"
+}

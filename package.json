@@ -12,7 +12,9 @@
     "compile:test": "npm run compile:src && tsc --build test/tsconfig.json",
     "ts-patch:install": "node_modules/.bin/ts-patch install",
     "release": "scripts/release",
-    "test": "npm run ts-patch:install && npm run compile:src && NODE_ENV=test node_modules/.bin/mocha --trace-warnings --require ts-node/register \"test/**/*.ts\""
+    "test": "npm run ts-patch:install && npm run compile:src && NODE_ENV=test node_modules/.bin/mocha --trace-warnings --require ts-node/register \"test/**/*.ts\"",
+    "docs": "typedoc",
+    "docs:publish": "npm run docs && gh-pages -d api-docs"
   },
   "repository": {
     "type": "git",
@@ -31,6 +33,7 @@
     "@types/node": "^18.11.9",
     "@types/should": "^13.0.0",
     "change-case": "^4.1.2",
+    "gh-pages": "^6.3.0",
     "gulp": "^4.0.2",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-typescript": "^6.0.0-alpha.1",
@@ -39,6 +42,7 @@
     "should": "^13.2.3",
     "ts-node": "^9.0.0",
     "ts-patch": "^3.1.2",
+    "typedoc": "^0.28.17",
     "typescript": "^5.3.3"
   },
   "dependencies": {
