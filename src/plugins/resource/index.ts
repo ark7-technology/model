@@ -191,4 +191,5 @@ import './singleton';
 // --- Re-exports ---
 
 export { CloneOptions, ResourceHandler, ResourceHandlerOptions, ResourceConfigs, ResourceModelOptions, A7ResourceModel, buildHandlerOptions, configureResource, getResourceConfigs } from './types';
+export { WebHandler, WebHandlerOptions } from './web-handler';
 export { addPrefixToObjectKey, mapKey } from './utils';
