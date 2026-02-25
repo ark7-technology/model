@@ -23,11 +23,18 @@ declare module '../../core/fields' {
      * implemented.
      *
      * - `true` — singleton with no key. `sGet()` calls
-     *   `handler.findOne(modelClass, {})`.
+     *   `handler.findOne(options, {})`.
      * - `'keyName'` — keyed singleton. `sGet(val)` calls
-     *   `handler.findOne(modelClass, { keyName: val })`.
+     *   `handler.findOne(options, { keyName: val })`.
      */
     singleton?: boolean | string;
+
+    /**
+     * The path prefix for this model's API endpoint. Passed to handler
+     * methods via {@link ResourceHandlerOptions}. Defaults to the model
+     * class name if not specified.
+     */
+    path?: string;
   }
 
 }
@@ -183,5 +190,5 @@ import './singleton';
 
 // --- Re-exports ---
 
-export { CloneOptions, ResourceHandler, ResourceConfigs, configureResource, getResourceConfigs } from './types';
+export { CloneOptions, ResourceHandler, ResourceHandlerOptions, ResourceConfigs, ResourceModelOptions, A7ResourceModel, buildHandlerOptions, configureResource, getResourceConfigs } from './types';
 export { addPrefixToObjectKey, mapKey } from './utils';

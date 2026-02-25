@@ -1,7 +1,7 @@
 import * as debug from 'debug';
 
 import { Model } from '../../core';
-import { getResourceConfigs } from './types';
+import { buildHandlerOptions, getResourceConfigs } from './types';
 
 const d = debug('ark7:model:resource:crud');
 
@@ -30,7 +30,8 @@ function requireHandler(method: string) {
     );
   }
 
-  const result = await handler.create(this, data);
+  const opts = buildHandlerOptions(this);
+  const result = await handler.create(opts, data);
   return this.modelize(result);
 };
 
@@ -47,7 +48,8 @@ function requireHandler(method: string) {
     );
   }
 
-  const result = await handler.get(this, id);
+  const opts = buildHandlerOptions(this);
+  const result = await handler.get(opts, id);
   return this.modelize(result);
 };
 
@@ -64,7 +66,8 @@ function requireHandler(method: string) {
     );
   }
 
-  const results = await handler.query(this, params);
+  const opts = buildHandlerOptions(this);
+  const results = await handler.query(opts, params);
   return results.map((r: any) => this.modelize(r));
 };
 
@@ -75,6 +78,7 @@ function requireHandler(method: string) {
 
   const handler = requireHandler('remove');
 
+  const opts = buildHandlerOptions(this);
   const stub = this.modelize({ _id: id }, { noSubFields: true });
-  return handler.remove(stub);
+  return handler.remove(opts, stub);
 };

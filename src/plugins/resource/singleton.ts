@@ -1,7 +1,7 @@
 import * as debug from 'debug';
 
-import { A7Model, Model } from '../../core';
-import { getResourceConfigs } from './types';
+import { Model } from '../../core';
+import { buildHandlerOptions, getResourceConfigs } from './types';
 
 const d = debug('ark7:model:resource:singleton');
 
@@ -18,14 +18,13 @@ const d = debug('ark7:model:resource:singleton');
     );
   }
 
-  const metadata = A7Model.getMetadata(this);
-  const singletonConfig = metadata.configs?.singleton;
+  const opts = buildHandlerOptions(this);
 
   let query: object;
 
-  if (typeof singletonConfig === 'string') {
+  if (typeof opts.singleton === 'string') {
     // Keyed singleton: sGet(val) → findOne({ [keyName]: val })
-    query = val != null ? { [singletonConfig]: val } : {};
+    query = val != null ? { [opts.singleton]: val } : {};
   } else {
     // Boolean singleton: sGet() → findOne({})
     query = {};
@@ -33,7 +32,7 @@ const d = debug('ark7:model:resource:singleton');
 
   d('sGet() calling findOne with query=%o', query);
 
-  const result = await handler.findOne(this, query);
+  const result = await handler.findOne(opts, query);
   return this.modelize(result);
 };
 

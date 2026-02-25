@@ -7,7 +7,7 @@ import {
   ModelizeOptions,
   StrictModel,
 } from '../../core';
-import { CloneOptions, getResourceConfigs } from './types';
+import { CloneOptions, buildHandlerOptions, getResourceConfigs } from './types';
 import { addPrefixToObjectKey } from './utils';
 
 const d = debug('ark7:model:resource');
@@ -199,7 +199,8 @@ StrictModel.prototype.$update = async function $update(
     );
   }
 
-  const result = await handler.update(this, obj);
+  const opts = buildHandlerOptions((this as any).__proto__.constructor);
+  const result = await handler.update(opts, obj, this);
   return this.$processResponse(result);
 };
 
@@ -243,7 +244,8 @@ StrictModel.prototype.$delete = async function $delete(
     );
   }
 
-  const result = await handler.remove(this);
+  const opts = buildHandlerOptions((this as any).__proto__.constructor);
+  const result = await handler.remove(opts, this);
   return this.$processResponse(result);
 };
 

@@ -2,10 +2,12 @@ import 'should';
 
 import { A7Model, Model, StrictModel } from '../../src';
 import {
+  A7ResourceModel,
   CloneOptions,
   configureResource,
   getResourceConfigs,
   ResourceHandler,
+  ResourceHandlerOptions,
 } from '../../src/plugins/resource';
 
 // --- Test models ---
@@ -45,6 +47,12 @@ class AppSettings extends Model {
 class TenantConfig extends Model {
   tenant: string;
   feature: string;
+}
+
+// External model — no resource config initially
+@A7Model({})
+class ExternalUser extends Model {
+  email: string;
 }
 
 describe('resource', () => {
@@ -244,20 +252,20 @@ describe('resource', () => {
   });
 
   describe('$update / $save / $delete', () => {
-    let lastUpdate: { instance: any; obj: any } | null = null;
-    let lastRemove: { instance: any } | null = null;
+    let lastUpdate: { options: any; instance: any; obj: any } | null = null;
+    let lastRemove: { options: any; instance: any } | null = null;
     let updateResponse: any = null;
     let removeResponse: any = null;
 
     before(() => {
       configureResource({
         handler: {
-          async update(instance, obj) {
-            lastUpdate = { instance, obj };
+          async update(options, obj, instance) {
+            lastUpdate = { options, instance, obj };
             return updateResponse;
           },
-          async remove(instance) {
-            lastRemove = { instance };
+          async remove(options, instance) {
+            lastRemove = { options, instance };
             return removeResponse;
           },
         },
@@ -288,7 +296,9 @@ describe('resource', () => {
 
       await user.$update({ email: 'new@example.com' });
 
+      lastUpdate.options.path.should.be.equal('ResourceUser');
       lastUpdate.obj.should.be.deepEqual({ email: 'new@example.com' });
+      lastUpdate.instance.should.be.exactly(user);
       user.email.should.be.equal('new@example.com');
     });
 
@@ -318,6 +328,7 @@ describe('resource', () => {
 
       await user.$delete();
 
+      lastRemove.options.path.should.be.equal('ResourceUser');
       lastRemove.instance.should.be.exactly(user);
     });
 
@@ -338,12 +349,12 @@ describe('resource', () => {
     it('nested $update prefixes keys to parent', async () => {
       configureResource({
         handler: {
-          async update(instance, obj) {
-            lastUpdate = { instance, obj };
+          async update(options, obj, instance) {
+            lastUpdate = { options, instance, obj };
             return updateResponse;
           },
-          async remove(instance) {
-            lastRemove = { instance };
+          async remove(options, instance) {
+            lastRemove = { options, instance };
             return removeResponse;
           },
         },
@@ -395,29 +406,29 @@ describe('resource', () => {
   });
 
   describe('CRUD static methods', () => {
-    let lastCreate: { modelClass: any; data: any } | null = null;
-    let lastGet: { modelClass: any; id: any } | null = null;
-    let lastQuery: { modelClass: any; params: any } | null = null;
-    let lastRemove: { instance: any } | null = null;
+    let lastCreate: { options: any; data: any } | null = null;
+    let lastGet: { options: any; id: any } | null = null;
+    let lastQuery: { options: any; params: any } | null = null;
+    let lastRemove: { options: any; instance: any } | null = null;
 
     before(() => {
       configureResource({
         handler: {
           async update() {},
-          async remove(instance) {
-            lastRemove = { instance };
+          async remove(options, instance) {
+            lastRemove = { options, instance };
             return null;
           },
-          async create(modelClass, data) {
-            lastCreate = { modelClass, data };
+          async create(options, data) {
+            lastCreate = { options, data };
             return { _id: 'new-id', ...data };
           },
-          async get(modelClass, id) {
-            lastGet = { modelClass, id };
+          async get(options, id) {
+            lastGet = { options, id };
             return { _id: id, email: 'found@example.com' };
           },
-          async query(modelClass, params) {
-            lastQuery = { modelClass, params };
+          async query(options, params) {
+            lastQuery = { options, params };
             return [
               { _id: '1', email: 'a@example.com' },
               { _id: '2', email: 'b@example.com' },
@@ -444,7 +455,8 @@ describe('resource', () => {
         name: 'Alice',
       });
 
-      lastCreate.modelClass.should.be.exactly(CRUDUser);
+      lastCreate.options.path.should.be.equal('CRUDUser');
+      lastCreate.options.crud.should.be.true();
       lastCreate.data.should.be.deepEqual({
         email: 'new@example.com',
         name: 'Alice',
@@ -457,7 +469,7 @@ describe('resource', () => {
     it('Model.get calls handler and returns modelized instance', async () => {
       const user = await CRUDUser.get('123');
 
-      lastGet.modelClass.should.be.exactly(CRUDUser);
+      lastGet.options.path.should.be.equal('CRUDUser');
       lastGet.id.should.be.equal('123');
       user.should.be.instanceof(CRUDUser);
       user.email.should.be.equal('found@example.com');
@@ -466,7 +478,7 @@ describe('resource', () => {
     it('Model.query calls handler and returns modelized array', async () => {
       const users = await CRUDUser.query({ name: 'test' });
 
-      lastQuery.modelClass.should.be.exactly(CRUDUser);
+      lastQuery.options.path.should.be.equal('CRUDUser');
       lastQuery.params.should.be.deepEqual({ name: 'test' });
       users.should.have.length(2);
       users[0].should.be.instanceof(CRUDUser);
@@ -478,7 +490,7 @@ describe('resource', () => {
     it('Model.query works without params', async () => {
       const users = await CRUDUser.query();
 
-      lastQuery.modelClass.should.be.exactly(CRUDUser);
+      lastQuery.options.path.should.be.equal('CRUDUser');
       (lastQuery.params == null).should.be.true();
       users.should.have.length(2);
     });
@@ -486,6 +498,7 @@ describe('resource', () => {
     it('Model.remove delegates to handler.remove with stub instance', async () => {
       await CRUDUser.remove('456');
 
+      lastRemove.options.path.should.be.equal('CRUDUser');
       lastRemove.instance.should.be.instanceof(CRUDUser);
       String(lastRemove.instance._id).should.be.equal('456');
     });
@@ -515,8 +528,8 @@ describe('resource', () => {
         handler: {
           async update() {},
           async remove() { return null; },
-          async create(modelClass, data) {
-            lastCreate = { modelClass, data };
+          async create(options, data) {
+            lastCreate = { options, data };
             return { _id: 'sub-id', ...data };
           },
           async get() {
@@ -533,21 +546,21 @@ describe('resource', () => {
         email: 'sub@example.com',
       });
 
-      lastCreate.modelClass.should.be.exactly(ResourceUser);
+      lastCreate.options.path.should.be.equal('ResourceUser');
       user.should.be.instanceof(ResourceUser);
       user.email.should.be.equal('sub@example.com');
     });
   });
 
   describe('Singleton static methods', () => {
-    let lastFindOne: { modelClass: any; query: any } | null = null;
-    let lastUpdate: { instance: any; obj: any } | null = null;
+    let lastFindOne: { options: any; query: any } | null = null;
+    let lastUpdate: { options: any; instance: any; obj: any } | null = null;
 
     before(() => {
       configureResource({
         handler: {
-          async update(instance, obj) {
-            lastUpdate = { instance, obj };
+          async update(options, obj, instance) {
+            lastUpdate = { options, instance, obj };
             return AppSettings.modelize({
               _id: 'singleton-1',
               ...instance.toJSON(),
@@ -555,8 +568,8 @@ describe('resource', () => {
             } as any);
           },
           async remove() { return null; },
-          async findOne(modelClass, query) {
-            lastFindOne = { modelClass, query };
+          async findOne(options, query) {
+            lastFindOne = { options, query };
             return { _id: 'singleton-1', theme: 'dark', language: 'en' };
           },
         },
@@ -575,7 +588,8 @@ describe('resource', () => {
     it('Model.sGet calls handler.findOne with empty query when singleton: true', async () => {
       const settings = await AppSettings.sGet();
 
-      lastFindOne.modelClass.should.be.exactly(AppSettings);
+      lastFindOne.options.path.should.be.equal('AppSettings');
+      lastFindOne.options.singleton.should.be.true();
       lastFindOne.query.should.be.deepEqual({});
       settings.should.be.instanceof(AppSettings);
       settings.theme.should.be.equal('dark');
@@ -585,8 +599,8 @@ describe('resource', () => {
     it('Model.sGet builds keyed query when singleton is a string', async () => {
       configureResource({
         handler: {
-          async update(instance, obj) {
-            lastUpdate = { instance, obj };
+          async update(options, obj, instance) {
+            lastUpdate = { options, instance, obj };
             return TenantConfig.modelize({
               _id: 'tc-1',
               ...instance.toJSON(),
@@ -594,8 +608,8 @@ describe('resource', () => {
             } as any);
           },
           async remove() { return null; },
-          async findOne(modelClass, query) {
-            lastFindOne = { modelClass, query };
+          async findOne(options, query) {
+            lastFindOne = { options, query };
             return { _id: 'tc-1', tenant: 'acme', feature: 'billing' };
           },
         },
@@ -603,7 +617,8 @@ describe('resource', () => {
 
       const config = await TenantConfig.sGet('acme');
 
-      lastFindOne.modelClass.should.be.exactly(TenantConfig);
+      lastFindOne.options.path.should.be.equal('TenantConfig');
+      lastFindOne.options.singleton.should.be.equal('tenant');
       lastFindOne.query.should.be.deepEqual({ tenant: 'acme' });
       config.should.be.instanceof(TenantConfig);
       config.tenant.should.be.equal('acme');
@@ -614,8 +629,8 @@ describe('resource', () => {
       // Restore AppSettings handler
       configureResource({
         handler: {
-          async update(instance, obj) {
-            lastUpdate = { instance, obj };
+          async update(options, obj, instance) {
+            lastUpdate = { options, instance, obj };
             return AppSettings.modelize({
               _id: 'singleton-1',
               ...instance.toJSON(),
@@ -623,8 +638,8 @@ describe('resource', () => {
             } as any);
           },
           async remove() { return null; },
-          async findOne(modelClass, query) {
-            lastFindOne = { modelClass, query };
+          async findOne(options, query) {
+            lastFindOne = { options, query };
             return { _id: 'singleton-1', theme: 'dark', language: 'en' };
           },
         },
@@ -635,7 +650,7 @@ describe('resource', () => {
       });
 
       // findOne should have been called first
-      lastFindOne.modelClass.should.be.exactly(AppSettings);
+      lastFindOne.options.path.should.be.equal('AppSettings');
       lastFindOne.query.should.be.deepEqual({});
 
       // Then $update should have called handler.update
@@ -646,8 +661,8 @@ describe('resource', () => {
     it('Model.sUpdate passes val to build keyed query', async () => {
       configureResource({
         handler: {
-          async update(instance, obj) {
-            lastUpdate = { instance, obj };
+          async update(options, obj, instance) {
+            lastUpdate = { options, instance, obj };
             return TenantConfig.modelize({
               _id: 'tc-1',
               ...instance.toJSON(),
@@ -655,8 +670,8 @@ describe('resource', () => {
             } as any);
           },
           async remove() { return null; },
-          async findOne(modelClass, query) {
-            lastFindOne = { modelClass, query };
+          async findOne(options, query) {
+            lastFindOne = { options, query };
             return { _id: 'tc-1', tenant: 'ops', feature: 'old' };
           },
         },
@@ -683,6 +698,63 @@ describe('resource', () => {
       await (AppSettings as any)
         .sUpdate({ theme: 'x' })
         .should.be.rejectedWith(/findOne is not implemented/);
+    });
+  });
+
+  describe('A7ResourceModel', () => {
+    it('adds crud config to an existing model', () => {
+      A7ResourceModel({ crud: true })(ExternalUser);
+
+      const metadata = ExternalUser.$metadata();
+      (metadata.configs as any).crud.should.be.true();
+    });
+
+    it('enables CRUD static methods on the extended model', async () => {
+      let lastCreate: any = null;
+
+      configureResource({
+        handler: {
+          async update() {},
+          async remove() { return null; },
+          async create(options, data) {
+            lastCreate = { options, data };
+            return { _id: 'ext-1', ...data };
+          },
+        },
+      });
+
+      const user = await ExternalUser.create({ email: 'ext@example.com' });
+
+      lastCreate.options.path.should.be.equal('ExternalUser');
+      user.should.be.instanceof(ExternalUser);
+      user.email.should.be.equal('ext@example.com');
+
+      configureResource({ handler: undefined });
+    });
+
+    it('adds singleton config with key name', () => {
+      @A7Model({})
+      class ExternalConfig extends Model {
+        tenant: string;
+        value: string;
+      }
+
+      A7ResourceModel({ singleton: 'tenant' })(ExternalConfig);
+
+      const metadata = ExternalConfig.$metadata();
+      (metadata.configs as any).singleton.should.be.equal('tenant');
+    });
+
+    it('configures custom path', () => {
+      @A7Model({})
+      class PathModel extends Model {
+        name: string;
+      }
+
+      A7ResourceModel({ crud: true, path: '/api/v2/paths' })(PathModel);
+
+      const metadata = PathModel.$metadata();
+      (metadata.configs as any).path.should.be.equal('/api/v2/paths');
     });
   });
 });
