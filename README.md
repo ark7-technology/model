@@ -5,6 +5,8 @@ In many projects, duplicating identical models can lead to numerous bugs. The
 class layer that operates seamlessly across various environments, ensuring
 consistent business logic and reducing redundancy.
 
+API Documentation: https://ark7-technology.github.io/model/
+
 Supported Platforms:
 
 - [Node.js (MongoDB)](https://github.com/ark7-technology/model-mongoose)
