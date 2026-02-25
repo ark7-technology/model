@@ -29,6 +29,24 @@ class ResourceUser extends Model {
   tags?: Tag[];
 }
 
+@A7Model({ crud: true })
+class CRUDUser extends Model {
+  email: string;
+  name?: string;
+}
+
+@A7Model({ singleton: true })
+class AppSettings extends Model {
+  theme: string;
+  language?: string;
+}
+
+@A7Model({ singleton: 'tenant' })
+class TenantConfig extends Model {
+  tenant: string;
+  feature: string;
+}
+
 describe('resource', () => {
   describe('$metadata', () => {
     it('returns metadata for the instance', () => {
@@ -373,6 +391,298 @@ describe('resource', () => {
       attach.should.have.property('$parent');
       attach.$parent.should.be.exactly(user);
       attach.$path.should.be.equal('address');
+    });
+  });
+
+  describe('CRUD static methods', () => {
+    let lastCreate: { modelClass: any; data: any } | null = null;
+    let lastGet: { modelClass: any; id: any } | null = null;
+    let lastQuery: { modelClass: any; params: any } | null = null;
+    let lastRemove: { instance: any } | null = null;
+
+    before(() => {
+      configureResource({
+        handler: {
+          async update() {},
+          async remove(instance) {
+            lastRemove = { instance };
+            return null;
+          },
+          async create(modelClass, data) {
+            lastCreate = { modelClass, data };
+            return { _id: 'new-id', ...data };
+          },
+          async get(modelClass, id) {
+            lastGet = { modelClass, id };
+            return { _id: id, email: 'found@example.com' };
+          },
+          async query(modelClass, params) {
+            lastQuery = { modelClass, params };
+            return [
+              { _id: '1', email: 'a@example.com' },
+              { _id: '2', email: 'b@example.com' },
+            ];
+          },
+        },
+      });
+    });
+
+    beforeEach(() => {
+      lastCreate = null;
+      lastGet = null;
+      lastQuery = null;
+      lastRemove = null;
+    });
+
+    after(() => {
+      configureResource({ handler: undefined });
+    });
+
+    it('Model.create calls handler and returns modelized instance', async () => {
+      const user = await CRUDUser.create({
+        email: 'new@example.com',
+        name: 'Alice',
+      });
+
+      lastCreate.modelClass.should.be.exactly(CRUDUser);
+      lastCreate.data.should.be.deepEqual({
+        email: 'new@example.com',
+        name: 'Alice',
+      });
+      user.should.be.instanceof(CRUDUser);
+      user.email.should.be.equal('new@example.com');
+      String(user._id).should.be.equal('new-id');
+    });
+
+    it('Model.get calls handler and returns modelized instance', async () => {
+      const user = await CRUDUser.get('123');
+
+      lastGet.modelClass.should.be.exactly(CRUDUser);
+      lastGet.id.should.be.equal('123');
+      user.should.be.instanceof(CRUDUser);
+      user.email.should.be.equal('found@example.com');
+    });
+
+    it('Model.query calls handler and returns modelized array', async () => {
+      const users = await CRUDUser.query({ name: 'test' });
+
+      lastQuery.modelClass.should.be.exactly(CRUDUser);
+      lastQuery.params.should.be.deepEqual({ name: 'test' });
+      users.should.have.length(2);
+      users[0].should.be.instanceof(CRUDUser);
+      users[1].should.be.instanceof(CRUDUser);
+      users[0].email.should.be.equal('a@example.com');
+      users[1].email.should.be.equal('b@example.com');
+    });
+
+    it('Model.query works without params', async () => {
+      const users = await CRUDUser.query();
+
+      lastQuery.modelClass.should.be.exactly(CRUDUser);
+      (lastQuery.params == null).should.be.true();
+      users.should.have.length(2);
+    });
+
+    it('Model.remove delegates to handler.remove with stub instance', async () => {
+      await CRUDUser.remove('456');
+
+      lastRemove.instance.should.be.instanceof(CRUDUser);
+      String(lastRemove.instance._id).should.be.equal('456');
+    });
+
+    it('throws when no handler configured', async () => {
+      configureResource({ handler: undefined });
+
+      await (CRUDUser as any)
+        .create({ email: 'x' })
+        .should.be.rejectedWith(/No ResourceHandler configured/);
+
+      await (CRUDUser as any)
+        .get('1')
+        .should.be.rejectedWith(/No ResourceHandler configured/);
+
+      await (CRUDUser as any)
+        .query()
+        .should.be.rejectedWith(/No ResourceHandler configured/);
+
+      await (CRUDUser as any)
+        .remove('1')
+        .should.be.rejectedWith(/No ResourceHandler configured/);
+    });
+
+    it('static methods are inherited by subclasses', async () => {
+      configureResource({
+        handler: {
+          async update() {},
+          async remove() { return null; },
+          async create(modelClass, data) {
+            lastCreate = { modelClass, data };
+            return { _id: 'sub-id', ...data };
+          },
+          async get() {
+            return { _id: '1', email: 'test@example.com' };
+          },
+          async query() {
+            return [];
+          },
+        },
+      });
+
+      // ResourceUser extends Model — static methods inherited via prototype chain
+      const user = await ResourceUser.create({
+        email: 'sub@example.com',
+      });
+
+      lastCreate.modelClass.should.be.exactly(ResourceUser);
+      user.should.be.instanceof(ResourceUser);
+      user.email.should.be.equal('sub@example.com');
+    });
+  });
+
+  describe('Singleton static methods', () => {
+    let lastFindOne: { modelClass: any; query: any } | null = null;
+    let lastUpdate: { instance: any; obj: any } | null = null;
+
+    before(() => {
+      configureResource({
+        handler: {
+          async update(instance, obj) {
+            lastUpdate = { instance, obj };
+            return AppSettings.modelize({
+              _id: 'singleton-1',
+              ...instance.toJSON(),
+              ...obj,
+            } as any);
+          },
+          async remove() { return null; },
+          async findOne(modelClass, query) {
+            lastFindOne = { modelClass, query };
+            return { _id: 'singleton-1', theme: 'dark', language: 'en' };
+          },
+        },
+      });
+    });
+
+    beforeEach(() => {
+      lastFindOne = null;
+      lastUpdate = null;
+    });
+
+    after(() => {
+      configureResource({ handler: undefined });
+    });
+
+    it('Model.sGet calls handler.findOne with empty query when singleton: true', async () => {
+      const settings = await AppSettings.sGet();
+
+      lastFindOne.modelClass.should.be.exactly(AppSettings);
+      lastFindOne.query.should.be.deepEqual({});
+      settings.should.be.instanceof(AppSettings);
+      settings.theme.should.be.equal('dark');
+      settings.language.should.be.equal('en');
+    });
+
+    it('Model.sGet builds keyed query when singleton is a string', async () => {
+      configureResource({
+        handler: {
+          async update(instance, obj) {
+            lastUpdate = { instance, obj };
+            return TenantConfig.modelize({
+              _id: 'tc-1',
+              ...instance.toJSON(),
+              ...obj,
+            } as any);
+          },
+          async remove() { return null; },
+          async findOne(modelClass, query) {
+            lastFindOne = { modelClass, query };
+            return { _id: 'tc-1', tenant: 'acme', feature: 'billing' };
+          },
+        },
+      });
+
+      const config = await TenantConfig.sGet('acme');
+
+      lastFindOne.modelClass.should.be.exactly(TenantConfig);
+      lastFindOne.query.should.be.deepEqual({ tenant: 'acme' });
+      config.should.be.instanceof(TenantConfig);
+      config.tenant.should.be.equal('acme');
+      config.feature.should.be.equal('billing');
+    });
+
+    it('Model.sUpdate composes sGet + $update', async () => {
+      // Restore AppSettings handler
+      configureResource({
+        handler: {
+          async update(instance, obj) {
+            lastUpdate = { instance, obj };
+            return AppSettings.modelize({
+              _id: 'singleton-1',
+              ...instance.toJSON(),
+              ...obj,
+            } as any);
+          },
+          async remove() { return null; },
+          async findOne(modelClass, query) {
+            lastFindOne = { modelClass, query };
+            return { _id: 'singleton-1', theme: 'dark', language: 'en' };
+          },
+        },
+      });
+
+      const settings = await AppSettings.sUpdate({
+        language: 'fr',
+      });
+
+      // findOne should have been called first
+      lastFindOne.modelClass.should.be.exactly(AppSettings);
+      lastFindOne.query.should.be.deepEqual({});
+
+      // Then $update should have called handler.update
+      lastUpdate.obj.should.be.deepEqual({ language: 'fr' });
+      settings.should.be.instanceof(AppSettings);
+    });
+
+    it('Model.sUpdate passes val to build keyed query', async () => {
+      configureResource({
+        handler: {
+          async update(instance, obj) {
+            lastUpdate = { instance, obj };
+            return TenantConfig.modelize({
+              _id: 'tc-1',
+              ...instance.toJSON(),
+              ...obj,
+            } as any);
+          },
+          async remove() { return null; },
+          async findOne(modelClass, query) {
+            lastFindOne = { modelClass, query };
+            return { _id: 'tc-1', tenant: 'ops', feature: 'old' };
+          },
+        },
+      });
+
+      await TenantConfig.sUpdate({ feature: 'new' }, 'ops');
+
+      lastFindOne.query.should.be.deepEqual({ tenant: 'ops' });
+      lastUpdate.obj.should.be.deepEqual({ feature: 'new' });
+    });
+
+    it('throws when handler.findOne is not implemented', async () => {
+      configureResource({
+        handler: {
+          async update() {},
+          async remove() { return null; },
+        },
+      });
+
+      await (AppSettings as any)
+        .sGet()
+        .should.be.rejectedWith(/findOne is not implemented/);
+
+      await (AppSettings as any)
+        .sUpdate({ theme: 'x' })
+        .should.be.rejectedWith(/findOne is not implemented/);
     });
   });
 });

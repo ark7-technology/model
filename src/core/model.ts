@@ -211,6 +211,26 @@ export class Model extends StrictModel {
   @Basic()
   @Proto({ protoAssignedId: 1 })
   _id?: ID;
+
+  // --- Resource plugin static methods (implemented by @ark7/model/resource) ---
+
+  /** Create a new resource. Requires `@ark7/model/resource` plugin. */
+  static create: (data: object) => Promise<any>;
+
+  /** Fetch a single resource by ID. Requires `@ark7/model/resource` plugin. */
+  static get: (id: any) => Promise<any>;
+
+  /** Query/find multiple resources. Requires `@ark7/model/resource` plugin. */
+  static query: (params?: object) => Promise<any[]>;
+
+  /** Delete a resource by ID. Requires `@ark7/model/resource` plugin. */
+  static remove: (id: any) => Promise<any>;
+
+  /** Fetch a singleton resource, optionally by key. Requires `@ark7/model/resource` plugin. */
+  static sGet: (key?: string) => Promise<any>;
+
+  /** Fetch and update a singleton resource. Requires `@ark7/model/resource` plugin. */
+  static sUpdate: (data: object, key?: string) => Promise<any>;
 }
 
 export type Attachment<T = object> = T & {

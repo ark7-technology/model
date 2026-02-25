@@ -8,6 +8,28 @@ declare module '../../core/fields' {
     /** Whether the instance has been locally modified since last server sync. */
     $dirty?: boolean;
   }
+
+  export interface StrictConfigOptions {
+    /**
+     * Enable class-level CRUD static methods (`create`, `get`, `query`,
+     * `remove`) on this model. Requires a {@link ResourceHandler} with the
+     * corresponding methods implemented.
+     */
+    crud?: boolean;
+
+    /**
+     * Enable class-level singleton static methods (`sGet`, `sUpdate`) on
+     * this model. Requires a {@link ResourceHandler} with `findOne`
+     * implemented.
+     *
+     * - `true` — singleton with no key. `sGet()` calls
+     *   `handler.findOne(modelClass, {})`.
+     * - `'keyName'` — keyed singleton. `sGet(val)` calls
+     *   `handler.findOne(modelClass, { keyName: val })`.
+     */
+    singleton?: boolean | string;
+  }
+
 }
 
 declare module '../../core/model' {
@@ -153,9 +175,11 @@ declare module '../../core/model' {
   }
 }
 
-// --- Side-effect imports (installs prototype methods) ---
+// --- Side-effect imports (installs prototype and static methods) ---
 
 import './model';
+import './crud';
+import './singleton';
 
 // --- Re-exports ---
 
