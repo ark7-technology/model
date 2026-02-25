@@ -31,7 +31,9 @@
     "compile:test": "npm run compile:src && tsc --build test/tsconfig.json",
     "ts-patch:install": "node_modules/.bin/ts-patch install",
     "release": "scripts/release",
-    "test": "npm run ts-patch:install && npm run compile:src && NODE_ENV=test node_modules/.bin/mocha --trace-warnings --require ts-node/register \"test/**/*.ts\"",
+    "test": "npm run ts-patch:install && npm run compile:src && NODE_ENV=test node_modules/.bin/mocha --trace-warnings --require ts-node/register \"test/*.ts\"",
+    "test:plugins": "npm run ts-patch:install && npm run compile:src && NODE_ENV=test node_modules/.bin/mocha --trace-warnings --require ts-node/register \"test/plugins/**/*.ts\"",
+    "test:all": "npm run test && npm run test:plugins",
     "docs": "typedoc",
     "docs:publish": "npm run docs && gh-pages -d api-docs"
   },

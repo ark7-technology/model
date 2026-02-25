@@ -22,6 +22,7 @@ export function buildInterface(
         name,
         props: symbols
           .filter((s) => s.getName() !== '__constructor')
+          .filter((s) => !s.getName().startsWith('$'))
           .map((s) => buildInterfaceProperty(s, typeChecker))
           .filter((x) => x != null),
       };
