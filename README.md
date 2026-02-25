@@ -26,14 +26,31 @@ Supported Platforms:
 - [Field](#field)
   - [Required vs. Optional](#required-vs-optional)
   - [Readonly](#readonly)
+  - [Autogen](#autogen)
   - [Default Values](#default-values)
   - [Model.modelize()](#modelmodelize)
   - [.toObject() & .toJSON()](#toobject--tojson)
   - [Data Level](#data-level)
+  - [Reference](#reference)
+  - [Virtual](#virtual)
+  - [Index](#index)
+  - [Encrypted](#encrypted)
+  - [Tag](#tag)
+  - [NoPersist](#nopersist)
+  - [Present](#present)
+  - [Important](#important)
+  - [MMap](#mmap)
+  - [IDType](#idtype)
+  - [Editable](#editable)
+  - [Proto](#proto)
   - [Attachment](#attachment)
 - [Built-in Types](#built-in-types)
   - [Email](#email)
-  - [UUID](#uuid)
+  - [StringUUID](#stringuuid)
+  - [SSN](#ssn)
+  - [PhoneNumber](#phonenumber)
+  - [Date](#date)
+  - [ID](#id)
 
 ---
 
@@ -215,7 +232,7 @@ interface CombinedModel extends M1, M2 {}
 
 ## Field
 
-### Required v.s. Optional
+### Required vs. Optional
 
 The `required` modifier can be declared at the `field metadata` or `schema` level:
 
@@ -255,6 +272,18 @@ class Name {
 ```
 
 It depends on the adapter to resolve these conflicts.
+
+### Autogen
+
+The `@Autogen()` decorator marks a field as both readonly and auto-generated. This is useful for fields that are automatically populated by the system (e.g., timestamps, computed values).
+
+```Typescript
+@A7Model({})
+class Record extends Model {
+  @Autogen()
+  createdAt: Date;
+}
+```
 
 ### Default
 
@@ -324,7 +353,7 @@ const user = User.modelize({
   }
 });
 
-user.toObject().should.be.instanceof({
+user.toObject().should.be.deepEqual({
   email: 'test@google.com',
   name: {
     first: 'foo',
@@ -379,11 +408,11 @@ const user = User.modelize({
   }
 });
 
-user.toObject({ level: DefaultDataLevel.BASIC }).should.be.instanceof({
+user.toObject({ level: DefaultDataLevel.BASIC }).should.be.deepEqual({
   email: 'test@google.com',
 });
 
-user.toObject({ level: DefaultDataLevel.SHORT }).should.be.instanceof({
+user.toObject({ level: DefaultDataLevel.SHORT }).should.be.deepEqual({
   email: 'test@google.com',
   name: {
     first: 'foo',
@@ -410,6 +439,248 @@ export class Post extends Model {
   author: Ref<User>;
 }
 ```
+
+### Reference
+
+The `@Reference()` decorator marks a field as a reference to another model. The `Ref<T>` type represents a field that can hold either an ID or a populated model instance.
+
+```Typescript
+import { A7Model, Model, Ref, Reference, asModel, idOf, isSameModel } from '@ark7/model';
+
+@A7Model({})
+class Author extends Model {
+  name: string;
+}
+
+@A7Model({})
+class Book extends Model {
+  title: string;
+
+  @Reference()
+  author: Ref<Author>;
+}
+```
+
+Utility functions for working with references:
+
+- `asModel(ref)` (alias `$$`) - Casts a `Ref<T>` to `T`.
+- `idOf(ref)` - Extracts the ID from a reference.
+- `isModel(ref)` - Checks if the reference is a populated model.
+- `isSameModel(ref1, ref2)` - Compares two references by their IDs.
+
+### Virtual
+
+The `@Virtual()` decorator defines a virtual field that is populated from another model via a local/foreign field relationship, similar to Mongoose virtuals.
+
+```Typescript
+@A7Model({})
+class Author extends Model {
+  name: string;
+
+  @Virtual({
+    ref: 'Book',
+    localField: '_id',
+    foreignField: 'author',
+  })
+  books: Book[];
+}
+
+@A7Model({})
+class Book extends Model {
+  title: string;
+
+  @Reference()
+  author: Ref<Author>;
+}
+```
+
+Options:
+
+- `ref` - The referenced model name or class.
+- `localField` - The field on the current model to match against.
+- `foreignField` - The field on the referenced model to match.
+- `justOne` - If true, populates a single document instead of an array.
+- `count` - If true, returns only the count of matching documents.
+- `match` - Additional query conditions for filtering.
+
+### Index
+
+The `@Index()`, `@Unique()`, and `@CompoundIndex()` decorators configure database indexes.
+
+```Typescript
+@A7Model({})
+@CompoundIndex({ email: 1, name: 1 })
+class User extends Model {
+  @Unique()
+  email: string;
+
+  @Index()
+  name: string;
+
+  @Index({ sparse: true })
+  nickname?: string;
+}
+```
+
+- `@Index(options?)` - Creates an index on the field. Options: `unique`, `sparse`, `indexDisabled`.
+- `@Unique(options?)` - Shorthand for a unique index. Options: `sparse`.
+- `@CompoundIndex(fields, options?)` - Class-level decorator for compound indexes.
+
+### Encrypted
+
+The `@Encrypted()` decorator marks a field for encryption at the database level.
+
+```Typescript
+@A7Model({})
+class User extends Model {
+  @Encrypted()
+  ssn: string;
+
+  @Encrypted({ algorithm: EncryptAlgorithm.AEAD_AES_256_CBC_HMAC_SHA_512_RANDOM })
+  secretNotes: string;
+}
+```
+
+Options:
+
+- `algorithm` - Encryption algorithm (default: `AEAD_AES_256_CBC_HMAC_SHA_512_DETERMINISTIC`).
+- `keyAltName` - The data key alias name (default: `'defaultDataKey'`).
+- `autoDecrypt` - Whether to auto-decrypt the field (default: `false`).
+
+### Tag
+
+The `@Tag()` decorator adds tags to a field for categorization or filtering.
+
+```Typescript
+@A7Model({})
+class Settings extends Model {
+  @Tag('ConfigField')
+  theme: string;
+
+  @Tag(['ConfigField', 'UserPref'])
+  language: string;
+}
+```
+
+### NoPersist
+
+The `@NoPersist()` decorator marks a field as in-memory only. The field will not be persisted to the database.
+
+```Typescript
+@A7Model({})
+class Session extends Model {
+  userId: string;
+
+  @NoPersist()
+  cachedProfile: object;
+}
+```
+
+### Present
+
+The `@Present()` decorator controls whether a field is present based on a static value or a condition evaluated against the model instance.
+
+```Typescript
+@A7Model({})
+class Feature extends Model {
+  @Present()
+  enabledField: string;
+
+  @Present(() => process.env.NODE_ENV === 'development')
+  debugField: string;
+}
+```
+
+### Important
+
+The `@Important()` decorator prevents a field from being overridden by the natural field resolution order (Child Class > Mixin Class > Parent Class).
+
+```Typescript
+@A7Model({})
+class Base extends Model {
+  @Important()
+  @Detail()
+  role: string;
+}
+```
+
+### MMap
+
+The `@MMap()` decorator and `MMap<T>` type provide Map support for model fields.
+
+```Typescript
+import { A7Model, Model, MMap } from '@ark7/model';
+
+@A7Model({})
+class Config extends Model {
+  @MMap(String)
+  settings: MMap<string>;
+}
+```
+
+### IDType
+
+The `@IDType()` decorator configures ID handling for nested fields.
+
+```Typescript
+@A7Model({})
+class Record extends Model {
+  @IDType({ forceIdToString: true })
+  nested: SubRecord;
+}
+```
+
+### Editable
+
+The `@Editable()` decorator attaches UI-oriented metadata to a field, useful for auto-generating forms and display components.
+
+```Typescript
+@A7Model({})
+class User extends Model {
+  @Editable({
+    inputType: 'text',
+    hint: 'Enter your full name',
+  })
+  name: string;
+
+  @Editable({
+    inputType: 'email',
+    hideDisplay: true,
+  })
+  email: string;
+
+  @Editable({
+    type: 'select',
+    options: [
+      { label: 'Admin', value: 'admin' },
+      { label: 'User', value: 'user' },
+    ],
+  })
+  role: string;
+}
+```
+
+Options include: `type`, `inputType`, `options`, `hint`, `info`, `disabled`, `hideDisplay`, `hideEditing`, `hide`, `reference`, `displayWidth`, `editWidth`, `listItemRemovable`, `copyText`, `autoHide`.
+
+### Proto
+
+The `@Proto()` decorator configures Protocol Buffer field options.
+
+```Typescript
+@A7Model({})
+class Message extends Model {
+  @Proto({ protoAssignedId: 1 })
+  title: string;
+
+  @Proto({ protoAssignedId: 2, protoFieldType: 'int32' })
+  count: number;
+}
+```
+
+Options:
+
+- `protoAssignedId` - The Protocol Buffer field number.
+- `protoFieldType` - Override the proto field type (`'none'`, `'int32'`, `'int64'`, `'string'`, `'float'`, `'double'`).
 
 ### Attachment
 
@@ -444,8 +715,24 @@ name.toObject().should.be.deepEqual({
 
 ### Email
 
-Email address.
+Email address type.
 
 ### StringUUID
 
-StringUUID.
+UUID string type. Used for UUID fields that should be stored as strings.
+
+### SSN
+
+Social Security Number type.
+
+### PhoneNumber
+
+Phone number type.
+
+### Date
+
+Date type with custom modelize handler that automatically converts values to `Date` instances via `new Date(val)`.
+
+### ID
+
+Base ID interface used for model identifiers (e.g., `_id` fields).
