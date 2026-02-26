@@ -16,12 +16,26 @@
     "./resource": {
       "types": "./plugins/resource/index.d.ts",
       "default": "./plugins/resource/index.js"
+    },
+    "./extensions/moment": {
+      "types": "./extensions/moment.d.ts",
+      "default": "./extensions/moment.js"
+    },
+    "./extensions/protobuf": {
+      "types": "./extensions/protobuf.d.ts",
+      "default": "./extensions/protobuf.js"
     }
   },
   "typesVersions": {
     "*": {
       "resource": [
         "plugins/resource/index.d.ts"
+      ],
+      "extensions/moment": [
+        "extensions/moment.d.ts"
+      ],
+      "extensions/protobuf": [
+        "extensions/protobuf.d.ts"
       ]
     }
   },
