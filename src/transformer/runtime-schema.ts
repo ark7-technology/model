@@ -2,6 +2,25 @@ import * as ts from 'typescript';
 
 import { runtime } from '../runtime';
 
+/**
+ * Symbols injected via module augmentation (e.g. by the resource plugin)
+ * that should not appear in the runtime schema.
+ */
+const EXCLUDED_SYMBOLS = new Set([
+  // StrictModel built-in
+  '$attach',
+  // Resource plugin (declare module augmentation)
+  '$set',
+  '$update',
+  '$save',
+  '$delete',
+  '$metadata',
+  '$processResponse',
+  '$root',
+  '$clone',
+  '$copy',
+]);
+
 export function buildInterface(
   name: string,
   type: ts.Type,
@@ -22,7 +41,7 @@ export function buildInterface(
         name,
         props: symbols
           .filter((s) => s.getName() !== '__constructor')
-          .filter((s) => !s.getName().startsWith('$'))
+          .filter((s) => !EXCLUDED_SYMBOLS.has(s.getName()))
           .map((s) => buildInterfaceProperty(s, typeChecker))
           .filter((x) => x != null),
       };
